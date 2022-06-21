@@ -4769,6 +4769,7 @@ bool OCCTest::CalculateSpecificPoints(TopoDS_Shape inputbody, std::vector<gp_Pnt
 {
 	bool generalpoints = true;
 
+	std::vector<gp_Pnt> prepoints;
 	std::vector<TopoDS_Edge> edges;
 	TopExp_Explorer edgeex;
 	for (edgeex.Init(inputbody, TopAbs_EDGE); edgeex.More(); edgeex.Next())
@@ -4777,6 +4778,63 @@ bool OCCTest::CalculateSpecificPoints(TopoDS_Shape inputbody, std::vector<gp_Pnt
 	}
 	for (int i = 0; i < edges.size(); i++)
 	{
-
+		TopoDS_Edge curedge = edges[i];
+		BRepAdaptor_Curve curvex(curedge);
+		double ufst = curvex.FirstParameter();
+		double ulst = curvex.LastParameter();
+		double umid = (ufst + ulst) / 2;
+		prepoints.push_back(curvex.Value(ufst));
+		prepoints.push_back(curvex.Value(ulst));
+		prepoints.push_back(curvex.Value(umid));
+		if (!generalpoints)
+		{
+			double u14 = (ufst + ulst) / 4;
+			double u34 = 3 * (ufst + ulst) / 4;
+			prepoints.push_back(curvex.Value(u14));
+			prepoints.push_back(curvex.Value(u34));
+			if (curvex.GetType() == GeomAbs_Circle)
+			{
+				gp_Circ circ = curvex.Circle();
+				prepoints.push_back(circ.Location());
+			}
+			else if (curvex.GetType() == GeomAbs_Ellipse)
+			{
+				gp_Elips elips = curvex.Ellipse();
+				prepoints.push_back(elips.Location());
+				prepoints.push_back(elips.Focus1());
+				prepoints.push_back(elips.Focus2());
+			}
+			else if (curvex.GetType() == GeomAbs_Hyperbola)
+			{
+				gp_Hypr Hypr = curvex.Hyperbola();
+				prepoints.push_back(Hypr.Location());
+				prepoints.push_back(Hypr.Focus1());
+				prepoints.push_back(Hypr.Focus2());
+			}
+			else if (curvex.GetType() == GeomAbs_Parabola)
+			{
+				gp_Parab Parab = curvex.Parabola();
+				prepoints.push_back(Parab.Location());
+				prepoints.push_back(Parab.Focus());
+			}
+		}
 	}
+
+	for (int i = 0; i < prepoints.size(); i++)
+	{
+		bool ifadd = true;
+		gp_Pnt pt1 = prepoints[i];
+		for (int j = 0; j < points.size(); j++)
+		{
+			gp_Pnt pt2 = points[j];
+			if (pt1.X() == pt2.X() && pt1.Y() == pt2.Y() && pt1.Z() == pt2.Z())
+			{
+				ifadd = false;
+				break;
+			}
+		}
+		if (ifadd)
+			points.push_back(pt1);
+	}
+	return true;
 }
