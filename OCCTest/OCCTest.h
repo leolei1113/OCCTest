@@ -56,8 +56,10 @@
 #include <GProp_GProps.hxx>
 #include <BRepGProp.hxx>
 #include <ShapeFix_Shape.hxx>
+#include <BRepBuilderAPI_MakeSolid.hxx>
 #include <BRepLProp_SLProps.hxx>
-//#include <BRepAlgoAPI_IntSS.hxx>
+#include <TDF_Label.hxx>
+#include <TNaming_NamedShape.hxx>
 
 #include <QWindow>
 #include <QGLWidget>
@@ -187,8 +189,15 @@ public:
 	static bool Transform(Transforminfo transinfo, NCollection_Mat4<double> inputmatrix, NCollection_Mat4<double>& outputmatrix);
 	static bool Transform(Transforminfo transinfo, TopoDS_Shape& operateshape);
 
-	bool CalculateSpecificPoints(TopoDS_Shape inputbody, std::vector<gp_Pnt> points);
+	static bool CalculateSpecificPoints(TopoDS_Shape inputbody, std::vector<gp_Pnt> points);
+
+	static bool CompondSolidTest(TopoDS_Shape shape1, TopoDS_Shape shape2, TopoDS_Shape& res);
+
+	static bool MakeSolidTest(TopoDS_Solid shape1, TopoDS_Shell shape2, TopoDS_Shape& res);
+
+	static bool FindTypeLevelFatherLabel(TDF_Label& inputlabel, TopAbs_ShapeEnum type, TopoDS_Shape& currentshape);
 	
+	static TopoDS_Shape getLabelShape(TDF_Label label);
 private:
 	
 };

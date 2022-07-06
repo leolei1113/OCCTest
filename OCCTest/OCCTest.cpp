@@ -1596,112 +1596,6 @@ bool OCCTest::SmallEdges(TopoDS_Shape& shape, const double len, const double ang
 	return true; // Success.
 }
 
-
-
-bool OCCTest::MakeDraft(TopoDS_Shape& shape)
-{
-	//testting code
-	//gp_Dir dir1(0, 0, 1);
-	//gp_Dir dir2(0, 1, 0);
-	//gp_Dir dir3(1, 0, 0);
-	//gp_Dir dir4(-1, 0, 0);
-	//gp_Dir dir5(0, -1, 0);
-
-	//gp_Dir cross1 = dir1.Crossed(dir2);
-	//gp_Dir cross2 = dir2.Crossed(dir1);
-	//gp_Dir cross3 = dir1.Crossed(dir3);
-	//gp_Dir cross4 = dir3.Crossed(dir1);
-
-	//gp_Dir cross5 = dir1.Crossed(dir4);
-	//gp_Dir cross6 = dir4.Crossed(dir1);
-	//gp_Dir cross7 = dir1.Crossed(dir5);
-	//gp_Dir cross8 = dir5.Crossed(dir1);
-
-	////绘制椭圆
-	//gp_Ax2 ax2(gp_Pnt(0, 0, 0), gp_Dir(0, 0, 1));
-	//gp_Elips test_elips(ax2,10,5);
-	//TopoDS_Wire my_wire;
-	//TopoDS_Face myface;
-	////模型，边数，线框
-	//ConvertEllipse2Polygon(test_elips, 7, my_wire);
-
-	//TopoDS_Face ProfileFace = BRepBuilderAPI_MakeFace(my_wire);
-	//shape = ProfileFace;
-
-
-	TopoDS_Wire Profile;
-	std::vector<TopoDS_Edge> anEdges;
-	anEdges.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(0, 0, 0), gp_Pnt(5, 0, 0)));
-	anEdges.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(5, 0, 0), gp_Pnt(10, 10, 0)));
-	anEdges.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(10, 10, 0), gp_Pnt(0, 20, 0)));
-	anEdges.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(0, 20, 0), gp_Pnt(-10, -10, 0)));
-	anEdges.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(-10, -10, 0), gp_Pnt(0, 0, 0)));
-	OCCBasicTools::GetOrderWireFromEdges(anEdges, Profile);
-	TopoDS_Face ProfileFace = BRepBuilderAPI_MakeFace(Profile);
-
-	//建立棱柱
-	gp_Vec vec(10, 10, 20);
-	BRepPrimAPI_MakePrism* make_prism = new BRepPrimAPI_MakePrism(ProfileFace, vec);
-
-	TopoDS_Shape first_shape = make_prism->FirstShape();
-	TopoDS_Shape first_face = TopoDS::Face(first_shape);
-	TopoDS_Shape last_shape = make_prism->LastShape();
-
-	BRepSweep_Prism prism = make_prism->Prism();
-	//shape = prism.Shape();
-
-	gp_Dir Direc(0., 0., 1.);                             //中性面的方向，似乎不影响
-	gp_Dir Direc1(-10., -10., -20.);                      //（关键）
-	Standard_Real Angle = -5. * PI / 180.;                  //代表拔模方向上与（0，0，1）法向的夹角                   （关键）
-	gp_Pln Neutral(gp_Pnt(0, 0, 20), Direc);                 //选择的这个面代表棱柱的这个底面在拔模过程中面积不会发生变化   （关键）
-	BRepOffsetAPI_DraftAngle theDraft_test(shape);
-	BRepOffsetAPI_DraftAngle theDraft(shape);
-
-	//找棱柱的侧面（用于拔模的面）
-	TopTools_ListOfShape ListOfFace_preselect;             //初选所有面
-	TopTools_ListOfShape ListOfFace_finalselect;           //真正可以用的面
-	TopExp_Explorer Ex;
-	for(Ex.Init(shape, TopAbs_FACE); Ex.More(); Ex.Next())
-	{
-		ListOfFace_preselect.Append(Ex.Value());
-	}
-
-	TopTools_ListIteratorOfListOfShape itl;
-	//这一段for筛出能拔模的面
-	for (itl.Initialize(ListOfFace_preselect); itl.More(); itl.Next())
-	{
-		TopoDS_Face todo_face = TopoDS::Face(itl.Value());                              //theDraft.Remove(todo_face)这个方法有bug，别用
-		theDraft_test.Add(todo_face, Direc1, Angle, Neutral);
-		if (theDraft_test.AddDone())
-		{
-			ListOfFace_finalselect.Append(todo_face);
-		}
-		else
-		{
-			break;
-		}
-	}
-	if (ListOfFace_finalselect.Size() != ListOfFace_preselect.Size())
-	{
-		for (itl.Initialize(ListOfFace_finalselect); itl.More(); itl.Next())
-		{
-			TopoDS_Face todo_face = TopoDS::Face(itl.Value());
-			theDraft.Add(todo_face, Direc1, Angle, Neutral);
-		}
-	}
-
-	theDraft.Build();
-	shape = theDraft.Shape();
-
-	//倒角
-	bool if_filleted = false;
-	//if_filleted = fillet(shape);
-
-	//OffSet(shape, -1, if_filleted);
-
-	return true;
-}
-
 void OCCTest::WriteLog(char* log, int ner)
 {
 	SYSTEMTIME st;
@@ -4837,4 +4731,223 @@ bool OCCTest::CalculateSpecificPoints(TopoDS_Shape inputbody, std::vector<gp_Pnt
 			points.push_back(pt1);
 	}
 	return true;
+}
+
+bool OCCTest::CompondSolidTest(TopoDS_Shape shape1, TopoDS_Shape shape2, TopoDS_Shape& res)
+{
+	TopoDS_CompSolid coms;
+	BRep_Builder b;
+	b.MakeCompSolid(coms);
+	b.Add(shape1, coms);
+	b.Add(shape2, coms);
+	res = BRepBuilderAPI_MakeSolid(coms).Solid();
+	return true;
+}
+
+bool OCCTest::MakeSolidTest(TopoDS_Solid shape1, TopoDS_Shell shape2, TopoDS_Shape& res)
+{
+	BRepBuilderAPI_MakeSolid mksold(shape1);
+	mksold.Add(shape2);
+	res = mksold.Solid();
+	return true;
+}
+
+bool OCCTest::MakeDraft(TopoDS_Shape& shape)
+{
+	TopoDS_Wire Profile;
+	std::vector<TopoDS_Edge> anEdges;
+	anEdges.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(0, 0, 0), gp_Pnt(5, 0, 0)));
+	anEdges.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(5, 0, 0), gp_Pnt(5, 5, 0)));
+	anEdges.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(5, 5, 0), gp_Pnt(0, 5, 0)));
+	anEdges.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(0, 5, 0), gp_Pnt(0, 0, 0)));
+	OCCBasicTools::GetOrderWireFromEdges(anEdges, Profile);
+	TopoDS_Face ProfileFace = BRepBuilderAPI_MakeFace(Profile);
+
+	//建立棱柱
+	gp_Vec vec(0, 0, 5);
+	BRepPrimAPI_MakePrism* make_prism = new BRepPrimAPI_MakePrism(ProfileFace, vec);
+	TopoDS_Shape shape1 = make_prism->Shape();
+
+	TopoDS_Wire Profile1;
+	std::vector<TopoDS_Edge> anEdges1;
+	anEdges1.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(5, 0, 0), gp_Pnt(10, 0, 0)));
+	anEdges1.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(10, 0, 0), gp_Pnt(10, 5, 0)));
+	anEdges1.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(10, 5, 0), gp_Pnt(5, 5, 0)));
+	anEdges1.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(5, 5, 0), gp_Pnt(5, 0, 0)));
+	OCCBasicTools::GetOrderWireFromEdges(anEdges1, Profile1);
+	TopoDS_Face ProfileFace1 = BRepBuilderAPI_MakeFace(Profile1);
+
+	//建立棱柱
+	BRepPrimAPI_MakePrism* make_prism1 = new BRepPrimAPI_MakePrism(ProfileFace1, vec);
+	TopoDS_Shape shape2 = make_prism1->Shape();
+
+	CompondSolidTest(shape1, shape2, shape);
+
+	TopoDS_Wire Profile2;
+	std::vector<TopoDS_Edge> anEdges2;
+	anEdges2.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(0, 0, 0), gp_Pnt(10, 0, 0)));
+	anEdges2.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(10, 0, 0), gp_Pnt(10, 5, 0)));
+	anEdges2.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(10, 5, 0), gp_Pnt(0, 5, 0)));
+	anEdges2.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(0, 5, 0), gp_Pnt(0, 0, 0)));
+	OCCBasicTools::GetOrderWireFromEdges(anEdges2, Profile2);
+	TopoDS_Face ProfileFace2 = BRepBuilderAPI_MakeFace(Profile2);
+	//建立棱柱
+	BRepPrimAPI_MakePrism* make_prism2 = new BRepPrimAPI_MakePrism(ProfileFace2, vec);
+	TopoDS_Shape shape3 = make_prism2->Shape();
+	TopExp_Explorer exsold;
+	TopoDS_Solid solid1;
+	for (exsold.Init(shape3, TopAbs_SOLID); exsold.More(); exsold.Next())
+	{
+		solid1 = TopoDS::Solid(exsold.Current());
+	}
+
+	TopoDS_Wire Profile3;
+	std::vector<TopoDS_Edge> anEdges3;
+	anEdges3.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(5, 0, 0), gp_Pnt(5, 5, 0)));
+	anEdges3.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(5, 5, 0), gp_Pnt(5, 5, 5)));
+	anEdges3.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(5, 5, 5), gp_Pnt(5, 0, 5)));
+	anEdges3.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(5, 0, 5), gp_Pnt(5, 0, 0)));
+	OCCBasicTools::GetOrderWireFromEdges(anEdges3, Profile3);
+	TopoDS_Face ProfileFace3 = BRepBuilderAPI_MakeFace(Profile3);
+	BRep_Builder b;
+	TopoDS_Shell shell1;
+	b.MakeShell(shell1);
+	b.Add(shell1, ProfileFace3);
+	MakeSolidTest(solid1, shell1, shape);
+
+	return true;
+}
+
+//bool OCCTest::MakeDraft(TopoDS_Shape& shape)
+//{
+//	//testting code
+//	//gp_Dir dir1(0, 0, 1);
+//	//gp_Dir dir2(0, 1, 0);
+//	//gp_Dir dir3(1, 0, 0);
+//	//gp_Dir dir4(-1, 0, 0);
+//	//gp_Dir dir5(0, -1, 0);
+//
+//	//gp_Dir cross1 = dir1.Crossed(dir2);
+//	//gp_Dir cross2 = dir2.Crossed(dir1);
+//	//gp_Dir cross3 = dir1.Crossed(dir3);
+//	//gp_Dir cross4 = dir3.Crossed(dir1);
+//
+//	//gp_Dir cross5 = dir1.Crossed(dir4);
+//	//gp_Dir cross6 = dir4.Crossed(dir1);
+//	//gp_Dir cross7 = dir1.Crossed(dir5);
+//	//gp_Dir cross8 = dir5.Crossed(dir1);
+//
+//	////绘制椭圆
+//	//gp_Ax2 ax2(gp_Pnt(0, 0, 0), gp_Dir(0, 0, 1));
+//	//gp_Elips test_elips(ax2,10,5);
+//	//TopoDS_Wire my_wire;
+//	//TopoDS_Face myface;
+//	////模型，边数，线框
+//	//ConvertEllipse2Polygon(test_elips, 7, my_wire);
+//
+//	//TopoDS_Face ProfileFace = BRepBuilderAPI_MakeFace(my_wire);
+//	//shape = ProfileFace;
+//
+//
+//	TopoDS_Wire Profile;
+//	std::vector<TopoDS_Edge> anEdges;
+//	anEdges.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(0, 0, 0), gp_Pnt(5, 0, 0)));
+//	anEdges.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(5, 0, 0), gp_Pnt(10, 10, 0)));
+//	anEdges.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(10, 10, 0), gp_Pnt(0, 20, 0)));
+//	anEdges.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(0, 20, 0), gp_Pnt(-10, -10, 0)));
+//	anEdges.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(-10, -10, 0), gp_Pnt(0, 0, 0)));
+//	OCCBasicTools::GetOrderWireFromEdges(anEdges, Profile);
+//	TopoDS_Face ProfileFace = BRepBuilderAPI_MakeFace(Profile);
+//
+//	//建立棱柱
+//	gp_Vec vec(10, 10, 20);
+//	BRepPrimAPI_MakePrism* make_prism = new BRepPrimAPI_MakePrism(ProfileFace, vec);
+//
+//	TopoDS_Shape first_shape = make_prism->FirstShape();
+//	TopoDS_Shape first_face = TopoDS::Face(first_shape);
+//	TopoDS_Shape last_shape = make_prism->LastShape();
+//
+//	BRepSweep_Prism prism = make_prism->Prism();
+//	//shape = prism.Shape();
+//
+//	gp_Dir Direc(0., 0., 1.);                             //中性面的方向，似乎不影响
+//	gp_Dir Direc1(-10., -10., -20.);                      //（关键）
+//	Standard_Real Angle = -5. * PI / 180.;                  //代表拔模方向上与（0，0，1）法向的夹角                   （关键）
+//	gp_Pln Neutral(gp_Pnt(0, 0, 20), Direc);                 //选择的这个面代表棱柱的这个底面在拔模过程中面积不会发生变化   （关键）
+//	BRepOffsetAPI_DraftAngle theDraft_test(shape);
+//	BRepOffsetAPI_DraftAngle theDraft(shape);
+//
+//	//找棱柱的侧面（用于拔模的面）
+//	TopTools_ListOfShape ListOfFace_preselect;             //初选所有面
+//	TopTools_ListOfShape ListOfFace_finalselect;           //真正可以用的面
+//	TopExp_Explorer Ex;
+//	for (Ex.Init(shape, TopAbs_FACE); Ex.More(); Ex.Next())
+//	{
+//		ListOfFace_preselect.Append(Ex.Value());
+//	}
+//
+//	TopTools_ListIteratorOfListOfShape itl;
+//	//这一段for筛出能拔模的面
+//	for (itl.Initialize(ListOfFace_preselect); itl.More(); itl.Next())
+//	{
+//		TopoDS_Face todo_face = TopoDS::Face(itl.Value());                              //theDraft.Remove(todo_face)这个方法有bug，别用
+//		theDraft_test.Add(todo_face, Direc1, Angle, Neutral);
+//		if (theDraft_test.AddDone())
+//		{
+//			ListOfFace_finalselect.Append(todo_face);
+//		}
+//		else
+//		{
+//			break;
+//		}
+//	}
+//	if (ListOfFace_finalselect.Size() != ListOfFace_preselect.Size())
+//	{
+//		for (itl.Initialize(ListOfFace_finalselect); itl.More(); itl.Next())
+//		{
+//			TopoDS_Face todo_face = TopoDS::Face(itl.Value());
+//			theDraft.Add(todo_face, Direc1, Angle, Neutral);
+//		}
+//	}
+//
+//	theDraft.Build();
+//	shape = theDraft.Shape();
+//
+//	//倒角
+//	bool if_filleted = false;
+//	//if_filleted = fillet(shape);
+//
+//	//OffSet(shape, -1, if_filleted);
+//
+//	return true;
+//}
+
+bool OCCTest::FindTypeLevelFatherLabel(TDF_Label& inputlabel, TopAbs_ShapeEnum type, TopoDS_Shape& currentshape)
+{
+	TopoDS_Shape testshape = getLabelShape(inputlabel);
+	TopAbs_ShapeEnum currenttype = testshape.ShapeType();
+	if (currenttype > type)
+	{
+		inputlabel = inputlabel.Father();
+		FindTypeLevelFatherLabel(inputlabel, type, currentshape);
+		//手动终止递归
+		if (!currentshape.IsNull())
+			return true;
+		currenttype = testshape.ShapeType();
+	}
+	else if (currenttype == type)
+	{
+		currentshape = getLabelShape(inputlabel);
+		return true;
+	}	
+	return false;
+}
+
+TopoDS_Shape OCCTest::getLabelShape(TDF_Label label)
+{
+	TopoDS_Shape emptyshape;
+	Handle(TNaming_NamedShape) namedshape;
+	if(!label.FindAttribute(TNaming_NamedShape::GetID(), namedshape))
+		return emptyshape;
+	return namedshape->Get();
 }
