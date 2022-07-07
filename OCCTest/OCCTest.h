@@ -60,6 +60,7 @@
 #include <BRepLProp_SLProps.hxx>
 #include <TDF_Label.hxx>
 #include <TNaming_NamedShape.hxx>
+#include <TDF_ChildIterator.hxx>
 
 #include <QWindow>
 #include <QGLWidget>
@@ -198,6 +199,8 @@ public:
 	static bool FindTypeLevelFatherLabel(TDF_Label& inputlabel, TopAbs_ShapeEnum type, TopoDS_Shape& currentshape);
 	
 	static TopoDS_Shape getLabelShape(TDF_Label label);
+
+	static TDF_Label getShapeLabel(TDF_Label& rootlabel, TopoDS_Shape shape);
 private:
 	
 };

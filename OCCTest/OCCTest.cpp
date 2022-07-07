@@ -4943,6 +4943,7 @@ bool OCCTest::FindTypeLevelFatherLabel(TDF_Label& inputlabel, TopAbs_ShapeEnum t
 	return false;
 }
 
+//从label找shape
 TopoDS_Shape OCCTest::getLabelShape(TDF_Label label)
 {
 	TopoDS_Shape emptyshape;
@@ -4950,4 +4951,27 @@ TopoDS_Shape OCCTest::getLabelShape(TDF_Label label)
 	if(!label.FindAttribute(TNaming_NamedShape::GetID(), namedshape))
 		return emptyshape;
 	return namedshape->Get();
+}
+
+//从shape找label
+TDF_Label OCCTest::getShapeLabel(TDF_Label& rootlabel, TopoDS_Shape shape)
+{
+	Handle(TNaming_NamedShape) namedshape;
+	//当前label与要找的shape的label一致
+	if (!rootlabel.FindAttribute(TNaming_NamedShape::GetID(), namedshape))
+	{
+		TopoDS_Shape compareshape = namedshape->Get();
+		if (compareshape.IsSame(shape))
+		{
+			return rootlabel;
+		}
+	}
+
+	//没找到，继续往rootlabel的子节点寻找
+	TDF_ChildIterator childiter(rootlabel);
+	for (; childiter.More(); childiter.Next())
+	{
+		TDF_Label childlabel = childiter.Value();
+		getShapeLabel(childlabel, shape);
+	}
 }
