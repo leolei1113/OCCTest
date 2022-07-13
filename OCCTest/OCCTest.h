@@ -37,6 +37,7 @@
 #include <iostream>
 #include <stdio.h>
 
+#include <ShapeUpgrade_RemoveInternalWires.hxx>
 #include <BRepExtrema_ExtCC.hxx>
 #include <Aspect_DisplayConnection.hxx>
 #include <OpenGl_GraphicDriver.hxx>
@@ -61,6 +62,8 @@
 #include <TDF_Label.hxx>
 #include <TNaming_NamedShape.hxx>
 #include <TDF_ChildIterator.hxx>
+#include <ShapeAnalysis_FreeBounds.hxx>
+#include <Geom_CylindricalSurface.hxx>
 
 #include <QWindow>
 #include <QGLWidget>
@@ -201,6 +204,12 @@ public:
 	static TopoDS_Shape getLabelShape(TDF_Label label);
 
 	static TDF_Label getShapeLabel(TDF_Label& rootlabel, TopoDS_Shape shape);
+
+	static bool TestRemoveHolesWithinAreaAndDetectFaces(TopoDS_Shape muttershape,
+		TopoDS_Shape& output, TopTools_ListOfShape& facelist, double inputarea);
+
+	static bool DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape& facelist, double inputradius);
+
 private:
 	
 };

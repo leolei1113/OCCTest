@@ -4975,3 +4975,183 @@ TDF_Label OCCTest::getShapeLabel(TDF_Label& rootlabel, TopoDS_Shape shape)
 		getShapeLabel(childlabel, shape);
 	}
 }
+
+bool OCCTest::TestRemoveHolesWithinAreaAndDetectFaces(TopoDS_Shape muttershape, 
+	TopoDS_Shape& output, TopTools_ListOfShape& facelist, double inputarea)
+{
+	ShapeUpgrade_RemoveInternalWires sri(muttershape);
+	sri.RemoveFaceMode() = true;
+	sri.MinArea() = inputarea;
+	sri.Perform();
+	ShapeExtend_Status ses;
+	if (sri.Status(ses) && ses <= ShapeExtend_DONE)
+	{
+		output = sri.GetResult();
+		TopTools_SequenceOfShape faces = sri.RemovedFaces();
+		for (auto iter : faces)
+		{
+			facelist.Append(iter);
+		}
+		return true;
+	}
+	return false;
+}
+
+bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape& facelist,
+	double inputradius)
+{
+	TopExp_Explorer faceex;
+	std::vector<TopoDS_Face> facelists;
+	std::vector<TopoDS_Wire> wirelists;
+	for (faceex.Init(shape, TopAbs_FACE); faceex.More(); faceex.Next())
+		facelists.push_back(TopoDS::Face(faceex.Current()));
+	//找到内部线框
+	for (int i = 0; i < facelists.size(); i++)
+	{
+		TopTools_ListOfShape innerwires;
+		ShapeAnalysis_FreeBounds shapeanalyze(shape);
+		TopoDS_Compound wires = shapeanalyze.GetClosedWires();
+
+		TopoDS_Shape outcontour;
+		double biggestarea = 0;
+		//找到最大wire,即外部线框
+		for (TopExp_Explorer iter(wires, TopAbs_WIRE); iter.More(); iter.Next())
+		{
+			Bnd_Box box;
+			BRepBndLib::Add(iter.Current(), box);
+			if (biggestarea < box.SquareExtent())
+			{
+				biggestarea = box.SquareExtent();
+				outcontour = iter.Current();
+			}
+		}
+
+		//再次遍历wires，如果包围盒小于外框，则是内部线
+		for (TopExp_Explorer iter(wires, TopAbs_WIRE); iter.More(); iter.Next())
+		{
+			Bnd_Box box;
+			BRepBndLib::Add(iter.Current(), box);
+			if (biggestarea > box.SquareExtent())
+			{
+				innerwires.Append(iter.Current());
+			}
+		}
+
+		//寻找内部线框面积小于指定面积的
+		for (auto wireiter : innerwires)
+		{
+			GProp_GProps ggx;
+			BRepGProp::LinearProperties(wireiter, ggx);
+			double areax = ggx.Mass();
+			if (areax <= inputradius * 2 * M_PI)
+			{
+				wirelists.push_back(TopoDS::Wire(wireiter));
+			}
+		}
+	}
+
+	//处理内部线框，找内部线框对应的面
+	std::vector<TopoDS_Edge> edgelist;
+	TopTools_ListOfShape face_listofshape;
+	for (int i = 0; i < wirelists.size(); i++)
+	{
+		TopoDS_Wire wireshape = wirelists[i];
+		TopExp_Explorer thisex;
+		TopoDS_Edge edgesp;
+		for (thisex.Init(wireshape, TopAbs_EDGE); thisex.More(); thisex.Next())
+		{
+			edgesp = TopoDS::Edge(thisex.Current());
+		}
+		for (int j = 0; j < facelists.size(); j++)
+		{
+			TopoDS_Face xface = facelists[j];
+			Handle(Geom_Surface) xsurface = BRep_Tool::Surface(xface);
+			if (!xsurface)
+				continue;
+			if(xsurface->IsKind(STANDARD_TYPE(Geom_Plane)))
+				continue;
+			TopExp_Explorer wireex;
+
+			bool ifcontinue = true;
+			for (wireex.Init(xface, TopAbs_EDGE); wireex.More(); wireex.Next())
+			{
+				if(IsShapeGeomSame(edgesp, wireex.Current(),TopAbs_EDGE))
+					ifcontinue = false;
+			}
+			if(ifcontinue)
+				continue;
+			if (!facelist.Contains(xface))
+				facelist.Append(xface);
+
+			//找face的对面边
+			for (wireex.Init(xface, TopAbs_EDGE); wireex.More(); wireex.Next())
+			{
+				TopoDS_Shape compareshape = wireex.Current();
+				bool ifint = Does2EdgeIntersect(edgesp, TopoDS::Edge(wireex.Current()));
+				bool ifrepeat = false;
+				for (int k = 0; k < wirelists.size(); k++)
+				{
+					TopoDS_Wire wireshapexx = wirelists[k];
+					//内部线转为edge
+					TopExp_Explorer thisexx;
+					TopoDS_Edge edgespx;
+					for (thisexx.Init(wireshapexx, TopAbs_EDGE); thisexx.More(); thisexx.Next())
+					{
+						edgespx = TopoDS::Edge(thisexx.Current());
+					}
+					if (IsShapeGeomSame(edgespx, compareshape, TopAbs_EDGE))
+					{
+						ifrepeat = true;
+						break;
+					}
+				}
+				if (!ifint && !ifrepeat)
+					edgelist.push_back(TopoDS::Edge(wireex.Current()));
+			}
+		}
+	}
+	//找另一个面
+	for (int i = 0; i < facelists.size(); i++)
+	{
+		TopExp_Explorer wireex;
+		TopoDS_Face xface = facelists[i];
+		bool ifcontinue = true;
+		for (wireex.Init(xface, TopAbs_EDGE); wireex.More(); wireex.Next())
+		{
+			TopoDS_Edge xire = TopoDS::Edge(wireex.Current());
+			for (int j = 0; j < edgelist.size(); j++)
+			{
+				TopoDS_Edge xxire = edgelist[j];
+				if (IsShapeGeomSame(xire, xxire, TopAbs_EDGE))
+					ifcontinue = false;
+			}
+		}
+		if (ifcontinue)
+			continue;
+		if (!facelist.Contains(xface))
+			facelist.Append(xface);
+	}
+
+	TopTools_ListOfShape finalfacelist;
+	//处理特殊情况，内曲面分离
+	for (auto iter : facelist)
+	{
+		TopoDS_Shape xs = iter;
+		Handle(Geom_Surface) xsurface = BRep_Tool::Surface(TopoDS::Face(xs));
+		if (xsurface->IsKind(STANDARD_TYPE(Geom_CylindricalSurface)))
+		{
+			Handle(Geom_CylindricalSurface) xsurfcy = Handle(Geom_CylindricalSurface)
+				::DownCast(xsurface);
+			gp_Cylinder xcylinder = xsurfcy->Cylinder();
+			gp_Ax1 ax1 = xcylinder.Axis();
+			double r1 = xcylinder.Radius();
+			for (int i = 0; i < facelists.size(); i++)
+			{
+				TopoDS_Face xface = facelists[i];
+				if (facelist.Contains(xface))
+					continue;
+
+			}
+		}
+	}
+}
