@@ -5150,8 +5150,20 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 				TopoDS_Face xface = facelists[i];
 				if (facelist.Contains(xface))
 					continue;
-
+				Handle(Geom_Surface) xxsurface = BRep_Tool::Surface(xface);
+				if (xxsurface->IsKind(STANDARD_TYPE(Geom_CylindricalSurface)))
+				{
+					Handle(Geom_CylindricalSurface) xxsurfcy = Handle(Geom_CylindricalSurface)
+						::DownCast(xxsurface);
+					gp_Cylinder xxcylinder = xxsurfcy->Cylinder();
+					gp_Ax1 xax1 = xxcylinder.Axis();
+					double xr1 = xxcylinder.Radius();
+					if (ax1.IsCoaxial(xax1, 0.00001, 0.00001) && r1 == xr1)
+						finalfacelist.Append(xface);
+				}
 			}
 		}
 	}
+	finalfacelist.Append(facelist);
+	return true;
 }
