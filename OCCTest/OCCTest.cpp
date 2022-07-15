@@ -5001,7 +5001,9 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 	double inputradius)
 {
 	TopExp_Explorer faceex;
+	//当前模型所有的面
 	std::vector<TopoDS_Face> facelists;
+	//发现的小于半径值的圆线框
 	std::vector<TopoDS_Wire> wirelists;
 	for (faceex.Init(shape, TopAbs_FACE); faceex.More(); faceex.Next())
 		facelists.push_back(TopoDS::Face(faceex.Current()));
@@ -5009,7 +5011,7 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 	for (int i = 0; i < facelists.size(); i++)
 	{
 		TopTools_ListOfShape innerwires;
-		ShapeAnalysis_FreeBounds shapeanalyze(shape);
+		ShapeAnalysis_FreeBounds shapeanalyze(facelists[i]);
 		TopoDS_Compound wires = shapeanalyze.GetClosedWires();
 
 		TopoDS_Shape outcontour;
@@ -5165,5 +5167,19 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 		}
 	}
 	finalfacelist.Append(facelist);
+	facelist = finalfacelist;
+	return true;
+}
+
+bool OCCTest::Does2EdgeIntersect(TopoDS_Edge eg1, TopoDS_Edge eg2)
+{
+	BRepAdaptor_Curve c1(eg1);
+	BRepAdaptor_Curve c2(eg2);
+
+	Extrema_ExtCC ecc(c1, c2);
+	ecc.Perform();
+	int num = ecc.NbExt();
+	if (num == 1)
+		return false;
 	return true;
 }

@@ -210,6 +210,8 @@ public:
 
 	static bool DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape& facelist, double inputradius);
 
+	static bool Does2EdgeIntersect(TopoDS_Edge eg1, TopoDS_Edge eg2);
+
 private:
 	
 };
