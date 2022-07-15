@@ -5,6 +5,7 @@
 #include <Geom_OffsetCurve.hxx>
 #include <Geom_Surface.hxx>
 #include <Geom_Plane.hxx>
+#include <Geom_Circle.hxx>
 
 #include <GC_MakeArcOfCircle.hxx>
 
@@ -5062,14 +5063,26 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 		TopoDS_Wire wireshape = wirelists[i];
 		TopExp_Explorer thisex;
 		TopoDS_Edge edgesp;
+		bool needcontinue = false;
 		for (thisex.Init(wireshape, TopAbs_EDGE); thisex.More(); thisex.Next())
 		{
 			edgesp = TopoDS::Edge(thisex.Current());
 			BRepAdaptor_Curve xcurve(edgesp);
-			gp_Circ xcircle = xcurve.Circle();
-			double radius = xcircle.Radius();
-			radiuses.push_back(radius);
+			Handle(Geom_Curve) xxcurve = xcurve.Curve().Curve();
+			Handle(Geom_Circle) xcire = Handle(Geom_Circle)::DownCast(xxcurve);
+			if (xcire)
+			{
+				gp_Circ xcircle = xcire->Circ();
+				double radius = xcircle.Radius();
+				radiuses.push_back(radius);
+			}
+			else
+				needcontinue = true;
 		}
+		//跳过中间干涉边
+		if(needcontinue)
+			continue;
+
 		for (int j = 0; j < facelists.size(); j++)
 		{
 			TopoDS_Face xface = facelists[j];
