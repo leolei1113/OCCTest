@@ -5055,6 +5055,8 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 	//处理内部线框，找内部线框对应的面
 	std::vector<TopoDS_Edge> edgelist;
 	TopTools_ListOfShape face_listofshape;
+	//找一下内部线的最大半径
+	std::vector<double> radiuses;
 	for (int i = 0; i < wirelists.size(); i++)
 	{
 		TopoDS_Wire wireshape = wirelists[i];
@@ -5063,6 +5065,10 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 		for (thisex.Init(wireshape, TopAbs_EDGE); thisex.More(); thisex.Next())
 		{
 			edgesp = TopoDS::Edge(thisex.Current());
+			BRepAdaptor_Curve xcurve(edgesp);
+			gp_Circ xcircle = xcurve.Circle();
+			double radius = xcircle.Radius();
+			radiuses.push_back(radius);
 		}
 		for (int j = 0; j < facelists.size(); j++)
 		{
@@ -5112,6 +5118,7 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 			}
 		}
 	}
+	std::sort(radiuses.begin(), radiuses.end());
 	//找另一个面
 	for (int i = 0; i < facelists.size(); i++)
 	{
@@ -5131,7 +5138,15 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 		if (ifcontinue)
 			continue;
 		if (!facelist.Contains(xface))
-			facelist.Append(xface);
+		{
+			//需要判断一下内外性，防止最外轮廓面被包括
+			GProp_GProps gg;
+			BRepGProp::SurfaceProperties(xface, gg);
+			double comparea = M_PI * pow(radiuses[radiuses.size() - 1], 2);
+			double surfarea = gg.Mass();
+			if (surfarea <= comparea + 0.1)
+				facelist.Append(xface);
+		}
 	}
 
 	TopTools_ListOfShape finalfacelist;
@@ -5166,8 +5181,11 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 			}
 		}
 	}
-	finalfacelist.Append(facelist);
-	facelist = finalfacelist;
+	for (auto iter : finalfacelist)
+	{
+		if (!facelist.Contains(iter))
+			facelist.Append(iter);
+	}
 	return true;
 }
 
