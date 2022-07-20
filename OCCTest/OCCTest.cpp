@@ -2347,8 +2347,10 @@ bool OCCTest::ShapeFindFilterSub(TopoDS_Shape& orishape, TopAbs_ShapeEnum target
 	return true;
 }
 
-bool OCCTest::AutoFillGapFaces(TopoDS_Shape& orishape, double allowedarea)
+bool OCCTest::AutoFillGapFaces(TopoDS_Shape& orishape, double allowedarea, TopoDS_Shape& result)
 {
+	if (orishape.ShapeType() != TopAbs_SHELL)
+		return false;
 	//先找所有的被单个面拥有的边
 	std::vector<TopoDS_Shape> alldupedges, neededges;
 	TopExp_Explorer edgeex;
@@ -2375,30 +2377,17 @@ bool OCCTest::AutoFillGapFaces(TopoDS_Shape& orishape, double allowedarea)
 	std::vector<std::vector<TopoDS_Shape>> grouped_edges;
 	for (int i = 0; i < neededges.size(); i++)
 	{
-		std::vector<TopoDS_Shape> edgeset;
+		TopTools_ListOfShape edgeset, listededges;
 		TopoDS_Shape edge1 = neededges[i];
+		std::vector<TopoDS_Shape> xedgegroup;
 		if (usedshapes.Contains(edge1))
 			continue;
-		ShapeAnalysis_Edge sae1;
-		TopoDS_Vertex v11 = sae1.FirstVertex(TopoDS::Edge(edge1));
-		TopoDS_Vertex v12 = sae1.LastVertex(TopoDS::Edge(edge1));
-		for (int j = 0; j < neededges.size(); j++)
-		{
-			TopoDS_Shape edge2 = neededges[j];
-			if (usedshapes.Contains(edge2))
-				continue;
-			ShapeAnalysis_Edge sae2;
-			TopoDS_Vertex v21 = sae2.FirstVertex(TopoDS::Edge(edge2));
-			TopoDS_Vertex v22 = sae2.LastVertex(TopoDS::Edge(edge2));
-			if (IsShapeGeomSame(v11, v21, TopAbs_VERTEX) || IsShapeGeomSame(v11, v22, TopAbs_VERTEX) ||
-				IsShapeGeomSame(v12, v21, TopAbs_VERTEX) || IsShapeGeomSame(v12, v22, TopAbs_VERTEX))
-			{
-				usedshapes.Append(edge1);
-				usedshapes.Append(edge2);
-				LoopFindAdjacentEdge(usedshapes, edge2, neededges, edgeset);
-			}
-		}
-		grouped_edges.push_back(edgeset);
+		
+		LoopFindAdjacentEdge(usedshapes, edge1, edgeset, neededges, listededges);
+
+		for (auto iter : listededges)
+			xedgegroup.push_back(iter);
+		grouped_edges.push_back(xedgegroup);
 	}
 
 	//处理每一组独立的封闭wire
@@ -2414,15 +2403,35 @@ bool OCCTest::AutoFillGapFaces(TopoDS_Shape& orishape, double allowedarea)
 		bff.Build();
 		if (!bff.IsDone())
 			continue;
-		filledfaces.Append(bff.Face());
+		TopoDS_Face fillface = bff.Face();
+
+		GProp_GProps gg;
+		BRepGProp::SurfaceProperties(fillface, gg);
+		if (gg.Mass() < allowedarea + 0.1)
+			filledfaces.Append(bff.Face());
 	}
+	BRep_Builder b;
+	b.MakeShell(TopoDS::Shell(result));
+	for (auto iter : filledfaces)
+		b.Add(result, iter);
+	TopExp_Explorer faceex(orishape, TopAbs_FACE);
+	for (; faceex.More(); faceex.Next())
+	{
+		b.Add(result, faceex.Current());
+	}
+	ShapeUpgrade_UnifySameDomain unify(result);
+	unify.SetAngularTolerance(M_PI / 6);
+	unify.Build();
+	result = unify.Shape();
+	return true;
 }
 
-bool OCCTest::LoopFindAdjacentEdge(TopTools_ListOfShape usedshapes, TopoDS_Shape startedge, std::vector<TopoDS_Shape> edgeset,
-	std::vector<TopoDS_Shape> neededges)
+bool OCCTest::LoopFindAdjacentEdge(TopTools_ListOfShape& usedshapes, TopoDS_Shape& startedge, 
+	TopTools_ListOfShape& edgeset,
+	std::vector<TopoDS_Shape>& neededges, TopTools_ListOfShape& xedgegroup)
 {
 	TopoDS_Shape edge1 = startedge;
-	if (usedshapes.Contains(edge1))
+	if (edgeset.Contains(edge1))
 		return false;
 
 	ShapeAnalysis_Edge sae1;
@@ -2432,6 +2441,8 @@ bool OCCTest::LoopFindAdjacentEdge(TopTools_ListOfShape usedshapes, TopoDS_Shape
 	for (int j = 0; j < neededges.size(); j++)
 	{
 		TopoDS_Shape edge2 = neededges[j];
+		if(edge2.IsSame(edge1))
+			continue;
 		if (usedshapes.Contains(edge2))
 			continue;
 		ShapeAnalysis_Edge sae2;
@@ -2440,9 +2451,17 @@ bool OCCTest::LoopFindAdjacentEdge(TopTools_ListOfShape usedshapes, TopoDS_Shape
 		if (IsShapeGeomSame(v11, v21, TopAbs_VERTEX) || IsShapeGeomSame(v11, v22, TopAbs_VERTEX) || 
 			IsShapeGeomSame(v12, v21, TopAbs_VERTEX) || IsShapeGeomSame(v12, v22, TopAbs_VERTEX))
 		{
-			usedshapes.Append(edge1);
-			usedshapes.Append(edge2);
-			if (!LoopFindAdjacentEdge(usedshapes, edge2, neededges, edgeset))
+			if(!usedshapes.Contains(edge1))
+				usedshapes.Append(edge1);
+			if (!usedshapes.Contains(edge2))
+				usedshapes.Append(edge2);
+			if (!edgeset.Contains(edge1))
+				edgeset.Append(edge1);
+			if (!xedgegroup.Contains(edge1))
+				xedgegroup.Append(edge1);
+			if (!xedgegroup.Contains(edge2))
+				xedgegroup.Append(edge2);
+			if (!LoopFindAdjacentEdge(usedshapes, edge2, edgeset, neededges, xedgegroup))
 				return false;
 		}
 	}
@@ -5214,3 +5233,20 @@ bool OCCTest::Does2EdgeIntersect(TopoDS_Edge eg1, TopoDS_Edge eg2)
 		return false;
 	return true;
 }
+
+void OCCTest::InterceptString(string stringtocut)
+{
+	std::vector<string> array;
+	int index = 0;
+	while (stringtocut.find("@") != -1)
+	{
+		index = stringtocut.find("@");
+		string xstr = stringtocut.substr(0, index);
+		array.push_back(xstr);
+		stringtocut = stringtocut.substr(index + 1, stringtocut.length() - index);
+	}
+	array.push_back(stringtocut);
+	int MB_OK = 0x00000000L;
+	MessageBoxA(NULL, "abc", "abc", MB_OK);
+}
+

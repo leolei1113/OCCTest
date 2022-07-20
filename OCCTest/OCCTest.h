@@ -3,6 +3,7 @@
 #include <Geom_Ellipse.hxx>
 #include <GCPnts_QuasiUniformAbscissa.hxx>
 #include <GCPnts_UniformAbscissa.hxx>
+#include <ShapeUpgrade_UnifySameDomain.hxx>
 #include <BRepAdaptor_CompCurve.hxx>
 #include <vector>
 #include <string>
@@ -36,6 +37,8 @@
 #include <string>
 #include <iostream>
 #include <stdio.h>
+
+#include <windows.h>
 
 #include <ShapeUpgrade_RemoveInternalWires.hxx>
 #include <BRepExtrema_ExtCC.hxx>
@@ -149,10 +152,11 @@ public:
 	static bool Connect(TopTools_ListOfShape shapelist, bool gensolid, TopoDS_Shape& connectshape);
 	static bool CreatePolyLine(std::vector<std::vector<double>>& points, TopoDS_Shape& outputshape);
 	static bool ShapeFindFilterSub(TopoDS_Shape& orishape, TopAbs_ShapeEnum targettype, TopoDS_Shape& filtershape);
-	static bool AutoFillGapFaces(TopoDS_Shape& orishape, double allowedarea);
+	static bool AutoFillGapFaces(TopoDS_Shape& orishape, double allowedarea, TopoDS_Shape& result);
 	static bool IsShapeGeomSame(const TopoDS_Shape shape1, const TopoDS_Shape shape2, const TopAbs_ShapeEnum type);
-	static bool LoopFindAdjacentEdge(TopTools_ListOfShape usedshapes, TopoDS_Shape startedge, std::vector<TopoDS_Shape> edgeset,
-		std::vector<TopoDS_Shape> neededges);
+	static bool LoopFindAdjacentEdge(TopTools_ListOfShape& usedshapes, TopoDS_Shape& startedge,
+		TopTools_ListOfShape& edgeset,
+		std::vector<TopoDS_Shape>& neededges, TopTools_ListOfShape& xedgegroup);
 	static bool shapeFilter(const TopoDS_Shape& origSHape, TopAbs_ShapeEnum targetType, TopoDS_Shape& filterShape);
 	static bool Assembly(TopoDS_Shape toolshape, TopoDS_Shape blankshape, AssembleType type,
 		TopoDS_Shape& targetshape, NCollection_Mat4<double> matrix);
@@ -211,6 +215,8 @@ public:
 	static bool DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape& facelist, double inputradius);
 
 	static bool Does2EdgeIntersect(TopoDS_Edge eg1, TopoDS_Edge eg2);
+
+	static void InterceptString(string stringtocut);
 
 private:
 	
