@@ -37,7 +37,8 @@
 #include <string>
 #include <iostream>
 #include <stdio.h>
-
+#include <BRepExtrema_DistShapeShape.hxx>
+#include <BRepBuilderAPI_Sewing.hxx>
 #include <windows.h>
 
 #include <ShapeUpgrade_RemoveInternalWires.hxx>
@@ -217,6 +218,9 @@ public:
 	static bool Does2EdgeIntersect(TopoDS_Edge eg1, TopoDS_Edge eg2);
 
 	static void InterceptString(string stringtocut);
+
+	static bool StitchFaces(std::vector<TopoDS_Shape> inputfaces, double gap,
+		std::vector<TopoDS_Shape>& outresults);
 
 private:
 	

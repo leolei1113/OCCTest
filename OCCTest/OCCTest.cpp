@@ -5250,3 +5250,34 @@ void OCCTest::InterceptString(string stringtocut)
 	MessageBoxA(NULL, "abc", "abc", MB_OK);
 }
 
+
+bool OCCTest::StitchFaces(std::vector<TopoDS_Shape> inputfaces, double gap,
+	std::vector<TopoDS_Shape>& outresults)
+{
+	if (inputfaces.size() < 1)
+		return false;
+	std::vector<TopoDS_Shape> thisentities, nextentities;
+	TopoDS_Shape argshape = inputfaces[0];
+	for (int i = 1; i < inputfaces.size(); i++)
+	{
+		TopoDS_Shape toolshape = inputfaces[i];
+		double distance = BRepExtrema_DistShapeShape(argshape, toolshape).Value();
+		if (distance <= gap + 0.1)
+			thisentities.push_back(toolshape);
+		else
+			nextentities.push_back(toolshape);
+	}
+	BRepBuilderAPI_Sewing sewbuilder;
+	sewbuilder.SetTolerance(gap);
+	sewbuilder.Load(argshape);
+	for (int i = 0; i < thisentities.size(); i++)
+	{
+		sewbuilder.Add(thisentities[i]);
+	}
+	sewbuilder.Perform();
+	if (sewbuilder.IsModified(argshape))
+		argshape = sewbuilder.SewedShape();
+	outresults.push_back(argshape);
+	StitchFaces(nextentities, gap, outresults);
+	return true;
+}
