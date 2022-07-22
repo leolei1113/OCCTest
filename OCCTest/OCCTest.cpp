@@ -5281,3 +5281,20 @@ bool OCCTest::StitchFaces(std::vector<TopoDS_Shape> inputfaces, double gap,
 	StitchFaces(nextentities, gap, outresults);
 	return true;
 }
+
+bool OCCTest::XDStitchFaces(string facestobestitched)
+{
+	try
+	{
+		/*TDocStd_Document* curDoc = TheOCCApp.getCurrentModel()->getDoc();
+		Handle(TDF_Label) data = curDoc->GetData();
+		TDF_Label rootlabel = data->Root();*/
+
+		TDF_Label rootlabel = TDocStd_Document::Main();
+
+	}
+	catch (...)
+	{
+		return false;
+	}
+}

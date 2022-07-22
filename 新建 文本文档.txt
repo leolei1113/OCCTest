@@ -1,0 +1,25 @@
+vpn.xidian.edu.cn
+https://adc.xdu.com
+tianfu2 / Aa12345678
+web_dzz_01 / laspcem213
+
+https://www.18waimao.org/login.php
+79500  zty888
+leolei Wz060021
+
+574133288
+r8a883
+
+//根据程序组名称获取操作
+            List<Tag> SelectOperaTag = new List<NXOpen.Tag>();
+            foreach (var selectGroup in SelectGroupName)
+            {
+                foreach (var opera in Operate_names_tag)
+                {
+                    Tag group;
+                    theUFSession.Oper.AskProgramGroup(opera, out group);
+                    NXOpen.CAM.NCGroup nCGroup = (NXOpen.CAM.NCGroup)NXOpen.Utilities.NXObjectManager.Get(group);
+                    if (selectGroup == nCGroup.Name)
+                        SelectOperaTag.Add(opera);
+                }
+            }

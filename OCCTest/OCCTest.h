@@ -68,6 +68,9 @@
 #include <TDF_ChildIterator.hxx>
 #include <ShapeAnalysis_FreeBounds.hxx>
 #include <Geom_CylindricalSurface.hxx>
+#include <TDocStd_Document.hxx>
+
+
 
 #include <QWindow>
 #include <QGLWidget>
@@ -221,6 +224,8 @@ public:
 
 	static bool StitchFaces(std::vector<TopoDS_Shape> inputfaces, double gap,
 		std::vector<TopoDS_Shape>& outresults);
+
+	static bool XDStitchFaces(string facestobestitched);
 
 private:
 	
