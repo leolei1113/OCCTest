@@ -18,7 +18,7 @@ public:
 	static void SaveStl(TopoDS_Shape& shapes, const std::string& stlFile);
 	static TopoDS_Face GetFaceFromPntList(std::vector<gp_Pnt> PntsList);
 	static Standard_Boolean GetOrderWireFromEdges(std::vector<TopoDS_Edge> anEdges, TopoDS_Wire& OrderWire);
-	
+	static bool GetPlanarFaceApexs(TopoDS_Face face, TopTools_ListOfShape& vtxs);
 };
 
 

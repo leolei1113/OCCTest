@@ -91,7 +91,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;WIN32;WIN64;QT_CHARTS_LIB;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;QT_OPENGLEXTENSIONS_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\Projects\OpenCas\BasicOCC\OCCTest\GeneratedFiles;D:\Projects\OpenCas\BasicOCC\OCCTest;.\GeneratedFiles;C:\OpenCASCADE-7.5.0-vc14-64\opencascade-7.5.0\inc;C:\OpenCASCADE-7.5.0-vc14-64\opencascade-7.5.0\src;D:\Qt\5.12.0\msvc2017_64\include;D:\Qt\5.12.0\msvc2017_64\include\QtCharts;D:\Qt\5.12.0\msvc2017_64\include\QtCore;D:\Qt\5.12.0\msvc2017_64\include\QtGui;D:\Qt\5.12.0\msvc2017_64\include\QtANGLE;D:\Qt\5.12.0\msvc2017_64\include\QtOpenGL;D:\Qt\5.12.0\msvc2017_64\include\QtOpenGLExtensions;D:\Qt\5.12.0\msvc2017_64\include\QtWidgets;$(QTDIR)\include\QtNetwork</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\OCCTest-master\OCCTest\OCCTest\GeneratedFiles;D:\OCCTest-master\OCCTest\OCCTest;.\GeneratedFiles;D:\OpenCASCADE-7.5.0-vc14-64\opencascade-7.5.0\inc;D:\OpenCASCADE-7.5.0-vc14-64\opencascade-7.5.0\src;D:\Qt\5.12.0\msvc2017_64\include;D:\Qt\5.12.0\msvc2017_64\include\QtCharts;D:\Qt\5.12.0\msvc2017_64\include\QtCore;D:\Qt\5.12.0\msvc2017_64\include\QtGui;D:\Qt\5.12.0\msvc2017_64\include\QtANGLE;D:\Qt\5.12.0\msvc2017_64\include\QtOpenGL;D:\Qt\5.12.0\msvc2017_64\include\QtOpenGLExtensions;D:\Qt\5.12.0\msvc2017_64\include\QtWidgets;$(QTDIR)\include\QtNetwork</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>

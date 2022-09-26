@@ -24,7 +24,6 @@
 #include <BRep_Tool.hxx>
 
 
-
 #include <gp.hxx>
 #include <gp_Ax1.hxx>
 #include <gp_Ax2.hxx>
@@ -33,6 +32,9 @@
 #include <gp_Trsf.hxx>
 #include <gp_Vec.hxx>
 
+#include <TopExp_Explorer.hxx>
+#include <BRepAdaptor_Curve.hxx>
+#include <ShapeAnalysis_Edge.hxx>
 
 OCCBasicTools::OCCBasicTools()
 {
@@ -132,3 +134,54 @@ Standard_Boolean OCCBasicTools::GetOrderWireFromEdges(std::vector<TopoDS_Edge> a
 }
 
 //大小面重叠测试
+bool OCCBasicTools::GetPlanarFaceApexs(TopoDS_Face face, TopTools_ListOfShape& vtxs)
+{
+	std::vector<TopoDS_Edge> vecEdges;
+	TopExp_Explorer edgex(face);
+	for (; edgex.More(); edgex.Next())
+	{
+		vecEdges.push_back(TopoDS::Edge(edgex.Current()));
+	}
+	for (int i = 0; i < vecEdges.size(); i++)
+	{
+		TopoDS_Edge edge1 = vecEdges[i];
+		ShapeAnalysis_Edge sae;
+		TopoDS_Vertex vtx11 = sae.FirstVertex(edge1);
+		gp_Pnt pt11 = BRep_Tool::Pnt(vtx11);
+		TopoDS_Vertex vtx12 = sae.LastVertex(edge1);
+		gp_Pnt pt12 = BRep_Tool::Pnt(vtx12);
+
+		for (int j = 0; j < vecEdges.size(); i++)
+		{
+			TopoDS_Edge edge2 = vecEdges[j];
+			if (edge1.IsSame(edge2))
+			{
+				continue;
+			}
+			TopoDS_Vertex vtx21 = sae.FirstVertex(edge2);
+			gp_Pnt pt21 = BRep_Tool::Pnt(vtx21);
+			TopoDS_Vertex vtx22 = sae.LastVertex(edge2);
+			gp_Pnt pt22 = BRep_Tool::Pnt(vtx22);
+			bool ifcontinue = true;
+			if (pt12.X() == pt21.X() &&
+				pt12.Y() == pt21.Y() &&
+				pt12.Z() == pt21.Z())
+			{
+				ifcontinue = false;
+			}
+			if (ifcontinue)
+			{
+				continue;
+			}
+			gp_Dir dir1(pt12.X() - pt11.X(), pt12.Y() - pt11.Y(), pt12.Z() - pt11.Z());
+			gp_Dir dir2(pt22.X() - pt21.X(), pt22.Y() - pt21.Y(), pt22.Z() - pt21.Z());
+			if (!dir1.IsParallel(dir2))
+			{
+				if (!vtxs.Contains(vtx21))
+				{
+					vtxs.Append(vtx21);
+				}
+			}
+		}
+	}
+}
