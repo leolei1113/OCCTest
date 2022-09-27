@@ -35,6 +35,8 @@
 #include <TopExp_Explorer.hxx>
 #include <BRepAdaptor_Curve.hxx>
 #include <ShapeAnalysis_Edge.hxx>
+#include <GeomConvert_CompCurveToBSplineCurve.hxx>
+#include <Geom_TrimmedCurve.hxx>
 
 OCCBasicTools::OCCBasicTools()
 {
@@ -103,6 +105,72 @@ TopoDS_Face OCCBasicTools::GetFaceFromPntList(std::vector<gp_Pnt> PntsList)
 
 }
 
+bool OCCBasicTools::IsShapeGeomSame(const TopoDS_Shape shape1, const TopoDS_Shape shape2, const TopAbs_ShapeEnum type)
+{
+	try
+	{
+		if (shape1.ShapeType() > type || shape2.ShapeType() > type)
+			return false;
+		TopoDS_Shape filterShape1, filterShape2;
+		shapeFilter(shape1, type, filterShape1);
+		shapeFilter(shape2, type, filterShape2);
+
+		if (type == TopAbs_VERTEX)
+		{
+			if (BRep_Tool::Pnt(TopoDS::Vertex(filterShape1)).IsEqual(BRep_Tool::Pnt(TopoDS::Vertex(filterShape2)), Precision::Confusion()))
+				return true;
+		}
+		else if (type == TopAbs_EDGE)
+		{
+			double start1, end1, start2, end2;
+			Handle(Geom_Curve) curve1 = BRep_Tool::Curve(TopoDS::Edge(filterShape1), start1, end1);
+			Handle(Geom_Curve) curve2 = BRep_Tool::Curve(TopoDS::Edge(filterShape2), start2, end2);
+			if (!curve1 || !curve2)
+				return false;
+
+			if (curve1->Value(start1).IsEqual(curve2->Value(start2), Precision::Confusion()) &&
+				curve1->Value(end1).IsEqual(curve2->Value(end2), Precision::Confusion()) &&
+				curve1->Value(0.5 * (start1 + end1)).IsEqual(curve2->Value(0.5 * (start2 + end2)), Precision::Confusion()))
+				return true;
+			else if (curve1->Value(start1).IsEqual(curve2->Value(end2), Precision::Confusion()) &&
+				curve1->Value(end1).IsEqual(curve2->Value(start2), Precision::Confusion()) &&
+				curve1->Value(0.5 * (start1 + end1)).IsEqual(curve2->Value(0.5 * (start2 + end2)), Precision::Confusion()))
+				return true;
+		}
+		else if (type == TopAbs_FACE)
+		{
+			double ustart1, uend1, vstart1, vend1;
+			double ustart2, uend2, vstart2, vend2;
+			Handle(Geom_Surface) surface1 = BRep_Tool::Surface(TopoDS::Face(filterShape1));
+			Handle(Geom_Surface) surface2 = BRep_Tool::Surface(TopoDS::Face(filterShape2));
+
+			BRepAdaptor_Surface adp_sur1(TopoDS::Face(filterShape1));
+			BRepAdaptor_Surface adp_sur2(TopoDS::Face(filterShape2));
+			ustart1 = adp_sur1.FirstUParameter();
+			uend1 = adp_sur1.LastUParameter();
+			vstart1 = adp_sur1.FirstVParameter();
+			vend1 = adp_sur1.LastVParameter();
+
+			ustart2 = adp_sur2.FirstUParameter();
+			uend2 = adp_sur2.LastUParameter();
+			vstart2 = adp_sur2.FirstVParameter();
+			vend2 = adp_sur2.LastVParameter();
+
+			if (surface1->Value(ustart1, vstart1).IsEqual(surface2->Value(ustart2, vstart2), Precision::Confusion()) &&
+				surface1->Value(uend1, vstart1).IsEqual(surface2->Value(uend2, vstart2), Precision::Confusion()) &&
+				surface1->Value(ustart1, vend1).IsEqual(surface2->Value(ustart2, vend2), Precision::Confusion()) &&
+				surface1->Value(uend1, vend1).IsEqual(surface2->Value(uend2, vend2), Precision::Confusion()) &&
+				surface1->Value(0.5 * (ustart1 + uend1), 0.5 * (vstart1 + vend1)).IsEqual(surface2->Value(0.5 * (ustart2 + uend2), 0.5 * (vstart2 + vend2)), Precision::Confusion()))
+				return true;
+		}
+		return false;
+	}
+	catch (...)
+	{
+		return false;
+	}
+}
+
 Standard_Boolean OCCBasicTools::GetOrderWireFromEdges(std::vector<TopoDS_Edge> anEdges, TopoDS_Wire& OrderWire) 
 {
 	ShapeAnalysis_Edge anEdgeAnalyser;
@@ -134,10 +202,11 @@ Standard_Boolean OCCBasicTools::GetOrderWireFromEdges(std::vector<TopoDS_Edge> a
 }
 
 //大小面重叠测试
-bool OCCBasicTools::GetPlanarFaceApexs(TopoDS_Face face, TopTools_ListOfShape& vtxs)
+bool OCCBasicTools::GetPlanarFaceApexs(TopoDS_Face face, TopTools_ListOfShape& vtxs,
+	TopTools_ListOfShape& uselessEdges)
 {
 	std::vector<TopoDS_Edge> vecEdges;
-	TopExp_Explorer edgex(face);
+	TopExp_Explorer edgex(face,TopAbs_EDGE);
 	for (; edgex.More(); edgex.Next())
 	{
 		vecEdges.push_back(TopoDS::Edge(edgex.Current()));
@@ -151,7 +220,7 @@ bool OCCBasicTools::GetPlanarFaceApexs(TopoDS_Face face, TopTools_ListOfShape& v
 		TopoDS_Vertex vtx12 = sae.LastVertex(edge1);
 		gp_Pnt pt12 = BRep_Tool::Pnt(vtx12);
 
-		for (int j = 0; j < vecEdges.size(); i++)
+		for (int j = 0; j < vecEdges.size(); j++)
 		{
 			TopoDS_Edge edge2 = vecEdges[j];
 			if (edge1.IsSame(edge2))
@@ -175,13 +244,123 @@ bool OCCBasicTools::GetPlanarFaceApexs(TopoDS_Face face, TopTools_ListOfShape& v
 			}
 			gp_Dir dir1(pt12.X() - pt11.X(), pt12.Y() - pt11.Y(), pt12.Z() - pt11.Z());
 			gp_Dir dir2(pt22.X() - pt21.X(), pt22.Y() - pt21.Y(), pt22.Z() - pt21.Z());
-			if (!dir1.IsParallel(dir2))
+			if (!dir1.IsParallel(dir2,0.0001))
 			{
 				if (!vtxs.Contains(vtx21))
 				{
 					vtxs.Append(vtx21);
 				}
 			}
+			else
+			{
+				uselessEdges.Append(edge2);
+			}
+		}
+	}
+}
+
+bool OCCBasicTools::ReOrgnizeEdgeOrderWire(TopTools_ListOfShape& edges, TopoDS_Vertex vtx,
+	std::vector<TopoDS_Shape>& newOrderEdges)
+{
+	std::vector<TopoDS_Shape> vecOrder;
+	for (auto iter : edges)
+	{
+		vecOrder.push_back(iter);
+	}
+	int count = 0;
+	for (int i = 0; i < vecOrder.size(); i++)
+	{
+		count++;
+		TopoDS_Edge edge1 = TopoDS::Edge(vecOrder[i]);
+		ShapeAnalysis_Edge sae;
+		TopoDS_Vertex vtx11 = sae.FirstVertex(edge1);
+		if (IsShapeGeomSame(vtx11, vtx, TopAbs_VERTEX)
+		{
+			break;
+		}
+	}
+	for (int i = count; i < vecOrder.size(); i++)
+	{
+		newOrderEdges.push_back(vecOrder[i]);
+	}
+	for (int i = 0; i < count; i++)
+	{
+		newOrderEdges.push_back(vecOrder[i]);
+	}
+}
+
+bool OCCBasicTools::GroupEdgesInWire(std::vector<TopoDS_Shape>& edges, std::vector<std::vector<TopoDS_Shape>>& groups)
+{
+	if (edges.size() < 0)
+		return false;
+	std::vector<TopoDS_Shape> group;
+	group.push_back(edges[0]);
+	int count = -1;
+	for (int i=0;i< edges.size()-1;i++)
+	{
+		TopoDS_Edge edge1 = edges[i];
+		ShapeAnalysis_Edge sae1;
+		TopoDS_Vertex vtx11 = sae1.FirstVertex(edge1);
+		gp_Pnt pt11 = BRep_Tool::Pnt(vtx11);
+		TopoDS_Vertex vtx12 = sae1.LastVertex(edge1);
+		gp_Pnt pt12 = BRep_Tool::Pnt(vtx12);
+
+		TopoDS_Edge edge2 = edges[i+1];
+		ShapeAnalysis_Edge sae2;
+		TopoDS_Vertex vtx21 = sae2.FirstVertex(edge2);
+		gp_Pnt pt21 = BRep_Tool::Pnt(vtx21);
+		TopoDS_Vertex vtx22 = sae2.LastVertex(edge2);
+		gp_Pnt pt22 = BRep_Tool::Pnt(vtx22);
+
+		gp_Dir dir1(pt12.X() - pt11.X(), pt12.Y() - pt11.Y(), pt12.Z() - pt11.Z());
+		gp_Dir dir2(pt22.X() - pt21.X(), pt22.Y() - pt21.Y(), pt22.Z() - pt21.Z());
+		if (dir1.IsParallel(dir2, 0.0001))
+		{
+			group.push_back(edges[i + 1]);
+		}
+		else
+		{
+			count = i + 1;
+			break;
+		}
+	}
+
+	std::vector<TopoDS_Shape> newEdges;
+	for (int i = count; i < edges.size(); i++)
+	{
+		newEdges.push_back(edges[i]);
+	}
+	groups.push_back(group);
+	GroupEdgesInWire(newEdges, groups);
+	return true;
+}
+
+bool OCCBasicTools::ReOrderEdgesInWire(std::vector<std::vector<TopoDS_Shape>>& groups, TopoDS_Wire &wire)
+{
+	BRepBuilderAPI_MakeWire mkwire;
+	for (int i = 0; i < groups.size(); i++)
+	{
+		std::vector<TopoDS_Shape> group = groups[i];
+		if (group.size() == 1)
+		{
+			mkwire.Add(TopoDS::Edge(group[0]));
+		}
+		else if (group.size() > 1)
+		{
+			GeomConvert_CompCurveToBSplineCurve gcc;
+			for (int j = 0; j < group.size(); j++)
+			{
+				TopoDS_Edge xedge = TopoDS::Edge(group[j]);
+				BRepAdaptor_Curve bac(xedge);
+				double start, end;
+				start = bac.FirstParameter();
+				end = bac.LastParameter();
+				Handle(Geom_Curve) gc = bac.Curve().Curve();
+				Handle(Geom_TrimmedCurve) gtc = new Geom_TrimmedCurve(gc, start, end);
+				gcc.Add(gtc, Precision::Confusion());
+			}
+			TopoDS_Edge xedge = BRepBuilderAPI_MakeEdge(gcc.BSplineCurve()).Edge();
+			mkwire.Add(xedge);
 		}
 	}
 }

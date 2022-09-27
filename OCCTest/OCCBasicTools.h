@@ -18,7 +18,13 @@ public:
 	static void SaveStl(TopoDS_Shape& shapes, const std::string& stlFile);
 	static TopoDS_Face GetFaceFromPntList(std::vector<gp_Pnt> PntsList);
 	static Standard_Boolean GetOrderWireFromEdges(std::vector<TopoDS_Edge> anEdges, TopoDS_Wire& OrderWire);
-	static bool GetPlanarFaceApexs(TopoDS_Face face, TopTools_ListOfShape& vtxs);
+	static bool GetPlanarFaceApexs(TopoDS_Face face, TopTools_ListOfShape& vtxs,
+		TopTools_ListOfShape& uselessEdges);
+	static bool IsShapeGeomSame(const TopoDS_Shape shape1, const TopoDS_Shape shape2, const TopAbs_ShapeEnum type);
+	static bool ReOrgnizeEdgeOrderWire(TopTools_ListOfShape& edges, TopoDS_Vertex vtx,
+		std::vector<TopoDS_Shape>& newOrderEdges);
+	static bool GroupEdgesInWire(std::vector<TopoDS_Shape>& edges, std::vector<std::vector<TopoDS_Shape>>& groups);
+	static bool ReOrderEdgesInWire(std::vector<std::vector<TopoDS_Shape>>& groups, TopoDS_Wire& wire);
 };
 
 
