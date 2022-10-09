@@ -25,6 +25,11 @@ public:
 		std::vector<TopoDS_Shape>& newOrderEdges);
 	static bool GroupEdgesInWire(std::vector<TopoDS_Shape>& edges, std::vector<std::vector<TopoDS_Shape>>& groups);
 	static bool ReOrderEdgesInWire(std::vector<std::vector<TopoDS_Shape>>& groups, TopoDS_Wire& wire);
+	static bool STPSeperateBodies(TopoDS_Shape input, TopTools_ListOfShape featurelists);
+	static bool GetIndependentFeatureFacesAndStore(TopoDS_Shape shape, TopTools_ListOfShape& facepackage,
+		std::vector<std::vector<TopoDS_Face>>& independentbodyfaces);
+	static bool LoopOperate(TopoDS_Shape shape, std::vector<TopoDS_Face>& featurefaces,
+		TopTools_ListOfShape& facepackage);
 };
 
 

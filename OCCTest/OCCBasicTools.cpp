@@ -267,7 +267,7 @@ bool OCCBasicTools::ReOrgnizeEdgeOrderWire(TopTools_ListOfShape& edges, TopoDS_V
 	{
 		vecOrder.push_back(iter);
 	}
-	int count = 0;
+	int count = -1;
 	for (int i = 0; i < vecOrder.size(); i++)
 	{
 		count++;
@@ -363,4 +363,108 @@ bool OCCBasicTools::ReOrderEdgesInWire(std::vector<std::vector<TopoDS_Shape>>& g
 			mkwire.Add(xedge);
 		}
 	}
+	wire = mkwire.Wire();
 }
+
+//分离step文件各特征方法 start
+bool OCCBasicTools::STPSeperateBodies(TopoDS_Shape input, TopTools_ListOfShape featurelists)
+{
+	//存一下所有面
+	TopTools_ListOfShape allfaces;
+	TopExp_Explorer faceex;
+	for (faceex.Init(input, TopAbs_FACE); faceex.More(); faceex.Next())
+	{
+		allfaces.Append(faceex.Current())
+	}
+	//存放各个独立体的面
+	std::vector<std::vector<TopoDS_Face>> independentbodyfaces;
+	GetIndependentFeatureFacesAndStore(input, allfaces, independentbodyfaces);
+}
+
+bool OCCBasicTools::GetIndependentFeatureFacesAndStore(TopoDS_Shape shape, TopTools_ListOfShape& facepackage,
+	std::vector<std::vector<TopoDS_Face>>& independentbodyfaces)
+{
+
+	while (facepackage.Size > 0)
+	{
+		std::vector<TopoDS_Face> featurefaces;
+		if (!LoopOperate(shape, featurefaces, facepackage))
+		{
+			continue;
+		}
+		independentbodyfaces.push_back(featurefaces);
+	}
+}
+
+bool OCCBasicTools::LoopOperate(TopoDS_Shape shape, std::vector<TopoDS_Face>& featurefaces, 
+	TopTools_ListOfShape& facepackage)
+{
+	if (facepackage.Size() == 0)
+		return false;
+	if (facepackage.Size() == 1)
+	{
+		featurefaces.push_back(TopoDS::Face(*facepackage.begin()));
+		return true;
+	}
+	TopTools_ListOfShape usedfeatures, reffeaturefaces;
+	for (auto iter : facepackage)
+	{
+		if (usedfeatures.Contains(iter))
+			continue;
+		BRepAdaptor_Surface brs(TopoDS::Face(iter));
+		double uf = brs.FirstUParameter();
+		double vf = brs.FirstVParameter();
+		double ue = brs.LastUParameter();
+		double ve = brs.LastVParameter();
+		gp_Dir dir;
+		gp_Pnt mid = brs.Value((ue + uf) / 2, (ve + vf) / 2);
+		if (!ShapeUtilities::FaceNormal(TopoDS::Face(iter), (ue + uf) / 2, (ve + vf) / 2, dir))
+			continue;
+		for (auto iter2 : facepackage)
+		{
+			if (iter2.IsSame(iter))
+				continue;
+			if (usedfeatures.Contains(iter))
+				continue;
+			TopoDS_Shape common = BRepAlgoAPI_Section(iter, iter2).Shape();
+			TopoDS_Edge commonedge = TopoDS::Edge(common);
+			BRepAdaptor_Curve bac(commonedge);
+			gp_Dir edgedir = bac.DN(bac.FirstParameter(), 1);
+			if (!common.IsNull())
+			{
+				BRepAdaptor_Surface xbrs(TopoDS::Face(iter2));
+				double xuf = brs.FirstUParameter();
+				double xvf = brs.FirstVParameter();
+				double xue = brs.LastUParameter();
+				double xve = brs.LastVParameter();
+				gp_Dir xdir;
+				if (!ShapeUtilities::FaceNormal(TopoDS::Face(iter2), (xue + xuf) / 2, (xve + xvf) / 2, xdir))
+					continue;
+				gp_Dir newdir = xdir.Crossed(dir);
+
+				if (newdir.IsEqual(edgedir, 0.01))
+				{
+					if (!usedfeatures.Contains(iter))
+					{
+						usedfeatures.Append(iter);
+						featurefaces.push_back(TopoDS::Face(iter));
+					}
+					if (!usedfeatures.Contains(iter2))
+					{
+						usedfeatures.Append(iter2);
+						featurefaces.push_back(TopoDS::Face(iter2));
+					}
+				}
+			}
+		}
+	}
+
+	for (auto iter : facepackage)
+	{
+		if (!usedfeatures.Contains(iter))
+			reffeaturefaces.Append(iter);
+	}
+
+	facepackage = reffeaturefaces;
+}
+//分离step文件各特征方法 end
