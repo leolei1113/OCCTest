@@ -22,7 +22,7 @@
 #include <TopoDS_Wire.hxx>
 #include <TopoDS_Face.hxx>
 #include <BRep_Tool.hxx>
-
+#include <BRepAdaptor_Surface.hxx>
 
 #include <gp.hxx>
 #include <gp_Ax1.hxx>
@@ -289,6 +289,84 @@ bool OCCBasicTools::ReOrgnizeEdgeOrderWire(TopTools_ListOfShape& edges, TopoDS_V
 	}
 }
 
+bool OCCBasicTools::GroupEdgesInCompLoop(TopoDS_Edge edge, std::vector<int> vecUsedIndex,
+	std::vector<TopoDS_Edge>& vecEdges, std::vector<TopoDS_Edge> vecXGroup)
+{
+	ShapeAnalysis_Edge sae;
+	TopoDS_Edge edge1 = TopoDS::Edge(vecEdges[i]);
+	TopoDS_Vertex vtx12 = sae.LastVertex(edge1);
+	gp_Pnt pt12 = BRep_Tool::Pnt(vtx12);
+
+	for (int i = 0; i < vecEdges.size(); i++)
+	{
+		bool ifcontinue = false;
+		for (int j = 0; j < vecUsedIndex.size(); j++)
+		{
+			if (i == vecUsedIndex[j])
+			{
+				ifcontinue = true;
+				break;
+			}
+		}
+		if (ifcontinue)
+		{
+			continue;
+		}
+		TopoDS_Edge edge2 = TopoDS::Edge(vecEdges[j]);
+		TopoDS_Vertex vtx21 = sae.FirstVertex(edge2);
+		gp_Pnt pt21 = BRep_Tool::Pnt(vtx21);
+
+		if (pt12.IsEqual(pt21, 0.01))
+		{
+			vecUsedIndex.push_back(i);
+			vecXGroup.push_back(edge2);
+			GroupEdgesInComp(edge2, vecUsedIndex, vecEdges, vecXGroup);
+		}
+	}
+}
+
+bool OCCBasicTools::GroupEdgesInComp(std::vector<TopoDS_Edge>& vecEdges, 
+	std::vector<std::vector<TopoDS_Edge>>& vecvecGroups)
+{
+	if (vecEdges.size() < 1)
+	{
+		return false;
+	}
+	if (vecEdges.size() == 1)
+	{
+		vecvecGroups.push_back(vecEdges);
+	}
+
+	std::vector<int> vecUsedIndex;
+
+	for (int i = 0; i < vecEdges.size(); i++)
+	{
+		vecUsedIndex.push_back(i);
+		std::vector<TopoDS_Edge> vecXGroup;
+		ShapeAnalysis_Edge sae;
+		TopoDS_Edge edge1 = TopoDS::Edge(vecEdges[i]);
+		vecXGroup.push_back(edge1);
+		TopoDS_Vertex vtx12 = sae.LastVertex(edge1);
+		gp_Pnt pt12 = BRep_Tool::Pnt(vtx12);
+		for (int j = 0; j < vecEdges.size(); j++)
+		{
+			if (i == j)
+			{
+				continue;
+			}
+			TopoDS_Edge edge2 = TopoDS::Edge(vecEdges[j]);
+			TopoDS_Vertex vtx21 = sae.FirstVertex(edge2);
+			gp_Pnt pt21 = BRep_Tool::Pnt(vtx21);
+			if (pt12.IsEqual(pt21, 0.01))
+			{
+				vecUsedIndex.push_back(j);
+				vecXGroup.push_back(edge2);
+				GroupEdgesInComp(edge2, vecUsedIndex, vecEdges, vecXGroup);
+			}
+		}
+	}
+}
+
 bool OCCBasicTools::GroupEdgesInWire(std::vector<TopoDS_Shape>& edges, std::vector<std::vector<TopoDS_Shape>>& groups)
 {
 	if (edges.size() < 0)
@@ -417,7 +495,7 @@ bool OCCBasicTools::LoopOperate(TopoDS_Shape shape, std::vector<TopoDS_Face>& fe
 		double ue = brs.LastUParameter();
 		double ve = brs.LastVParameter();
 		gp_Dir dir;
-		gp_Pnt mid = brs.Value((ue + uf) / 2, (ve + vf) / 2);
+		gp_Pnt mid = brs.Value((ue + uf) / 2, (ve + vf) / 2);     //面1中间点
 		if (!ShapeUtilities::FaceNormal(TopoDS::Face(iter), (ue + uf) / 2, (ve + vf) / 2, dir))
 			continue;
 		for (auto iter2 : facepackage)
@@ -427,22 +505,37 @@ bool OCCBasicTools::LoopOperate(TopoDS_Shape shape, std::vector<TopoDS_Face>& fe
 			if (usedfeatures.Contains(iter))
 				continue;
 			TopoDS_Shape common = BRepAlgoAPI_Section(iter, iter2).Shape();
-			TopoDS_Edge commonedge = TopoDS::Edge(common);
+			TopoDS_Edge commonedge;
+			TopoDS_Iterator edgeit(common);
+			for(; edgeit.More(); edgeit.Next())
+			{
+				TopoDS_Shape subShape = edgeit.Value();
+				if (subShape.ShapeType() != TopAbs_EDGE)
+				{
+					continue;
+				}
+				commonedge = TopoDS::Edge(subShape);
+			}
 			BRepAdaptor_Curve bac(commonedge);
+			gp_Pnt curMid = bac.Value((bac.FirstParameter() + bac.LastParameter()) / 2);
 			gp_Dir edgedir = bac.DN(bac.FirstParameter(), 1);
 			if (!common.IsNull())
 			{
 				BRepAdaptor_Surface xbrs(TopoDS::Face(iter2));
-				double xuf = brs.FirstUParameter();
-				double xvf = brs.FirstVParameter();
-				double xue = brs.LastUParameter();
-				double xve = brs.LastVParameter();
+				double xuf = xbrs.FirstUParameter();
+				double xvf = xbrs.FirstVParameter();
+				double xue = xbrs.LastUParameter();
+				double xve = xbrs.LastVParameter();
+				gp_Pnt mid2 = xbrs.Value((xue + xuf) / 2, (xve + xvf) / 2);     //面2中间点
 				gp_Dir xdir;
 				if (!ShapeUtilities::FaceNormal(TopoDS::Face(iter2), (xue + xuf) / 2, (xve + xvf) / 2, xdir))
 					continue;
 				gp_Dir newdir = xdir.Crossed(dir);
 
-				if (newdir.IsEqual(edgedir, 0.01))
+				gp_Dir edgeFace1(mid.X() - curMid.X(), mid.Y() - curMid.Y(), mid.Z() - curMid.Z());
+				gp_Dir edgeFace2(mid2.X() - curMid.X(), mid2.Y() - curMid.Y(), mid2.Z() - curMid.Z());
+
+				if (edgeFace1.Angle(edgeFace2)>M_PI)  //newdir.IsEqual(edgedir, 0.01)
 				{
 					if (!usedfeatures.Contains(iter))
 					{
