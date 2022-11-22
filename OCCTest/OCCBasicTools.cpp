@@ -289,6 +289,184 @@ bool OCCBasicTools::ReOrgnizeEdgeOrderWire(TopTools_ListOfShape& edges, TopoDS_V
 	}
 }
 
+bool  OCCBasicTools::GroupEdgesInTriangles(double dPointEqual, std::vector<TopoDS_Edge>& vecEdges,
+	std::vector<std::vector<TopoDS_Edge>>& vecvecGroups)
+{
+	if (vecEdges.size() == 0)
+		return false;
+	if (vecEdges.size() < 3)
+	{
+		vecvecGroups.push_back(vecEdges);
+		vecEdges.clear();
+		return false;
+	}
+
+	std::vector<int> vecUsedIdx;
+	std::vector<TopoDS_Edge> vecTopoEdges;
+	ShapeAnalysis_Edge sae;
+	TopoDS_Edge edge1 = vecEdges[0];
+	TopoDS_Vertex vtx11 = sae.FirstVertex(edge1);
+	gp_Pnt pt11 = BRep_Tool::Pnt(vtx11);
+	TopoDS_Vertex vtx12 = sae.LastVertex(edge1);
+	gp_Pnt pt12 = BRep_Tool::Pnt(vtx12);
+
+	for (int j = 1; j < vecEdges.size(); j++)
+	{
+		bool ifbreak = false;
+		TopoDS_Edge edge2 = vecEdges[j];
+		TopoDS_Vertex vtx21 = sae.FirstVertex(edge2);
+		gp_Pnt pt21 = BRep_Tool::Pnt(vtx21);
+		TopoDS_Vertex vtx22 = sae.LastVertex(edge2);
+		gp_Pnt pt22 = BRep_Tool::Pnt(vtx22);
+
+		if (pt12.IsEqual(pt21, dPointEqual))
+		{
+			for (int k = 1; k < vecEdges.size(); k++)
+			{
+				if (k == j)
+					continue;
+				TopoDS_Edge edge3 = vecEdges[k];
+				TopoDS_Vertex vtx31 = sae.FirstVertex(edge3);
+				gp_Pnt pt31 = BRep_Tool::Pnt(vtx31);
+				TopoDS_Vertex vtx32 = sae.LastVertex(edge3);
+				gp_Pnt pt32 = BRep_Tool::Pnt(vtx32);
+				if ((pt31.IsEqual(pt11, dPointEqual) && pt32.IsEqual(pt22, dPointEqual)) ||
+					(pt31.IsEqual(pt22, dPointEqual) && pt32.IsEqual(pt11, dPointEqual)))
+				{
+					vecTopoEdges.push_back(edge1);
+					vecTopoEdges.push_back(edge2);
+					vecTopoEdges.push_back(edge3);
+
+					vecUsedIdx.push_back(0);
+					vecUsedIdx.push_back(j);
+					vecUsedIdx.push_back(k);
+
+					ifbreak = true;
+					break;
+				}
+			}
+		}
+		else if (pt11.IsEqual(pt22, dPointEqual))
+		{
+			for (int k = 1; k < vecEdges.size(); k++)
+			{
+				if (k == j)
+					continue;
+				TopoDS_Edge edge3 = vecEdges[k];
+				TopoDS_Vertex vtx31 = sae.FirstVertex(edge3);
+				gp_Pnt pt31 = BRep_Tool::Pnt(vtx31);
+				TopoDS_Vertex vtx32 = sae.LastVertex(edge3);
+				gp_Pnt pt32 = BRep_Tool::Pnt(vtx32);
+				if ((pt31.IsEqual(pt12, dPointEqual) && pt32.IsEqual(pt21, dPointEqual)) ||
+					(pt31.IsEqual(pt21, dPointEqual) && pt32.IsEqual(pt12, dPointEqual)))
+				{
+					vecTopoEdges.push_back(edge1);
+					vecTopoEdges.push_back(edge2);
+					vecTopoEdges.push_back(edge3);
+
+					vecUsedIdx.push_back(0);
+					vecUsedIdx.push_back(j);
+					vecUsedIdx.push_back(k);
+
+					ifbreak = true;
+					break;
+				}
+			}
+		}
+		else if (pt11.IsEqual(pt21, dPointEqual))
+		{
+			for (int k = 1; k < vecEdges.size(); k++)
+			{
+				if (k == j)
+					continue;
+				TopoDS_Edge edge3 = vecEdges[k];
+				TopoDS_Vertex vtx31 = sae.FirstVertex(edge3);
+				gp_Pnt pt31 = BRep_Tool::Pnt(vtx31);
+				TopoDS_Vertex vtx32 = sae.LastVertex(edge3);
+				gp_Pnt pt32 = BRep_Tool::Pnt(vtx32);
+				if ((pt31.IsEqual(pt12, dPointEqual) && pt32.IsEqual(pt22, dPointEqual)) ||
+					(pt31.IsEqual(pt22, dPointEqual) && pt32.IsEqual(pt12, dPointEqual)))
+				{
+					vecTopoEdges.push_back(edge1);
+					vecTopoEdges.push_back(edge2);
+					vecTopoEdges.push_back(edge3);
+
+					vecUsedIdx.push_back(0);
+					vecUsedIdx.push_back(j);
+					vecUsedIdx.push_back(k);
+
+					ifbreak = true;
+					break;
+				}
+			}
+		}
+		else if (pt12.IsEqual(pt22, dPointEqual))
+		{
+			for (int k = 1; k < vecEdges.size(); k++)
+			{
+				if (k == j)
+					continue;
+				TopoDS_Edge edge3 = vecEdges[k];
+				TopoDS_Vertex vtx31 = sae.FirstVertex(edge3);
+				gp_Pnt pt31 = BRep_Tool::Pnt(vtx31);
+				TopoDS_Vertex vtx32 = sae.LastVertex(edge3);
+				gp_Pnt pt32 = BRep_Tool::Pnt(vtx32);
+				if ((pt31.IsEqual(pt11, dPointEqual) && pt32.IsEqual(pt21, dPointEqual)) ||
+					(pt31.IsEqual(pt21, dPointEqual) && pt32.IsEqual(pt11, dPointEqual)))
+				{
+					vecTopoEdges.push_back(edge1);
+					vecTopoEdges.push_back(edge2);
+					vecTopoEdges.push_back(edge3);
+
+					vecUsedIdx.push_back(0);
+					vecUsedIdx.push_back(j);
+					vecUsedIdx.push_back(k);
+
+					ifbreak = true;
+					break;
+				}
+			}
+		}
+
+		if (ifbreak)
+			break;
+	}
+	if (vecTopoEdges.size() == 0)
+	{
+		vecTopoEdges.push_back(edge1);
+		vecvecGroups.push_back(vecTopoEdges);
+
+		std::vector<TopoDS_Edge> vecNextEdges;
+		for (int i = 1; i < vecEdges.size(); i++)
+		{
+			vecNextEdges.push_back(vecEdges[i]);
+		}
+
+		return GroupEdgesInTriangles(dPointEqual, vecNextEdges, vecvecGroups);
+	}
+	else if (vecTopoEdges.size() == 3)
+	{
+		vecvecGroups.push_back(vecTopoEdges);
+		std::vector<TopoDS_Edge> vecNextEdges;
+		for (int i = 0; i < vecEdges.size(); i++)
+		{
+			bool ifcontinue = false;
+			for (int j = 0; j < vecUsedIdx.size(); j++)
+			{
+				if (i == vecUsedIdx[j])
+				{
+					ifcontionue = true;
+					break;
+				}
+			}
+			if (ifcontinue)
+				continue;
+			vecNextEdges.push_back(vecEdges[i]);
+			return GroupEdgesInTriangles(dPointEqual, vecNextEdges, vecvecGroups);
+		}
+	}
+}
+
 bool OCCBasicTools::GroupEdgesInCompLoop(TopoDS_Edge edge, std::vector<int> vecUsedIndex,
 	std::vector<TopoDS_Edge>& vecEdges, std::vector<TopoDS_Edge> vecXGroup)
 {

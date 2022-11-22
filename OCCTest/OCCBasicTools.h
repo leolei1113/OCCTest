@@ -30,6 +30,9 @@ public:
 		std::vector<std::vector<TopoDS_Face>>& independentbodyfaces);
 	static bool LoopOperate(TopoDS_Shape shape, std::vector<TopoDS_Face>& featurefaces,
 		TopTools_ListOfShape& facepackage);
+
+	static bool GroupEdgesInTriangles(double dPointEqual, std::vector<TopoDS_Edge>& vecEdges,
+		std::vector<std::vector<TopoDS_Edge>>& vecvecGroups);
 };
 
 
