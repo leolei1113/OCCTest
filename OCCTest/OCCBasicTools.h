@@ -6,6 +6,14 @@
 #include <TopTools_ListOfShape.hxx>
 #include <gp_Pnt.hxx>
 #include <vector>
+#include <STEPCAFControl_Reader.hxx>
+#include <XSControl_TransferReader.hxx>
+#include <XSControl_WorkSession.hxx>
+#include <Transfer_TransientProcess.hxx>
+#include <Transfer_Binder.hxx>
+#include <TransferBRep.hxx>
+#include <StepRepr_RepresentationItem.hxx>
+#include <StepRepr_NextAssemblyUsageOccurrence.hxx>
 
 class OCCBasicTools
 {
@@ -33,6 +41,8 @@ public:
 
 	static bool GroupEdgesInTriangles(double dPointEqual, std::vector<TopoDS_Edge>& vecEdges,
 		std::vector<std::vector<TopoDS_Edge>>& vecvecGroups);
+
+	static bool ReadStepFile(Standard_CString strPath);
 };
 
 

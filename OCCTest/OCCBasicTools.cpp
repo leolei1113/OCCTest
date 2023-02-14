@@ -739,3 +739,71 @@ bool OCCBasicTools::LoopOperate(TopoDS_Shape shape, std::vector<TopoDS_Face>& fe
 	facepackage = reffeaturefaces;
 }
 //分离step文件各特征方法 end
+
+bool OCCBasicTools::ReadStepFile(Standard_CString strPath)
+{
+	std::vector<std::pair<TopoDS_Shape, std::string>> vecFaceNameMap, vecCSNameMap;
+	QHash<QString, std::string> hashFace;
+
+	STEPCAFControl_Reader cafreader;
+	if (cafreader.ReadFile(strPath) != IFSelect_RetDone)
+		return false;
+	STEPControl_Reader reader = cafreader.Reader();
+
+	Handle(XSControl_TransferReader) treader = reader.WS()->TransferReader();
+	Handle(XSControl_WorkSession) workSession = reader.WS();
+	Handle(Interface_InterfaceModel) model = workSession->Model();
+	Handle(Transfer_TransientProcess) transPro = treader->TransientProcess();
+	int nEntities = model->NbEntities();
+	for (int i = 1; i < nEntities; i++)
+	{
+		Handle(Standard_Transient) transient = model->Value(i);
+		auto dynamicType = transient->DynamicType();
+		Handle(Transfer_Binder) binder = transPro->Find(transient);
+		if (!binder)
+			continue;
+		TopoDS_Shape compareShape = TransferBRep::ShapeResult(binder);
+		if(compareShape.IsNull())
+			continue;
+		if (dynamicType->SubType("StepShape_Face"))
+		{
+			Handle(StepRepr_RepresentationItem) item = Handle(StepRepr_RepresentationItem)::DownCast(transient);
+			if (item)
+			{
+				Handle(TCollection_HAsciiString) hascii = item->Name();
+				if (!hascii)
+					continue;
+				TCollection_AsciiString ascii = hascii->String();
+				std::string s1 = ascii.ToCString();
+
+				if(s1=="")
+					continue;
+
+				vecFaceNameMap.push_back(
+					std::pair<TopoDS_Shape, std::string>(compareShape, s1)
+				);
+			}
+		}
+		else if (dynamicType->SubType("StepRepr_NextAssemblyUsageOccurrence"))
+		{
+			Handle(StepRepr_NextAssemblyUsageOccurrence) item = 
+				Handle(StepRepr_NextAssemblyUsageOccurrence)::DownCast(transient);
+			if (item)
+			{
+				Handle(TCollection_HAsciiString) hascii = item->Name();
+				if (!hascii)
+					continue;
+				TCollection_AsciiString ascii = hascii->String();
+				std::string s1 = ascii.ToCString();
+
+				if (s1 == "")
+					continue;
+
+				vecCSNameMap.push_back(
+					std::pair<TopoDS_Shape, std::string>(compareShape, s1)
+				);
+			}
+		}
+	}
+	return true;
+}
