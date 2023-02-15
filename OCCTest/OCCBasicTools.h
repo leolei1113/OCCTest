@@ -15,6 +15,16 @@
 #include <StepRepr_RepresentationItem.hxx>
 #include <StepRepr_NextAssemblyUsageOccurrence.hxx>
 
+#include <BRep_Builder.hxx>
+
+#include <QtCore/Qhash>
+
+struct struShellFaces
+{
+	TopTools_ListOfShape faceList;
+	std::string name;
+};
+
 class OCCBasicTools
 {
 public:
@@ -43,6 +53,12 @@ public:
 		std::vector<std::vector<TopoDS_Edge>>& vecvecGroups);
 
 	static bool ReadStepFile(Standard_CString strPath);
+	static TopoDS_Shape ReConstructShape(TopoDS_Shape entryShape,
+		std::vector<std::pair<TopoDS_Shape, std::string>> vecCSNameMap,
+		std::vector<std::pair<TopoDS_Shape, std::string>> vecFaceNameMap,
+		QHash<QString, std::string> hashFaces,
+		std::vector<std::pair<TopoDS_Shape, std::string>>& vecReCSNameMap,
+		std::vector<std::pair<TopoDS_Shape, std::string>>& vecReFaceNameMap)
 };
 
 

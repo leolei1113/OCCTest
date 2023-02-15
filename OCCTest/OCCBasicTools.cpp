@@ -782,6 +782,57 @@ bool OCCBasicTools::ReadStepFile(Standard_CString strPath)
 				vecFaceNameMap.push_back(
 					std::pair<TopoDS_Shape, std::string>(compareShape, s1)
 				);
+
+				TopAbs_ShapeEnum type = compareShape.ShapeType();
+				if (type != TopAbs_FACE)
+					continue;
+
+				QString qstrCompare1;
+				{
+					BRepAdaptor_Surface adp_sur(TopoDS::Face(compareShape));
+					double ustart = adp_sur.FirstUParameter();
+					double uend = adp_sur.LastUParameter();
+					double vstart = adp_sur.FirstVParameter();
+					double vend = adp_sur.LastVParameter();
+					gp_Pnt pntUsVsSurf = adp_sur.Value(ustart, vstart);
+					double dXPntUsVsSurf = pntUsVsSurf.X();
+					double dYPntUsVsSurf = pntUsVsSurf.Y();
+					double dZPntUsVsSurf = pntUsVsSurf.Z();
+					QString qstr1 = QString::number(dXPntUsVsSurf, 'f', 5) + ","
+						+ QString::number(dYPntUsVsSurf, 'f', 5) + ","
+						+ QString::number(dZPntUsVsSurf, 'f', 5) + ",";
+					gp_Pnt pntUeVsSurf = adp_sur.Value(uend, vstart);
+					double dXPntUeVsSurf = pntUeVsSurf.X();
+					double dYPntUeVsSurf = pntUeVsSurf.Y();
+					double dZPntUeVsSurf = pntUeVsSurf.Z();
+					QString qstr2 = QString::number(dXPntUeVsSurf, 'f', 5) + ","
+						+ QString::number(dYPntUeVsSurf, 'f', 5) + ","
+						+ QString::number(dZPntUeVsSurf, 'f', 5) + ",";
+					gp_Pnt pntUsVeSurf = adp_sur.Value(ustart, vend);
+					double dXPntUsVeSurf = pntUsVeSurf.X();
+					double dYPntUsVeSurf = pntUsVeSurf.Y();
+					double dZPntUsVeSurf = pntUsVeSurf.Z();
+					QString qstr3 = QString::number(dXPntUsVeSurf, 'f', 5) + ","
+						+ QString::number(dYPntUsVeSurf, 'f', 5) + ","
+						+ QString::number(dZPntUsVeSurf, 'f', 5) + ",";
+					gp_Pnt pntUeVeSurf = adp_sur.Value(uend, vend);
+					double dXPntUeVeSurf = pntUeVeSurf.X();
+					double dYPntUeVeSurf = pntUeVeSurf.Y();
+					double dZPntUeVeSurf = pntUeVeSurf.Z();
+					QString qstr4 = QString::number(dXPntUeVeSurf, 'f', 5) + ","
+						+ QString::number(dYPntUeVeSurf, 'f', 5) + ","
+						+ QString::number(dZPntUeVeSurf, 'f', 5) + ",";
+					gp_Pnt pntUfVfSurf = adp_sur.Value(0.5 * (ustart + uend), 0.5 * (vstart + vend));
+					double dXPntUfVfSurf = pntUfVfSurf.X();
+					double dYPntUfVfSurf = pntUfVfSurf.Y();
+					double dZPntUfVfSurf = pntUfVfSurf.Z();
+					QString qstr5 = QString::number(dXPntUfVfSurf, 'f', 5) + ","
+						+ QString::number(dYPntUfVfSurf, 'f', 5) + ","
+						+ QString::number(dZPntUfVfSurf, 'f', 5) + ",";
+
+					qstrCompare1 = qstr1 + qstr2 + qstr3 + qstr4 + qstr5;
+				}
+				hashFace.insert(qstrCompare1, s1);
 			}
 		}
 		else if (dynamicType->SubType("StepRepr_NextAssemblyUsageOccurrence"))
@@ -806,4 +857,297 @@ bool OCCBasicTools::ReadStepFile(Standard_CString strPath)
 		}
 	}
 	return true;
+}
+
+TopoDS_Shape OCCBasicTools::ReConstructShape(TopoDS_Shape entryShape,
+	std::vector<std::pair<TopoDS_Shape, std::string>> vecCSNameMap,
+	std::vector<std::pair<TopoDS_Shape, std::string>> vecFaceNameMap,
+	QHash<QString, std::string> hashFaces,
+	std::vector<std::pair<TopoDS_Shape, std::string>>& vecReCSNameMap,
+	std::vector<std::pair<TopoDS_Shape, std::string>>& vecReFaceNameMap)
+{
+	std::vector<std::string> vecUniqName;
+	TopoDS_Shape result;
+	if (entryShape.ShapeType() == TopAbs_COMPOUND)
+	{
+		BRep_Builder b;
+		TopoDS_Compound compound;
+		b.MakeCompound(compound);
+		TopoDS_Iterator subiter(entryShape);
+		std::vector<TopoDS_Shape> vecSubFaces;
+		for (; subiter.More(); subiter.Next())
+		{
+			TopoDS_Shape currentShape = subiter.Value();
+			if (currentShape.ShapeType() == TopAbs_COMPOUND ||
+				currentShape.ShapeType() == TopAbs_SOLID)
+			{
+				currentShape = ReConstructShape(currentShape,
+					vecCSNameMap, vecFaceNameMap, hashFaces, vecReCSNameMap, vecReFaceNameMap);
+				b.Add(compound, currentShape);
+			}
+			else if (currentShape.ShapeType() == TopAbs_SHELL ||
+				currentShape.ShapeType() == TopAbs_FACE)
+			{
+				TopExp_Explorer faceEx(currentShape, TopAbs_FACE);
+				for (; faceEx.More(); faceEx.Next())
+				{
+					vecSubFaces.push_back(faceEx.Current());
+				}
+			}
+		}
+		if (vecSubFaces.size() > 0)
+		{
+			std::vector<struShellFaces> vecShellFaces;
+			for (int i = 0; i < vecUniqName.size(); i++)
+			{
+				struShellFaces currentStruc;
+				std::string strShellName = vecUniqName[i];
+				TopTools_ListOfShape faceList;
+				currentStruc.faceList = faceList;
+				currentStruc.name = strShellName;
+				vecShellFaces.push_back(currentStruc);
+			}
+
+			for (int i = 0; i < vecSubFaces.size(); i++)
+			{
+				TopoDS_Shape currentFace = vecSubFaces[i];
+				std::string strSurfaceName;
+				QString qstrCompare1;
+				{
+					BRepAdaptor_Surface adp_sur(TopoDS::Face(currentFace));
+					double ustart = adp_sur.FirstUParameter();
+					double uend = adp_sur.LastUParameter();
+					double vstart = adp_sur.FirstVParameter();
+					double vend = adp_sur.LastVParameter();
+					gp_Pnt pntUsVsSurf = adp_sur.Value(ustart, vstart);
+					double dXPntUsVsSurf = pntUsVsSurf.X();
+					double dYPntUsVsSurf = pntUsVsSurf.Y();
+					double dZPntUsVsSurf = pntUsVsSurf.Z();
+					QString qstr1 = QString::number(dXPntUsVsSurf, 'f', 5) + ","
+						+ QString::number(dYPntUsVsSurf, 'f', 5) + ","
+						+ QString::number(dZPntUsVsSurf, 'f', 5) + ",";
+					gp_Pnt pntUeVsSurf = adp_sur.Value(uend, vstart);
+					double dXPntUeVsSurf = pntUeVsSurf.X();
+					double dYPntUeVsSurf = pntUeVsSurf.Y();
+					double dZPntUeVsSurf = pntUeVsSurf.Z();
+					QString qstr2 = QString::number(dXPntUeVsSurf, 'f', 5) + ","
+						+ QString::number(dYPntUeVsSurf, 'f', 5) + ","
+						+ QString::number(dZPntUeVsSurf, 'f', 5) + ",";
+					gp_Pnt pntUsVeSurf = adp_sur.Value(ustart, vend);
+					double dXPntUsVeSurf = pntUsVeSurf.X();
+					double dYPntUsVeSurf = pntUsVeSurf.Y();
+					double dZPntUsVeSurf = pntUsVeSurf.Z();
+					QString qstr3 = QString::number(dXPntUsVeSurf, 'f', 5) + ","
+						+ QString::number(dYPntUsVeSurf, 'f', 5) + ","
+						+ QString::number(dZPntUsVeSurf, 'f', 5) + ",";
+					gp_Pnt pntUeVeSurf = adp_sur.Value(uend, vend);
+					double dXPntUeVeSurf = pntUeVeSurf.X();
+					double dYPntUeVeSurf = pntUeVeSurf.Y();
+					double dZPntUeVeSurf = pntUeVeSurf.Z();
+					QString qstr4 = QString::number(dXPntUeVeSurf, 'f', 5) + ","
+						+ QString::number(dYPntUeVeSurf, 'f', 5) + ","
+						+ QString::number(dZPntUeVeSurf, 'f', 5) + ",";
+					gp_Pnt pntUfVfSurf = adp_sur.Value(0.5 * (ustart + uend), 0.5 * (vstart + vend));
+					double dXPntUfVfSurf = pntUfVfSurf.X();
+					double dYPntUfVfSurf = pntUfVfSurf.Y();
+					double dZPntUfVfSurf = pntUfVfSurf.Z();
+					QString qstr5 = QString::number(dXPntUfVfSurf, 'f', 5) + ","
+						+ QString::number(dYPntUfVfSurf, 'f', 5) + ","
+						+ QString::number(dZPntUfVfSurf, 'f', 5) + ",";
+
+					qstrCompare1 = qstr1 + qstr2 + qstr3 + qstr4 + qstr5;
+				}
+				if (hashFaces.contains(qstrCompare1))
+				{
+					strSurfaceName = hashFaces.value(qstrCompare1);
+				}
+
+				if (strSurfaceName == "")
+					strSurfaceName = "sewed surface";
+
+				for (int k = 0; k < vecUniqName.size(); k++)
+				{
+					if (strSurfaceName == vecUniqName[k])
+					{
+						vecShellFaces[k].faceList.Append(currentFace);
+						break;
+					}
+				}
+			}
+
+			for (int i = 0; i < vecShellFaces.size(); i++)
+			{
+				struShellFaces currentStruc = vecShellFaces[i];
+				if (currentStruc.faceList.Size() < 1)
+					continue;
+				else
+				{
+					std::string strShellName = currentStruc.name;
+					TopoDS_Shell currentShell;
+					BRep_Builder bShell;
+					bShell.MakeShell(currentShell);
+					for (auto iter : currentStruc.faceList)
+					{
+						bShell.Add(currentShell, iter);
+					}
+					vecReFaceNameMap.push_back(std::pair<TopoDS_Shape, std::string>(currentShell, strShellName));
+					b.Add(compound, currentShell);
+				}
+			}
+		}
+
+		result = compound;
+
+		std::string strAssName;
+		for (int i = 0; i < vecCSNameMap.size(); i++)
+		{
+			std::pair<TopoDS_Shape, std::string> currentpair = vecCSNameMap[i];
+			TopoDS_Shape currentpairAss = currentpair.first;
+			if (currentpairAss.ShapeType() != TopAbs_COMPOUND)
+				continue;
+			if (entryShape.IsSame(currentpair.first))
+			{
+				strAssName = currentpair.second;
+			}
+		}
+		if (strAssName != "")
+			vecReCSNameMap.push_back(std::pair<TopoDS_Shape, std::string>(compound, strAssName));
+	}
+	else if (entryShape.ShapeType() == TopAbs_SOLID)
+	{
+		BRep_Builder b;
+		TopoDS_Solid solid;
+		b.MakeSolid(solid);
+		TopoDS_Iterator subiter(entryShape);
+		std::vector<TopoDS_Shape> vecSubFaces;
+		for (; subiter.More(); subiter.Next())
+		{
+			TopoDS_Shape currentShape = subiter.Value();
+			if (currentShape.ShapeType() == TopAbs_SHELL || currentShape.ShapeType() == TopAbs_FACE)
+			{
+				TopExp_Explorer faceEx(currentShape, TopAbs_FACE);
+				for (; faceEx.More(); faceEx.Next())
+				{
+					vecSubFaces.push_back(faceEx.Current());
+				}
+			}
+		}
+		if (vecSubFaces.size() > 0)
+		{
+			std::vector<struShellFaces> vecShellFaces;
+			for (int i = 0; i < vecUniqName.size(); i++)
+			{
+				struShellFaces currentStruc;
+				std::string strShellName = vecUniqName[i];
+				TopTools_ListOfShape faceList;
+				currentStruc.faceList = faceList;
+				currentStruc.name = strShellName;
+				vecShellFaces.push_back(currentStruc);
+			}
+
+			for (int i = 0; i < vecSubFaces.size(); i++)
+			{
+				TopoDS_Shape currentFace = vecSubFaces[i];
+				std::string strSurfaceName;
+				QString qstrCompare1;
+				{
+					BRepAdaptor_Surface adp_sur(TopoDS::Face(currentFace));
+					double ustart = adp_sur.FirstUParameter();
+					double uend = adp_sur.LastUParameter();
+					double vstart = adp_sur.FirstVParameter();
+					double vend = adp_sur.LastVParameter();
+					gp_Pnt pntUsVsSurf = adp_sur.Value(ustart, vstart);
+					double dXPntUsVsSurf = pntUsVsSurf.X();
+					double dYPntUsVsSurf = pntUsVsSurf.Y();
+					double dZPntUsVsSurf = pntUsVsSurf.Z();
+					QString qstr1 = QString::number(dXPntUsVsSurf, 'f', 5) + ","
+						+ QString::number(dYPntUsVsSurf, 'f', 5) + ","
+						+ QString::number(dZPntUsVsSurf, 'f', 5) + ",";
+					gp_Pnt pntUeVsSurf = adp_sur.Value(uend, vstart);
+					double dXPntUeVsSurf = pntUeVsSurf.X();
+					double dYPntUeVsSurf = pntUeVsSurf.Y();
+					double dZPntUeVsSurf = pntUeVsSurf.Z();
+					QString qstr2 = QString::number(dXPntUeVsSurf, 'f', 5) + ","
+						+ QString::number(dYPntUeVsSurf, 'f', 5) + ","
+						+ QString::number(dZPntUeVsSurf, 'f', 5) + ",";
+					gp_Pnt pntUsVeSurf = adp_sur.Value(ustart, vend);
+					double dXPntUsVeSurf = pntUsVeSurf.X();
+					double dYPntUsVeSurf = pntUsVeSurf.Y();
+					double dZPntUsVeSurf = pntUsVeSurf.Z();
+					QString qstr3 = QString::number(dXPntUsVeSurf, 'f', 5) + ","
+						+ QString::number(dYPntUsVeSurf, 'f', 5) + ","
+						+ QString::number(dZPntUsVeSurf, 'f', 5) + ",";
+					gp_Pnt pntUeVeSurf = adp_sur.Value(uend, vend);
+					double dXPntUeVeSurf = pntUeVeSurf.X();
+					double dYPntUeVeSurf = pntUeVeSurf.Y();
+					double dZPntUeVeSurf = pntUeVeSurf.Z();
+					QString qstr4 = QString::number(dXPntUeVeSurf, 'f', 5) + ","
+						+ QString::number(dYPntUeVeSurf, 'f', 5) + ","
+						+ QString::number(dZPntUeVeSurf, 'f', 5) + ",";
+					gp_Pnt pntUfVfSurf = adp_sur.Value(0.5 * (ustart + uend), 0.5 * (vstart + vend));
+					double dXPntUfVfSurf = pntUfVfSurf.X();
+					double dYPntUfVfSurf = pntUfVfSurf.Y();
+					double dZPntUfVfSurf = pntUfVfSurf.Z();
+					QString qstr5 = QString::number(dXPntUfVfSurf, 'f', 5) + ","
+						+ QString::number(dYPntUfVfSurf, 'f', 5) + ","
+						+ QString::number(dZPntUfVfSurf, 'f', 5) + ",";
+
+					qstrCompare1 = qstr1 + qstr2 + qstr3 + qstr4 + qstr5;
+				}
+				if (hashFaces.contains(qstrCompare1))
+				{
+					strSurfaceName = hashFaces.value(qstrCompare1);
+				}
+
+				if (strSurfaceName == "")
+					strSurfaceName = "sewed surface";
+
+				for (int k = 0; k < vecUniqName.size(); k++)
+				{
+					if (strSurfaceName == vecUniqName[k])
+					{
+						vecShellFaces[k].faceList.Append(currentFace);
+						break;
+					}
+				}
+			}
+
+			for (int i = 0; i < vecShellFaces.size(); i++)
+			{
+				struShellFaces currentStruc = vecShellFaces[i];
+				if (currentStruc.faceList.Size() < 1)
+					continue;
+				else
+				{
+					std::string strShellName = currentStruc.name;
+					TopoDS_Shell currentShell;
+					BRep_Builder bShell;
+					bShell.MakeShell(currentShell);
+					for (auto iter : currentStruc.faceList)
+					{
+						bShell.Add(currentShell, iter);
+					}
+					vecReFaceNameMap.push_back(std::pair<TopoDS_Shape, std::string>(currentShell, strShellName));
+					b.Add(solid, currentShell);
+				}
+			}
+		}
+		result = solid;
+
+		std::string strPrtName;
+		for (int i = 0; i < vecCSNameMap.size(); i++)
+		{
+			std::pair<TopoDS_Shape, std::string> currentpair = vecCSNameMap[i];
+			TopoDS_Shape currentpairSolid = currentpair.first;
+			if (currentpairSolid.ShapeType() != TopAbs_COMPOUND)
+				continue;
+			if (entryShape.IsSame(currentpair.first))
+			{
+				strPrtName = currentpair.second;
+			}
+		}
+		if (strPrtName != "")
+			vecReCSNameMap.push_back(std::pair<TopoDS_Shape, std::string>(compound, strAssName));
+	}
+	return result;
 }
