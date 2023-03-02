@@ -166,6 +166,7 @@
     <ClCompile Include="OCCBasicTools.cpp" />
     <ClCompile Include="OCCTest.cpp" />
     <ClCompile Include="occView.cpp" />
+    <ClCompile Include="pointBinaryTree.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +174,7 @@
     <ClInclude Include="occApp.h" />
     <ClInclude Include="OCCBasicTools.h" />
     <ClInclude Include="OCCTest.h" />
+    <ClInclude Include="pointBinaryTree.h" />
     <CustomBuild Include="test.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Identity)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>

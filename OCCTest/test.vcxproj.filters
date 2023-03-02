@@ -13,12 +13,18 @@
     <ClCompile Include="Annotation.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="pointBinaryTree.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="occApp.h" />
     <ClInclude Include="OCCBasicTools.h" />
     <ClInclude Include="OCCTest.h" />
     <ClInclude Include="Annotation.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pointBinaryTree.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
