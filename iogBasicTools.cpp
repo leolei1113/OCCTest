@@ -31,8 +31,10 @@
 #define nThree 3
 #define mergeTolerance 10                             //sqrt3 relation
 #define pointEqualTol 0.001 
-#define parallTolerance 1E-20
-#define angleTolerance 20 
+#define parallTolerance 1E-30
+#define angleTolerance 10 
+#define angleRecTolerance 5 
+#define RectRate 80
 
 #define Minor_Modify 2
 #define Major_Modify 2
@@ -326,7 +328,7 @@ bool iogBasicTools::DiscretizeShape(double dLinearDelVal, double dAngleDelVal, i
 
 	if (!DiscretizeLoopProcess(nAllFaces, nBeginFace, nBeginVtx, 
 		meshParas, firstloop, uMaxSurfIx, vecUniqName, vecnamemap, vecFaceNameMap, nVert, nthisAssIndex,
-		nShadingType, mainshape, hashVertIdx))
+		nShadingType, mainshape, hashVertIdx, dLinearDelVal, dAngleDelVal))
 	{
 		return false;
 	}
@@ -370,7 +372,8 @@ bool iogBasicTools::DiscretizeLoopProcess(int nAllFaces, int& nCurrentFace, int&
 	IMeshTools_Parameters meshParas, bool firstloop, UINT uMaxSurfIx, std::vector<string> vecUniqName,
 	std::vector<std::pair<TopoDS_Shape, std::string>> vecnamemap, std::vector<std::pair<TopoDS_Shape, std::string>> vecFaceNameMap,
 	UINT nVert, int nCurrentAssIndex, int nShadingType,
-	TopoDS_Shape mainshape, QHash<QString, UINT>& hashVertIdx)
+	TopoDS_Shape mainshape, QHash<QString, UINT>& hashVertIdx
+	, double dLinearDelVal, double dAngleDelVal)
 {
 	comAssemblyMgr * pAssMgr = comAssembly::Manager();
 	comPartMgr * pPartMgr = comPart::Manager();
@@ -454,6 +457,8 @@ bool iogBasicTools::DiscretizeLoopProcess(int nAllFaces, int& nCurrentFace, int&
 
 					TopLoc_Location topLocation;
 					TopoDS_Face currentface = TopoDS::Face(vecFacelist[i]);
+
+					//BRepMesh_IncrementalMesh incrementalmesh(currentface, dLinearDelVal, true, dAngleDelVal, true);
 
 					//triangle face
 					Handle(Poly_Triangulation) currentfacetri = BRep_Tool::Triangulation(currentface, topLocation);
@@ -594,7 +599,7 @@ bool iogBasicTools::DiscretizeLoopProcess(int nAllFaces, int& nCurrentFace, int&
 					int nthisAssIndex = pAssMgr->MaxIndex();
 					DiscretizeLoopProcess(nAllFaces, nCurrentFace, nBeginVtx, meshParas, firstloop, uMaxSurfIx, vecUniqName,
 						vecnamemap, vecFaceNameMap, nVert, nthisAssIndex,
-						 nShadingType, currentShape, hashVertIdx);
+						 nShadingType, currentShape, hashVertIdx, dLinearDelVal, dAngleDelVal);
 				}
 				else if (currentShape.ShapeType() == TopAbs_SOLID)
 				{
@@ -629,7 +634,7 @@ bool iogBasicTools::DiscretizeLoopProcess(int nAllFaces, int& nCurrentFace, int&
 					int nthisAssIndex = pAssMgr->MaxIndex();
 					DiscretizeLoopProcess(nAllFaces, nCurrentFace, nBeginVtx, meshParas, firstloop, uMaxSurfIx,
 						vecUniqName, vecnamemap, vecFaceNameMap, nVert, nthisAssIndex, nShadingType,
-						currentShape, hashVertIdx);
+						currentShape, hashVertIdx, dLinearDelVal, dAngleDelVal);
 				}
 			}
 			else
@@ -1756,6 +1761,9 @@ bool iogBasicTools::ClearFreeEdges(bool bIfSTP, double scale, bool firstloop, UI
 	//determine two vetex
 	for (int i = 0; i < groupedIndex.size(); i++)
 	{
+		double dProgress = i * 100 / groupedIndex.size();
+		TheExe.ProgressSetValue(dProgress);
+
 		//vector<UINT> currentClosed = groupedIndex[i];
 		vector<UINT> currentClosedPre = groupedIndex[i];
 		vector<UINT> currentClosed;
@@ -1764,211 +1772,11 @@ bool iogBasicTools::ClearFreeEdges(bool bIfSTP, double scale, bool firstloop, UI
 			currentClosed.push_back(currentClosedPre[j]);
 		}
 
-		if (currentClosed.size() > 3)
-		{
-			//jude if to sew
-			vector<UINT> vecVtx;
-			for (int j = 0; j < currentClosed.size() - 2; j++)
-			{
-				UINT ubegin = currentClosed[j];
-				UINT umid = currentClosed[j + 1];
-				UINT uend = currentClosed[j + 2];
+		//fix closed group which has vtxs >=3 and has inner angle <=10 degree
+		FixClosedFreeEdges(vecusedFaceIx, currentClosed);
 
-				if (ubegin == umid || uend == umid || ubegin == uend)
-				{
-					continue;
-				}
-
-				comVertice* pVtxBegin = (comVertice*)pVertMgr->Object(ubegin);
-				double dCoord1[3];
-				pVtxBegin->Xyz(dCoord1);
-				gp_Pnt pt1(dCoord1[0], dCoord1[1], dCoord1[2]);
-				comVertice* pVtxMid = (comVertice*)pVertMgr->Object(umid);
-				double dCoord2[3];
-				pVtxMid->Xyz(dCoord2);
-				gp_Pnt pt2(dCoord2[0], dCoord2[1], dCoord2[2]);
-				comVertice* pVtxEnd = (comVertice*)pVertMgr->Object(uend);
-				double dCoord3[3];
-				pVtxEnd->Xyz(dCoord3);
-				gp_Pnt pt3(dCoord3[0], dCoord3[1], dCoord3[2]);
-
-				gp_Dir dir1(pt2.X() - pt1.X(), pt2.Y() - pt1.Y(), pt2.Z() - pt1.Z());
-				gp_Dir dir2(pt2.X() - pt3.X(), pt2.Y() - pt3.Y(), pt2.Z() - pt3.Z());
-
-				double dAngle = CalculateAngleBetweenDirs(dir1, dir2);
-				if (dAngle < angleTolerance)
-				{
-					vecVtx.push_back(umid);
-				}
-				/*else if (10 < dAngle && dAngle < 90)
-					break;*/
-			}
-
-			//First vtx
-			{
-				UINT uVbeginF = currentClosed[currentClosed.size() - 2];
-				UINT uVmidF = currentClosed[currentClosed.size() - 1];
-				UINT uVendF = currentClosed[0];
-
-				if (uVbeginF == uVmidF || uVendF == uVmidF || uVbeginF == uVendF)
-				{
-					continue;
-				}
-
-				comVertice* pVVtxBeginF = (comVertice*)pVertMgr->Object(uVbeginF);
-				double dVCoord1F[3];
-				pVVtxBeginF->Xyz(dVCoord1F);
-				gp_Pnt ptV1F(dVCoord1F[0], dVCoord1F[1], dVCoord1F[2]);
-				comVertice* pVVtxMidF = (comVertice*)pVertMgr->Object(uVmidF);
-				double dVCoord2F[3];
-				pVVtxMidF->Xyz(dVCoord2F);
-				gp_Pnt ptV2F(dVCoord2F[0], dVCoord2F[1], dVCoord2F[2]);
-				comVertice* pVVtxEndF = (comVertice*)pVertMgr->Object(uVendF);
-				double dVCoord3F[3];
-				pVVtxEndF->Xyz(dVCoord3F);
-				gp_Pnt ptV3F(dVCoord3F[0], dVCoord3F[1], dVCoord3F[2]);
-
-				gp_Dir dirV1F(ptV2F.X() - ptV1F.X(), ptV2F.Y() - ptV1F.Y(), ptV2F.Z() - ptV1F.Z());
-				gp_Dir dirV2F(ptV2F.X() - ptV3F.X(), ptV2F.Y() - ptV3F.Y(), ptV2F.Z() - ptV3F.Z());
-
-				double dVAngleF = CalculateAngleBetweenDirs(dirV1F, dirV2F);
-				if (dVAngleF < angleTolerance)
-				{
-					vecVtx.push_back(uVmidF);
-				}
-			}
-
-			//second
-			{
-				UINT uVbegin = currentClosed[currentClosed.size() - 1];
-				UINT uVmid = currentClosed[0];
-				UINT uVend = currentClosed[1];
-
-				if (uVbegin == uVmid || uVend == uVmid || uVbegin == uVend)
-				{
-					continue;
-				}
-
-				comVertice* pVVtxBegin = (comVertice*)pVertMgr->Object(uVbegin);
-				double dVCoord1[3];
-				pVVtxBegin->Xyz(dVCoord1);
-				gp_Pnt ptV1(dVCoord1[0], dVCoord1[1], dVCoord1[2]);
-				comVertice* pVVtxMid = (comVertice*)pVertMgr->Object(uVmid);
-				double dVCoord2[3];
-				pVVtxMid->Xyz(dVCoord2);
-				gp_Pnt ptV2(dVCoord2[0], dVCoord2[1], dVCoord2[2]);
-				comVertice* pVVtxEnd = (comVertice*)pVertMgr->Object(uVend);
-				double dVCoord3[3];
-				pVVtxEnd->Xyz(dVCoord3);
-				gp_Pnt ptV3(dVCoord3[0], dVCoord3[1], dVCoord3[2]);
-
-				gp_Dir dirV1(ptV2.X() - ptV1.X(), ptV2.Y() - ptV1.Y(), ptV2.Z() - ptV1.Z());
-				gp_Dir dirV2(ptV2.X() - ptV3.X(), ptV2.Y() - ptV3.Y(), ptV2.Z() - ptV3.Z());
-
-				double dVAngle = CalculateAngleBetweenDirs(dirV1, dirV2);
-				if (dVAngle < angleTolerance)
-				{
-					vecVtx.push_back(uVmid);
-				}
-			}
-
-			if (vecVtx.size() != 2)
-				continue;
-
-			vector<UINT> vecFirstList, vecSecondList;
-			int nBegin, nEnd, nRealBegin, nRealEnd;
-			for (int j = 0; j < currentClosed.size(); j++)
-			{
-				if (currentClosed[j] == vecVtx[0])
-				{
-					nBegin = j;
-					nRealBegin = j;
-				}
-				else if (currentClosed[j] == vecVtx[1])
-				{
-					nEnd = j;
-					nRealEnd = j;
-				}
-			}
-			if (nBegin > nEnd)
-			{
-				nRealBegin = nEnd;
-				nRealEnd = nBegin;
-			}
-			for (int j = nRealBegin + 1; j < nRealEnd; j++)
-			{
-				vecFirstList.push_back(currentClosed[j]);
-			}
+		//fix closed group which has 4 inner angle >85 & <95 degree and length is >> than width
 			
-			for (int j = nRealEnd + 1; j < currentClosed.size(); j++)
-			{
-				vecSecondList.push_back(currentClosed[j]);
-			}
-			for (int j = 0; j < nRealBegin; j++)
-			{
-				vecSecondList.push_back(currentClosed[j]);
-			}
-			
-			if (vecFirstList.size() == vecSecondList.size())
-				ReplaceVertex(vecusedFaceIx, vecFirstList, vecSecondList);
-			else if (vecFirstList.size() > vecSecondList.size() && vecSecondList.size() != 0)
-			{
-				int nLess = vecFirstList.size() - vecSecondList.size();
-				vector<UINT> vecCurrentList;
-				for (int k = nLess; k < vecFirstList.size(); k++)
-				{
-					vecCurrentList.push_back(vecFirstList[k]);
-				}
-				ReplaceVertex(vecusedFaceIx, vecSecondList, vecCurrentList);
-			}
-			else if (vecFirstList.size() < vecSecondList.size() && vecFirstList.size() != 0)
-			{
-				int nLess = vecSecondList.size() - vecFirstList.size();
-				vector<UINT> vecCurrentList;
-				for (int k = nLess; k < vecSecondList.size(); k++)
-				{
-					vecCurrentList.push_back(vecSecondList[k]);
-				}
-				ReplaceVertex(vecusedFaceIx, vecFirstList, vecCurrentList);
-			}
-			else if (vecFirstList.size() < vecSecondList.size() && vecFirstList.size() == 0) 
-			{
-				for (int i = 0; i < vecSecondList.size() - 1; i++)
-				{
-					vector<UINT> vecSub;
-					vecSub.push_back(vecVtx[0]);
-					vecSub.push_back(vecSecondList[i]);
-					vecSub.push_back(vecSecondList[i + 1]);
-					FixTrigangle(vecSub);
-				}
-				vector<UINT> vecLast;
-				vecLast.push_back(vecVtx[0]);
-				vecLast.push_back(vecVtx[1]);
-				vecLast.push_back(vecSecondList[vecSecondList.size() - 1]);
-				FixTrigangle(vecLast);
-			}
-			else if (vecFirstList.size() > vecSecondList.size() && vecSecondList.size() == 0)
-			{
-				for (int i = 0; i < vecFirstList.size() - 1; i++)
-				{
-					vector<UINT> vecSub;
-					vecSub.push_back(vecVtx[0]);
-					vecSub.push_back(vecFirstList[i]);
-					vecSub.push_back(vecFirstList[i + 1]);
-					FixTrigangle(vecSub);
-				}
-				vector<UINT> vecLast;
-				vecLast.push_back(vecVtx[0]);
-				vecLast.push_back(vecVtx[1]);
-				vecLast.push_back(vecFirstList[vecFirstList.size() - 1]);
-				FixTrigangle(vecLast);
-			}
-		}
-		else if (currentClosed.size() == 3)
-		{
-			//sew as a triangle
-			FixTrigangle(currentClosed);
-		}
 	}
 
 	/*std::vector<std::vector<UINT>> vecTris, vecRealTris;
@@ -2103,6 +1911,72 @@ bool iogBasicTools::ClearFreeEdges(bool bIfSTP, double scale, bool firstloop, UI
 	return true;
 }
 
+bool iogBasicTools::FixTrigangle(UINT u1, UINT u2, UINT u3)
+{
+	if (u1 == u2 || u1 == u3 || u3 == u2)
+		return true;
+	comSurfaceMgr * pSurfMgr = comSurface::Manager();
+	comFaceMgr * pFaceMgr = comFace::Manager();
+	comVerticeMgr * pVertMgr = comVertice::Manager();
+
+	UINT uVerts[3];
+	uVerts[0] = u1;
+	uVerts[1] = u2;
+	uVerts[2] = u3;
+
+	comFace * pFace = new comFace(uVerts);
+	comVertice* vtx1 = (comVertice*)(pVertMgr->Object(uVerts[0]));
+	double dCoord1[3];
+	vtx1->Xyz(dCoord1);
+	gp_Pnt pt1(dCoord1[0], dCoord1[1], dCoord1[2]);
+	comVertice* vtx2 = (comVertice*)(pVertMgr->Object(uVerts[1]));
+	double dCoord2[3];
+	vtx2->Xyz(dCoord2);
+	gp_Pnt pt2(dCoord2[0], dCoord2[1], dCoord2[2]);
+	comVertice* vtx3 = (comVertice*)(pVertMgr->Object(uVerts[2]));
+	double dCoord3[3];
+	vtx3->Xyz(dCoord3);
+	gp_Pnt pt3(dCoord3[0], dCoord3[1], dCoord3[2]);
+
+	if (pt1.X() == pt2.X() &&
+		pt1.Y() == pt2.Y() &&
+		pt1.Z() == pt2.Z())
+	{
+		return false;
+	}
+	gp_Dir calculateNormalAssistDir1(pt1.X() - pt2.X(), pt1.Y() - pt2.Y(),
+		pt1.Z() - pt2.Z());
+
+	if (pt1.X() == pt3.X() &&
+		pt1.Y() == pt3.Y() &&
+		pt1.Z() == pt3.Z())
+	{
+		return false;
+	}
+	gp_Dir calculateNormalAssistDir2(pt1.X() - pt3.X(), pt1.Y() - pt3.Y(),
+		pt1.Z() - pt3.Z());
+
+	bool isParall2AssistDir = false;
+	if (calculateNormalAssistDir1.IsParallel(calculateNormalAssistDir2, parallTolerance))
+	{
+		isParall2AssistDir = true;
+	}
+	if (isParall2AssistDir)
+	{
+		return false;
+	}
+
+	gp_Dir triNormal = calculateNormalAssistDir1.Crossed(calculateNormalAssistDir2);
+	double dNormal[3] = { triNormal.X(), triNormal.Y(), triNormal.Z() };
+	pFace->SetNormal(dNormal);
+
+	pFace->SetNormal(dNormal);
+	pFaceMgr->Create(pFace);
+	pFace->SetSurface(pSurfMgr->MaxIndex());
+
+	return true;
+}
+
 bool iogBasicTools::FixTrigangle(vector<UINT> currentClosed)
 {
 	comSurfaceMgr * pSurfMgr = comSurface::Manager();
@@ -2128,10 +2002,33 @@ bool iogBasicTools::FixTrigangle(vector<UINT> currentClosed)
 	vtx3->Xyz(dCoord3);
 	gp_Pnt pt3(dCoord3[0], dCoord3[1], dCoord3[2]);
 
+	if (pt1.X() == pt2.X() &&
+		pt1.Y() == pt2.Y() &&
+		pt1.Z() == pt2.Z())
+	{
+		return false;
+	}
 	gp_Dir calculateNormalAssistDir1(pt1.X() - pt2.X(), pt1.Y() - pt2.Y(),
 		pt1.Z() - pt2.Z());
+	if (pt1.X() == pt3.X() &&
+		pt1.Y() == pt3.Y() &&
+		pt1.Z() == pt3.Z())
+	{
+		return false;
+	}
 	gp_Dir calculateNormalAssistDir2(pt1.X() - pt3.X(), pt1.Y() - pt3.Y(),
 		pt1.Z() - pt3.Z());
+
+	bool isParall2AssistDir = false;
+	if (calculateNormalAssistDir1.IsParallel(calculateNormalAssistDir2, parallTolerance))
+	{
+		isParall2AssistDir = true;
+	}
+	if (isParall2AssistDir)
+	{
+		return false;
+	}
+
 	gp_Dir triNormal = calculateNormalAssistDir1.Crossed(calculateNormalAssistDir2);
 	double dNormal[3] = { triNormal.X(), triNormal.Y(), triNormal.Z() };
 	pFace->SetNormal(dNormal);
@@ -3057,7 +2954,7 @@ vector<vector<UINT>> iogBasicTools::FindConnectedEdges(int nNum,
 	vector<pair<UINT, UINT>>& edges)
 {
 	// 构建邻接表
-	vector<vector<UINT>> graph(nNum);
+	vector<vector<UINT>> graph(nNum + 1);
 	for (auto edge : edges)
 	{
 		UINT u = edge.first;
@@ -3129,5 +3026,706 @@ void iogBasicTools::dfs(int node, const vector<vector<UINT>>& graph, vector<bool
 	}
 }
 
+//bool iogBasicTools::AutoFillTri(UINT uStart, vector<UINT> vecClosedFreeEdge)
+//{
+//	comVerticeMgr * pVertMgr = comVertice::Manager();
+//	if (vecClosedFreeEdge.size() < 3)
+//		return false;
+//
+//	QHash<int, UINT> hashFreeEdge;
+//	int n = 1, nStart = -1;
+//	for (int i = 0; i < vecClosedFreeEdge.size(); i++)
+//	{
+//		if (vecClosedFreeEdge[i] == uStart)
+//		{
+//			nStart = n;
+//		}
+//		hashFreeEdge.insert(n, vecClosedFreeEdge[i]);
+//		n++;
+//	}
+//
+//	//select start vtx
+//	/*UINT uStart = hashFreeEdge.value(1);
+//	hashFreeEdge.remove(1);*/
+//	hashFreeEdge.remove(nStart);
+//
+//	comVertice* vtxStart = (comVertice*)(pVertMgr->Object(uStart));
+//	double dCoordStart[3];
+//	vtxStart->Xyz(dCoordStart);
+//	gp_Pnt ptStart(dCoordStart[0], dCoordStart[1], dCoordStart[2]);
+//
+//	map<double, int> mapIndex;
+//	QHash<int, UINT>::ConstIterator iter = hashFreeEdge.constBegin();
+//	while (iter != hashFreeEdge.constEnd())
+//	{
+//		UINT uNext = iter.value();
+//		comVertice* vtxNext = (comVertice*)(pVertMgr->Object(uNext));
+//		double dCoordNext[3];
+//		vtxNext->Xyz(dCoordNext);
+//		gp_Pnt ptNext(dCoordNext[0], dCoordNext[1], dCoordNext[2]);
+//		double distance = ptStart.Distance(ptNext);
+//		mapIndex.insert(pair<double, int>(distance, iter.key()));
+//		iter++;
+//	}
+//
+//	if (mapIndex.size() == 0)
+//		return true;
+//
+//	//find second vtx
+//	int nNext = mapIndex.begin()->second;
+//	UINT uNextVtx = hashFreeEdge.value(nNext);
+//	hashFreeEdge.remove(nNext);
+//	comVertice* vtxSecond = (comVertice*)(pVertMgr->Object(uNextVtx));
+//	double dCoordSecond[3];
+//	vtxSecond->Xyz(dCoordSecond);
+//	gp_Pnt ptSecond(dCoordSecond[0], dCoordSecond[1], dCoordSecond[2]);
+//
+//	//find third vtx
+//	QHash<int, UINT>::iterator iter2 = hashFreeEdge.begin();
+//	map<double, int> mapIndex2;
+//	while (iter2 != hashFreeEdge.end())
+//	{
+//		UINT uThird = iter2.value();
+//		comVertice* thirdVtx = (comVertice*)(pVertMgr->Object(uThird));
+//		double dThirdCo[3];
+//		thirdVtx->Xyz(dThirdCo);
+//		gp_Pnt thirdPt(dThirdCo[0], dThirdCo[1], dThirdCo[2]);
+//		double distance = CalculateDistanceVtx2Line(ptStart, ptSecond, thirdPt);
+//		mapIndex2.insert(pair<double, int>(distance, iter2.key()));
+//		iter2++;
+//	}
+//
+//	if (mapIndex2.size() == 0)
+//		return true;
+//
+//	int nThird = mapIndex2.begin()->second;
+//	UINT uThirdVtx = hashFreeEdge.value(nThird);
+//	hashFreeEdge.remove(nThird);
+//	comVertice* vtxThird = (comVertice*)(pVertMgr->Object(uThirdVtx));
+//	double dCoordThird[3];
+//	vtxThird->Xyz(dCoordThird);
+//	gp_Pnt ptThird(dCoordThird[0], dCoordThird[1], dCoordThird[2]);
+//	FixTrigangle(uStart, uNextVtx, uThirdVtx);
+//
+//	LoopFillTri(uNextVtx, uThirdVtx, hashFreeEdge);
+//
+//	return true;
+//}
+
+bool iogBasicTools::FixClosedFreeEdges(vector<UINT> vecusedFaceIx, vector<UINT> currentClosed)
+{
+	comVerticeMgr * pVertMgr = comVertice::Manager();
+	if (currentClosed.size() > 2)
+	{
+		//jude if to sew
+		vector<UINT> vecVtx, vecRectangleVtx;
+		for (int j = 0; j < currentClosed.size() - 2; j++)
+		{
+			UINT ubegin = currentClosed[j];
+			UINT umid = currentClosed[j + 1];
+			UINT uend = currentClosed[j + 2];
+
+			if (ubegin == umid || uend == umid || ubegin == uend)
+			{
+				return true;
+			}
+
+			comVertice* pVtxBegin = (comVertice*)pVertMgr->Object(ubegin);
+			double dCoord1[3];
+			pVtxBegin->Xyz(dCoord1);
+			gp_Pnt pt1(dCoord1[0], dCoord1[1], dCoord1[2]);
+			comVertice* pVtxMid = (comVertice*)pVertMgr->Object(umid);
+			double dCoord2[3];
+			pVtxMid->Xyz(dCoord2);
+			gp_Pnt pt2(dCoord2[0], dCoord2[1], dCoord2[2]);
+			comVertice* pVtxEnd = (comVertice*)pVertMgr->Object(uend);
+			double dCoord3[3];
+			pVtxEnd->Xyz(dCoord3);
+			gp_Pnt pt3(dCoord3[0], dCoord3[1], dCoord3[2]);
+
+			gp_Dir dir1(pt2.X() - pt1.X(), pt2.Y() - pt1.Y(), pt2.Z() - pt1.Z());
+			gp_Dir dir2(pt2.X() - pt3.X(), pt2.Y() - pt3.Y(), pt2.Z() - pt3.Z());
+
+			double dAngle = CalculateAngleBetweenDirs(dir1, dir2);
+			if (dAngle < angleTolerance)
+			{
+				vecVtx.push_back(umid);
+			}
+			else if (abs(dAngle - 90) < angleRecTolerance)
+			{
+				vecRectangleVtx.push_back(umid);
+			}
+		}
+
+		//First vtx
+		{
+			UINT uVbeginF = currentClosed[currentClosed.size() - 2];
+			UINT uVmidF = currentClosed[currentClosed.size() - 1];
+			UINT uVendF = currentClosed[0];
+
+			if (uVbeginF == uVmidF || uVendF == uVmidF || uVbeginF == uVendF)
+			{
+				return true;
+			}
+
+			comVertice* pVVtxBeginF = (comVertice*)pVertMgr->Object(uVbeginF);
+			double dVCoord1F[3];
+			pVVtxBeginF->Xyz(dVCoord1F);
+			gp_Pnt ptV1F(dVCoord1F[0], dVCoord1F[1], dVCoord1F[2]);
+			comVertice* pVVtxMidF = (comVertice*)pVertMgr->Object(uVmidF);
+			double dVCoord2F[3];
+			pVVtxMidF->Xyz(dVCoord2F);
+			gp_Pnt ptV2F(dVCoord2F[0], dVCoord2F[1], dVCoord2F[2]);
+			comVertice* pVVtxEndF = (comVertice*)pVertMgr->Object(uVendF);
+			double dVCoord3F[3];
+			pVVtxEndF->Xyz(dVCoord3F);
+			gp_Pnt ptV3F(dVCoord3F[0], dVCoord3F[1], dVCoord3F[2]);
+
+			gp_Dir dirV1F(ptV2F.X() - ptV1F.X(), ptV2F.Y() - ptV1F.Y(), ptV2F.Z() - ptV1F.Z());
+			gp_Dir dirV2F(ptV2F.X() - ptV3F.X(), ptV2F.Y() - ptV3F.Y(), ptV2F.Z() - ptV3F.Z());
+
+			double dVAngleF = CalculateAngleBetweenDirs(dirV1F, dirV2F);
+			if (dVAngleF < angleTolerance)
+			{
+				vecVtx.push_back(uVmidF);
+			}
+			else if (abs(dVAngleF - 90) < angleRecTolerance)
+			{
+				vecRectangleVtx.push_back(uVmidF);
+			}
+		}
+
+		//second
+		{
+			UINT uVbegin = currentClosed[currentClosed.size() - 1];
+			UINT uVmid = currentClosed[0];
+			UINT uVend = currentClosed[1];
+
+			if (uVbegin == uVmid || uVend == uVmid || uVbegin == uVend)
+			{
+				return true;
+			}
+
+			comVertice* pVVtxBegin = (comVertice*)pVertMgr->Object(uVbegin);
+			double dVCoord1[3];
+			pVVtxBegin->Xyz(dVCoord1);
+			gp_Pnt ptV1(dVCoord1[0], dVCoord1[1], dVCoord1[2]);
+			comVertice* pVVtxMid = (comVertice*)pVertMgr->Object(uVmid);
+			double dVCoord2[3];
+			pVVtxMid->Xyz(dVCoord2);
+			gp_Pnt ptV2(dVCoord2[0], dVCoord2[1], dVCoord2[2]);
+			comVertice* pVVtxEnd = (comVertice*)pVertMgr->Object(uVend);
+			double dVCoord3[3];
+			pVVtxEnd->Xyz(dVCoord3);
+			gp_Pnt ptV3(dVCoord3[0], dVCoord3[1], dVCoord3[2]);
+
+			gp_Dir dirV1(ptV2.X() - ptV1.X(), ptV2.Y() - ptV1.Y(), ptV2.Z() - ptV1.Z());
+			gp_Dir dirV2(ptV2.X() - ptV3.X(), ptV2.Y() - ptV3.Y(), ptV2.Z() - ptV3.Z());
+
+			double dVAngle = CalculateAngleBetweenDirs(dirV1, dirV2);
+			if (dVAngle < angleTolerance)
+			{
+				vecVtx.push_back(uVmid);
+			}
+			else if (abs(dVAngle - 90) < angleRecTolerance)
+			{
+				vecRectangleVtx.push_back(uVmid);
+			}
+		}
+
+		/*if (vecVtx.size() == 2)
+		{
+			vector<UINT> vecFirstList, vecSecondList;
+			int nBegin, nEnd, nRealBegin, nRealEnd;
+			for (int j = 0; j < currentClosed.size(); j++)
+			{
+				if (currentClosed[j] == vecVtx[0])
+				{
+					nBegin = j;
+					nRealBegin = j;
+				}
+				else if (currentClosed[j] == vecVtx[1])
+				{
+					nEnd = j;
+					nRealEnd = j;
+				}
+			}
+			if (nBegin > nEnd)
+			{
+				nRealBegin = nEnd;
+				nRealEnd = nBegin;
+			}
+			for (int j = nRealBegin + 1; j < nRealEnd; j++)
+			{
+				vecFirstList.push_back(currentClosed[j]);
+			}
+
+			for (int j = nRealEnd + 1; j < currentClosed.size(); j++)
+			{
+				vecSecondList.push_back(currentClosed[j]);
+			}
+			for (int j = 0; j < nRealBegin; j++)
+			{
+				vecSecondList.push_back(currentClosed[j]);
+			}
+
+			if (vecFirstList.size() == vecSecondList.size())
+				ReplaceVertex(vecusedFaceIx, vecFirstList, vecSecondList);
+			else if (vecFirstList.size() > vecSecondList.size() && vecSecondList.size() != 0)
+			{
+				int nLess = vecFirstList.size() - vecSecondList.size();
+				vector<UINT> vecCurrentList;
+				for (int k = nLess; k < vecFirstList.size(); k++)
+				{
+					vecCurrentList.push_back(vecFirstList[k]);
+				}
+				ReplaceVertex(vecusedFaceIx, vecSecondList, vecCurrentList);
+			}
+			else if (vecFirstList.size() < vecSecondList.size() && vecFirstList.size() != 0)
+			{
+				int nLess = vecSecondList.size() - vecFirstList.size();
+				vector<UINT> vecCurrentList;
+				for (int k = nLess; k < vecSecondList.size(); k++)
+				{
+					vecCurrentList.push_back(vecSecondList[k]);
+				}
+				ReplaceVertex(vecusedFaceIx, vecFirstList, vecCurrentList);
+			}
+			else if (vecFirstList.size() < vecSecondList.size() && vecFirstList.size() == 0)
+			{
+				for (int i = 0; i < vecSecondList.size() - 1; i++)
+				{
+					vector<UINT> vecSub;
+					vecSub.push_back(vecVtx[0]);
+					vecSub.push_back(vecSecondList[i]);
+					vecSub.push_back(vecSecondList[i + 1]);
+					FixTrigangle(vecSub);
+				}
+				vector<UINT> vecLast;
+				vecLast.push_back(vecVtx[0]);
+				vecLast.push_back(vecVtx[1]);
+				vecLast.push_back(vecSecondList[vecSecondList.size() - 1]);
+				FixTrigangle(vecLast);
+			}
+			else if (vecFirstList.size() > vecSecondList.size() && vecSecondList.size() == 0)
+			{
+				for (int i = 0; i < vecFirstList.size() - 1; i++)
+				{
+					vector<UINT> vecSub;
+					vecSub.push_back(vecVtx[0]);
+					vecSub.push_back(vecFirstList[i]);
+					vecSub.push_back(vecFirstList[i + 1]);
+					FixTrigangle(vecSub);
+				}
+				vector<UINT> vecLast;
+				vecLast.push_back(vecVtx[0]);
+				vecLast.push_back(vecVtx[1]);
+				vecLast.push_back(vecFirstList[vecFirstList.size() - 1]);
+				FixTrigangle(vecLast);
+			}
+		}*/
+		if (vecVtx.size() > 0 ) //&& vecVtx.size() != 2
+		{
+			UINT uStart = vecVtx[0];
+			AutoFillTri(vecusedFaceIx, uStart, currentClosed);
+		}
+		if (vecVtx.size() == 0 && vecRectangleVtx.size() == 4) 
+		{
+			UINT uStart = vecRectangleVtx[0];
+			UINT uSecond = vecRectangleVtx[1];
+			UINT uThird = vecRectangleVtx[2];
+			UINT uForth = vecRectangleVtx[3];
+
+			vector<vector<UINT>> vecVecSplited;
+			SplitVecIntoVecs(currentClosed, vecRectangleVtx, vecVecSplited);
+			vector<double> lengths;
+			for (int i = 0; i < vecVecSplited.size(); i++)
+			{
+				double length = 0;
+				vector<UINT> vecSub = vecVecSplited[i];
+				for (int j = 0; j < vecSub.size() - 1; j++)
+				{
+					UINT uBegin = vecSub[j];
+					UINT uEnd = vecSub[j + 1];
+
+					comVertice* vtx1 = (comVertice*)(pVertMgr->Object(uBegin));
+					double dCoord1[3];
+					vtx1->Xyz(dCoord1);
+					gp_Pnt pt1(dCoord1[0], dCoord1[1], dCoord1[2]);
+
+					comVertice* vtx2 = (comVertice*)(pVertMgr->Object(uEnd));
+					double dCoord2[3];
+					vtx2->Xyz(dCoord2);
+					gp_Pnt pt2(dCoord2[0], dCoord2[1], dCoord2[2]);
+
+					double distance = pt1.Distance(pt2);
+					length += distance;
+				}
+				lengths.push_back(length);
+			}
+			sort(lengths.begin(), lengths.end());
+			if (lengths.size() == 4)
+			{
+				double rate = lengths[3] / lengths[0];
+				if (rate > RectRate)
+				{
+					AutoFillTri(vecusedFaceIx, uStart, currentClosed);
+				}
+			}
+			
+		}
+	}
+	//else if (currentClosed.size() == 3)
+	//{
+	//	//sew as a triangle
+	//	FixTrigangle(currentClosed);
+	//}
+
+	return true;
+}
+
+bool iogBasicTools::SplitVecIntoVecs(vector<UINT> vecToSplit, vector<UINT> vecSplitVtxs, vector<vector<UINT>>& vecVecSplited)
+{
+	if (vecToSplit.size() == 0 || vecSplitVtxs.size() == 0)
+		return false;
+
+	for (int i = 0; i < vecSplitVtxs.size() - 1; i++)
+	{
+		int nPosStart = -1, nPosEnd = -1;
+		for (int j = 0; j < vecToSplit.size(); j++)
+		{
+			if (vecToSplit[j] == vecSplitVtxs[i])
+				nPosStart = j;
+			if (vecToSplit[j] == vecSplitVtxs[i + 1])
+				nPosEnd = j;
+		}
+		if (nPosEnd > nPosStart)
+		{
+			vector<UINT> group(vecToSplit.begin() + nPosStart, vecToSplit.begin() + nPosEnd + 1);
+			vecVecSplited.push_back(group);
+		}
+		else
+		{
+			vector<UINT> group1(vecToSplit.begin() + nPosStart, vecToSplit.begin() + vecToSplit.size());
+			vector<UINT> group2(vecToSplit.begin(), vecToSplit.begin() + nPosEnd + 1);
+			group1.insert(group1.end(), group2.begin(), group2.end());
+			vecVecSplited.push_back(group1);
+		}
+	}
+	{
+		int nPosStart = -1, nPosEnd = -1;
+		for (int j = 0; j < vecToSplit.size(); j++)
+		{
+			if (vecToSplit[j] == vecSplitVtxs[vecSplitVtxs.size() - 1])
+				nPosStart = j;
+			if (vecToSplit[j] == vecSplitVtxs[0])
+				nPosEnd = j;
+		}
+		if (nPosEnd > nPosStart)
+		{
+			vector<UINT> group(vecToSplit.begin() + nPosStart, vecToSplit.begin() + nPosEnd + 1);
+			vecVecSplited.push_back(group);
+		}
+		else
+		{
+			vector<UINT> group1(vecToSplit.begin() + nPosStart, vecToSplit.begin() + vecToSplit.size());
+			vector<UINT> group2(vecToSplit.begin(), vecToSplit.begin() + nPosEnd + 1);
+			group1.insert(group1.end(), group2.begin(), group2.end());
+			vecVecSplited.push_back(group1);
+		}
+	}
+	return true;
+}
+
+bool iogBasicTools::AutoFillTri(vector<UINT> vecFaceIx, UINT uStart, vector<UINT> vecClosedFreeEdge)
+{
+	comVerticeMgr * pVertMgr = comVertice::Manager();
+	if (vecClosedFreeEdge.size() < 3)
+		return false;
+
+	QHash<int, UINT> hashFreeEdge, hashFreeEdgeUsed;
+	int n = 1, nStart = -1;
+	for (int i = 0; i < vecClosedFreeEdge.size(); i++)
+	{
+		if (vecClosedFreeEdge[i] == uStart)
+		{
+			nStart = n;
+		}
+		hashFreeEdge.insert(n, vecClosedFreeEdge[i]);
+		hashFreeEdgeUsed.insert(n, vecClosedFreeEdge[i]);
+		n++;
+	}
+
+	//select start vtx
+	int nHashSize = hashFreeEdge.size();
+	hashFreeEdgeUsed.remove(nStart);
+
+	int nNext = nStart + 1, nFormer = nStart - 1;
+	if (nNext > nHashSize)
+	{
+		nNext = nNext - nHashSize;
+	}
+	if (nFormer < 1)
+	{
+		nFormer = nHashSize - abs(nFormer);
+	}
+	FixTrigangle(uStart, hashFreeEdge.value(nNext), hashFreeEdge.value(nFormer));
+	hashFreeEdgeUsed.remove(nNext);
+	hashFreeEdgeUsed.remove(nFormer);
+
+	bool bLeft = false;
+	int nLoopNext = nNext, nLoopFormer = nFormer;
+	while (hashFreeEdgeUsed.size() > 0)
+	{
+		int nNew = 0;
+		if (bLeft)
+		{
+			nNew = nLoopNext + 1;
+		}
+		else
+		{
+			nNew = nLoopFormer - 1;
+		}
+		
+		if (nNew > nHashSize)
+		{
+			nNew = nNew - nHashSize;
+		}
+		if (nNew < 1)
+		{
+			nNew = nHashSize - abs(nNew);
+		}
+
+		FixTrigangle(hashFreeEdge.value(nNew), hashFreeEdge.value(nLoopNext), hashFreeEdge.value(nLoopFormer));
+
+		/*hashFreeEdgeUsed.remove(nLoopNext);
+		hashFreeEdgeUsed.remove(nLoopFormer);*/
+		hashFreeEdgeUsed.remove(nNew);
+
+		if (bLeft)
+		{
+			nLoopNext = nNew;
+			bLeft = false;
+		}
+		else
+		{
+			nLoopFormer = nNew;
+			bLeft = true;
+		}
+	}
+
+	/*if (hashFreeEdge.size() == 2)
+	{
+		QList<UINT> ulist = hashFreeEdge.values();
+		FixTrigangle(ulist.value(0), ulist.value(1), uLast);
+	}*/
+
+	return true;
+}
+
+//bool iogBasicTools::AutoFillTri(vector<UINT> vecFaceIx, UINT uStart, vector<UINT> vecClosedFreeEdge)
+//{
+//	comVerticeMgr * pVertMgr = comVertice::Manager();
+//	if (vecClosedFreeEdge.size() < 3)
+//		return false;
+//
+//	QHash<int, UINT> hashFreeEdge;
+//	int n = 1, nStart = -1;
+//	for (int i = 0; i < vecClosedFreeEdge.size(); i++)
+//	{
+//		if (vecClosedFreeEdge[i] == uStart)
+//		{
+//			nStart = n;
+//		}
+//		hashFreeEdge.insert(n, vecClosedFreeEdge[i]);
+//		n++;
+//	}
+//
+//	//select start vtx
+//	/*UINT uStart = hashFreeEdge.value(1);
+//	hashFreeEdge.remove(1);*/
+//	int nHashSize = hashFreeEdge.size();
+//	hashFreeEdge.remove(nStart);
+//
+//	int nBegin = nStart, nEnd = nStart;
+//	int nNext, nFormer;
+//	UINT uLast = 0;
+//	while (hashFreeEdge.size() > 2)
+//	{
+//		int nNext = nBegin + 1, nFormer = nEnd - 1;
+//		if (nNext > nHashSize)
+//		{
+//			nNext = nNext - nHashSize;
+//		}
+//		if (nFormer < 1)
+//		{
+//			nFormer = nHashSize - abs(nFormer);
+//		}
+//		
+//		ReplaceVertex(vecFaceIx, hashFreeEdge.value(nNext), hashFreeEdge.value(nFormer));
+//		uLast = hashFreeEdge.value(nFormer);
+//
+//		hashFreeEdge.remove(nNext);
+//		hashFreeEdge.remove(nFormer);
+//
+//		nBegin = nNext;
+//		nEnd = nFormer;
+//	}
+//
+//	if (hashFreeEdge.size() == 2)
+//	{
+//		QList<UINT> ulist = hashFreeEdge.values();
+//		FixTrigangle(ulist.value(0), ulist.value(1), uLast);
+//	}
+//
+//	return true;
+//}
+
+bool iogBasicTools::LoopFillTri(UINT& uStart, UINT& uSecond, QHash<int, UINT>& hashFreeEdge)
+{
+	if (hashFreeEdge.size() == 0)
+		return true;
+
+	comVerticeMgr * pVertMgr = comVertice::Manager();
+
+	comVertice* vtxStart = (comVertice*)(pVertMgr->Object(uStart));
+	double dCoordStart[3];
+	vtxStart->Xyz(dCoordStart);
+	gp_Pnt ptStart(dCoordStart[0], dCoordStart[1], dCoordStart[2]);
+
+	comVertice* vtxSecond = (comVertice*)(pVertMgr->Object(uSecond));
+	double dCoordSecond[3];
+	vtxSecond->Xyz(dCoordSecond);
+	gp_Pnt ptSecond(dCoordSecond[0], dCoordSecond[1], dCoordSecond[2]);
+
+	QHash<int, UINT>::iterator iter2 = hashFreeEdge.begin();
+	map<double, int> mapIndex2;
+	while (iter2 != hashFreeEdge.end())
+	{
+		UINT uThird = iter2.value();
+		comVertice* thirdVtx = (comVertice*)(pVertMgr->Object(uThird));
+		double dThirdCo[3];
+		thirdVtx->Xyz(dThirdCo);
+		gp_Pnt thirdPt(dThirdCo[0], dThirdCo[1], dThirdCo[2]);
+		double distance = CalculateDistanceVtx2Line(ptStart, ptSecond, thirdPt);
+		mapIndex2.insert(pair<double, int>(distance, iter2.key()));
+		iter2++;
+	}
+
+	if(mapIndex2.size()==0)
+		return true;
+
+	int nThird = mapIndex2.begin()->second;
+	UINT uThirdVtx = hashFreeEdge.value(nThird);
+	hashFreeEdge.remove(nThird);
+	comVertice* vtxThird = (comVertice*)(pVertMgr->Object(uThirdVtx));
+	double dCoordThird[3];
+	vtxThird->Xyz(dCoordThird);
+	gp_Pnt ptThird(dCoordThird[0], dCoordThird[1], dCoordThird[2]);
+	FixTrigangle(uStart, uSecond, uThirdVtx);
+
+	LoopFillTri(uSecond, uThirdVtx, hashFreeEdge);
+
+	return true;
+}
+
+double iogBasicTools::CalculateDistanceVtx2Line(gp_Pnt ptStart, gp_Pnt nextPt, gp_Pnt thirdPt)
+{
+	gp_Vec vec1(ptStart.X() - thirdPt.X(), ptStart.Y() - thirdPt.Y(), ptStart.Z() - thirdPt.Z());
+	gp_Vec vec2(ptStart.X() - nextPt.X(), ptStart.Y() - nextPt.Y(), ptStart.Z() - nextPt.Z());
+	gp_Vec cross = vec1.Crossed(vec2);
+	return sqrt(pow(cross.X(), 2) + pow(cross.Y(), 2) + pow(cross.Z(), 2)) /
+		sqrt(pow(vec2.X(), 2) + pow(vec2.Y(), 2) + pow(vec2.Z(), 2));
+}
+
+bool iogBasicTools::ReplaceVertex(vector<UINT> vecFaceIx, UINT vtxIx1, UINT vtxIx2)
+{
+	comFaceMgr * pFaceMgr = comFace::Manager();
+	comVerticeMgr * pVertMgr = comVertice::Manager();
+	algTopology topology;
+	topology.SetFace(vecFaceIx);
+	
+	vector<UINT> faceVec;
+	topology.GetFacesByVertex(vtxIx1, faceVec);
+
+	for (int j = 0; j < faceVec.size(); j++)
+	{
+		UINT uVerts[3];
+		comFace* currentFace = (comFace*)(pFaceMgr->Object(faceVec[j]));
+		currentFace->GetVertices(uVerts);
+
+		if (uVerts[0] == vtxIx1)
+		{
+				uVerts[0] = vtxIx2;
+		}
+		else if (uVerts[1] == vtxIx1)
+		{
+			uVerts[1] = vtxIx2;
+		}
+		else if (uVerts[2] == vtxIx1)
+		{
+			uVerts[2] = vtxIx2;
+		}
+		else
+		{
+			continue;
+		}
+
+		if (uVerts[0] == uVerts[1] || uVerts[0] == uVerts[2] || uVerts[1] == uVerts[2])
+		{
+			continue;
+		}
+
+		currentFace->SetVertices(uVerts);
+		currentFace->SetModified(Major_Modify);
+
+		comVertice* vtx1 = (comVertice*)(pVertMgr->Object(uVerts[0]));
+		double dCoord1[3];
+		vtx1->Xyz(dCoord1);
+		gp_Pnt pt1(dCoord1[0], dCoord1[1], dCoord1[2]);
+		comVertice* vtx2 = (comVertice*)(pVertMgr->Object(uVerts[1]));
+		double dCoord2[3];
+		vtx2->Xyz(dCoord2);
+		gp_Pnt pt2(dCoord2[0], dCoord2[1], dCoord2[2]);
+		comVertice* vtx3 = (comVertice*)(pVertMgr->Object(uVerts[2]));
+		double dCoord3[3];
+		vtx3->Xyz(dCoord3);
+		gp_Pnt pt3(dCoord3[0], dCoord3[1], dCoord3[2]);
+
+		if (pt1.X() == pt2.X() &&
+			pt1.Y() == pt2.Y() &&
+			pt1.Z() == pt2.Z())
+		{
+			return false;
+		}
+		gp_Dir calculateNormalAssistDir1(pt1.X() - pt2.X(), pt1.Y() - pt2.Y(),
+			pt1.Z() - pt2.Z());
+
+		if (pt1.X() == pt3.X() &&
+			pt1.Y() == pt3.Y() &&
+			pt1.Z() == pt3.Z())
+		{
+			return false;
+		}
+		gp_Dir calculateNormalAssistDir2(pt1.X() - pt3.X(), pt1.Y() - pt3.Y(),
+			pt1.Z() - pt3.Z());
+
+		bool isParall2AssistDir = false;
+		if (calculateNormalAssistDir1.IsParallel(calculateNormalAssistDir2, parallTolerance))
+		{
+			isParall2AssistDir = true;
+		}
+		if (isParall2AssistDir)
+		{
+			return false;
+		}
+
+		gp_Dir triNormal = calculateNormalAssistDir1.Crossed(calculateNormalAssistDir2);
+		double dNormal[3] = { triNormal.X(), triNormal.Y(), triNormal.Z() };
+		currentFace->SetNormal(dNormal);
+
+	}
+	return true;
+}
 //////////////////////////////////////////////////////////////////
 //

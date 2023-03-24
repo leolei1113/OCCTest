@@ -38,7 +38,8 @@ public:
 		IMeshTools_Parameters meshParas, bool firstloop, UINT uMaxSurfIx, std::vector<string> vecUniqName,
 		std::vector<std::pair<TopoDS_Shape, std::string>> vecnamemap, std::vector<std::pair<TopoDS_Shape, std::string>> vecFaceNameMap,
 		UINT nVert, int nCurrentAssIndex, int nShadingType,
-		 TopoDS_Shape mainshape, QHash<QString, UINT>& hashVertIdx);
+		 TopoDS_Shape mainshape, QHash<QString, UINT>& hashVertIdx
+		, double dLinearDelVal, double dAngleDelVal);
 	static bool Heal(TopoDS_Shape &entryShape, double dtolerance, double dholeRad, double dfilletRad);
 	static bool AutoFillInnerGaps(TopoDS_Shape &entryShape, double tolerance);
 	static bool LoopFindAdjacentEdge(TopTools_ListOfShape& usedshapes, TopoDS_Shape& startedge,
@@ -92,7 +93,9 @@ public:
 
 	static double CalculateAngleBetweenDirs(gp_Dir dir1, gp_Dir dir2);
 	static bool ReplaceVertex(vector<UINT> vecFaceIx, vector<UINT> vecFirstList, vector<UINT> vecSecondList);
+	static bool ReplaceVertex(vector<UINT> vecFaceIx, UINT vtxIx1, UINT vtxIx2);
 	static bool FixTrigangle(vector<UINT> currentClosed);
+	static bool FixTrigangle(UINT u1, UINT u2, UINT u3);
 	static bool OffsetSelectedSurface(double dDistance, vector<UINT> vecSelectedSurface);
 
 	static void GetVertexByFaces(const vector<UINT> & vecFaceIx, std::vector<UINT>  & vecVertex);
@@ -103,5 +106,12 @@ public:
 
 	static bool TurnClosedEdgePairToOrderedIndex(vector<pair<UINT, UINT>> vecEdgeIndx,
 		vector<UINT>& subgroup);
+
+	static double CalculateDistanceVtx2Line(gp_Pnt ptStart, gp_Pnt nextPt, gp_Pnt thirdPt);
+	static bool AutoFillTri(vector<UINT> vecFaceIx, UINT uStart, vector<UINT> vecClosedFreeEdge);
+	static bool FixClosedFreeEdges(vector<UINT> vecusedFaceIx, vector<UINT> currentClosed);
+	static bool LoopFillTri(UINT& uStart, UINT& uSecond, QHash<int, UINT>& hashFreeEdge);
+
+	static bool SplitVecIntoVecs(vector<UINT> vecToSplit, vector<UINT> vecSplitVtxs, vector<vector<UINT>>& vecVecSplited);
 };
 

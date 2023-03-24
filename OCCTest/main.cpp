@@ -1,5 +1,5 @@
 #include "test.h"
-#include <QtWidgets/QApplication>
+#include <QApplication>
 #include "MainWindow.h"
 
 
