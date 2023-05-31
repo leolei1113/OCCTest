@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "OCCTest\test.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OulaHuiLu", "OulaHuiLu\OulaHuiLu.vcxproj", "{DB219948-CE29-474F-B277-01222218D50F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Project1", "Project1\Project1.vcxproj", "{BFAF3EC2-1131-41D9-98C8-66EACA5D5F8F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{DB219948-CE29-474F-B277-01222218D50F}.Release|x64.Build.0 = Release|x64
 		{DB219948-CE29-474F-B277-01222218D50F}.Release|x86.ActiveCfg = Release|Win32
 		{DB219948-CE29-474F-B277-01222218D50F}.Release|x86.Build.0 = Release|Win32
+		{BFAF3EC2-1131-41D9-98C8-66EACA5D5F8F}.Debug|x64.ActiveCfg = Debug|x64
+		{BFAF3EC2-1131-41D9-98C8-66EACA5D5F8F}.Debug|x64.Build.0 = Debug|x64
+		{BFAF3EC2-1131-41D9-98C8-66EACA5D5F8F}.Debug|x86.ActiveCfg = Debug|Win32
+		{BFAF3EC2-1131-41D9-98C8-66EACA5D5F8F}.Debug|x86.Build.0 = Debug|Win32
+		{BFAF3EC2-1131-41D9-98C8-66EACA5D5F8F}.Release|x64.ActiveCfg = Release|x64
+		{BFAF3EC2-1131-41D9-98C8-66EACA5D5F8F}.Release|x64.Build.0 = Release|x64
+		{BFAF3EC2-1131-41D9-98C8-66EACA5D5F8F}.Release|x86.ActiveCfg = Release|Win32
+		{BFAF3EC2-1131-41D9-98C8-66EACA5D5F8F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
