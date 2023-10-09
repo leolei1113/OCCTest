@@ -1151,3 +1151,121 @@ TopoDS_Shape OCCBasicTools::ReConstructShape(TopoDS_Shape entryShape,
 	}
 	return result;
 }
+
+bool OCCBasicTools::JudgeTwoTrianglesIntersect(std::vector<gp_Pnt> tri1, std::vector<gp_Pnt> tri2)
+{
+	//O - A = -tD + u(B - A) + v(C - A)
+	//O is vertex of another triangle face
+	//ABC are 3 vtxs of this triangle
+	//D is direction of one edge of another face
+	//t,u,v are doubles, t>=0, 0<=u, v<=1,0<=u+v<=1;
+	gp_Pnt f1 = tri1[0];
+	gp_Pnt f2 = tri1[1];
+	gp_Pnt f3 = tri1[2];
+
+	gp_Pnt s1 = tri2[0];
+	gp_Pnt s2 = tri2[1];
+	gp_Pnt s3 = tri2[2];
+
+	gp_Vec vecBA(f2.X() - f1.X(), f2.Y() - f1.Y(), f2.Z() - f1.Z());
+	gp_Vec vecCA(f3.X() - f1.X(), f3.Y() - f1.Y(), f3.Z() - f1.Z());
+
+	//t = (O-A)x(B-A).(C-A)/(-D)x(B-A).(C-A)
+	//u = (-D)x(O-A).(C-A)/(-D)x(B-A).(C-A)
+	//v = (-D)x(B-A).(O-A)/(-D)x(B-A).(C-A)
+
+	//try edge AB
+	{
+		gp_Vec vecOA(s1.X() - f1.X(), s1.Y() - f1.Y(), s1.Z() - f1.Z());
+		gp_Dir dirD(s2.X() - s1.X(), s2.Y() - s1.Y(), s2.Z() - s1.Z());
+		gp_Vec vecD(dirD);
+
+		double tmax;
+		if (dirD.X() != 0)
+		{
+			tmax = (s2.X() - s1.X()) / dirD.X();
+		}
+		else if (dirD.Y() != 0)
+		{
+			tmax = (s2.Y() - s1.Y()) / dirD.Y();
+		}
+		else if (dirD.Z() != 0)
+		{
+			tmax = (s2.Z() - s1.Z()) / dirD.Z();
+		}
+		double t = (vecOA.Crossed(vecBA).Dot(vecCA)) / (vecD.Multiplied(-1).Crossed(vecBA).Dot(vecCA));
+		double u = (vecD.Multiplied(-1).Crossed(vecOA).Dot(vecCA)) / (vecD.Multiplied(-1).Crossed(vecBA).Dot(vecCA));
+		double v = (vecD.Multiplied(-1).Crossed(vecBA).Dot(vecOA)) / (vecD.Multiplied(-1).Crossed(vecBA).Dot(vecCA));
+
+		double sum = u + v;
+
+		if ((t > 1e-5) && (t < tmax - 1e-5) && ((u > 1e-5) && (u < 1 - 1e-5)) &&
+			((v > 1e-5) && (v < 1 - 1e-5)) && ((sum > 1e-5) && (sum < 1 - 1e-5)))
+		{
+			return true;
+		}
+	}
+	//try edge AC
+	{
+		gp_Vec vecOA(s1.X() - f1.X(), s1.Y() - f1.Y(), s1.Z() - f1.Z());
+		gp_Dir dirD(s3.X() - s1.X(), s3.Y() - s1.Y(), s3.Z() - s1.Z());
+		gp_Vec vecD(dirD);
+
+		double tmax;
+		if (dirD.X() != 0)
+		{
+			tmax = (s3.X() - s1.X()) / dirD.X();
+		}
+		else if (dirD.Y() != 0)
+		{
+			tmax = (s3.Y() - s1.Y()) / dirD.Y();
+		}
+		else if (dirD.Z() != 0)
+		{
+			tmax = (s3.Z() - s1.Z()) / dirD.Z();
+		}
+		double t = (vecOA.Crossed(vecBA).Dot(vecCA)) / (vecD.Multiplied(-1).Crossed(vecBA).Dot(vecCA));
+		double u = (vecD.Multiplied(-1).Crossed(vecOA).Dot(vecCA)) / (vecD.Multiplied(-1).Crossed(vecBA).Dot(vecCA));
+		double v = (vecD.Multiplied(-1).Crossed(vecBA).Dot(vecOA)) / (vecD.Multiplied(-1).Crossed(vecBA).Dot(vecCA));
+
+		double sum = u + v;
+
+		if ((t > 1e-5) && (t < tmax - 1e-5) && ((u > 1e-5) && (u < 1 - 1e-5)) &&
+			((v > 1e-5) && (v < 1 - 1e-5)) && ((sum > 1e-5) && (sum < 1 - 1e-5)))
+		{
+			return true;
+		}
+	}
+	//try edge BC
+	{
+		gp_Vec vecOA(s2.X() - f1.X(), s2.Y() - f1.Y(), s2.Z() - f1.Z());
+		gp_Dir dirD(s3.X() - s2.X(), s3.Y() - s2.Y(), s3.Z() - s2.Z());
+		gp_Vec vecD(dirD);
+
+		double tmax;
+		if (dirD.X() != 0)
+		{
+			tmax = (s3.X() - s2.X()) / dirD.X();
+		}
+		else if (dirD.Y() != 0)
+		{
+			tmax = (s3.Y() - s2.Y()) / dirD.Y();
+		}
+		else if (dirD.Z() != 0)
+		{
+			tmax = (s3.Z() - s2.Z()) / dirD.Z();
+		}
+		double t = (vecOA.Crossed(vecBA).Dot(vecCA)) / (vecD.Multiplied(-1).Crossed(vecBA).Dot(vecCA));
+		double u = (vecD.Multiplied(-1).Crossed(vecOA).Dot(vecCA)) / (vecD.Multiplied(-1).Crossed(vecBA).Dot(vecCA));
+		double v = (vecD.Multiplied(-1).Crossed(vecBA).Dot(vecOA)) / (vecD.Multiplied(-1).Crossed(vecBA).Dot(vecCA));
+
+		double sum = u + v;
+
+		if ((t > 1e-5) && (t < tmax - 1e-5) && ((u > 1e-5) && (u < 1 - 1e-5)) &&
+			((v > 1e-5) && (v < 1 - 1e-5)) && ((sum > 1e-5) && (sum < 1 - 1e-5)))
+		{
+			return true;
+		}
+	}
+	return false;
+}

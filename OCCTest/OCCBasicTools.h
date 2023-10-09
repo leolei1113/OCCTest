@@ -58,7 +58,8 @@ public:
 		std::vector<std::pair<TopoDS_Shape, std::string>> vecFaceNameMap,
 		QHash<QString, std::string> hashFaces,
 		std::vector<std::pair<TopoDS_Shape, std::string>>& vecReCSNameMap,
-		std::vector<std::pair<TopoDS_Shape, std::string>>& vecReFaceNameMap)
+		std::vector<std::pair<TopoDS_Shape, std::string>>& vecReFaceNameMap);
+	static bool JudgeTwoTrianglesIntersect(std::vector<gp_Pnt> tri1, std::vector<gp_Pnt> tri2);
 };
 
 
