@@ -1,0 +1,477 @@
+<FlowDocument xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" FontFamily="Segoe UI" FontSize="12">
+  <FlowDocument.Tag><![CDATA[{
+  "timestamp": "2023-11-01 15:29:47",
+  "files": {
+    "D:\\OCCTest-master\\OCCTest\\Mesh-Simplify-master\\meshSimple\\meshSimple\\meshSimple.vcxproj": {
+      "before": "7VpJb9s4FO55gPkPhpAiziGW7SxdIqto5TQIxllap80lQEFLdMypJAoUlSYznX8+h3kUF0m2lMbI1GmD9tBa5Hvk48e3s/+2njxxXl1HYesKs5TQeGD1Ol2rhWOfBiS+HFgZn24+t165v//mnDL6J/Z5a4inKAv5GWKXmKcD601GwsBqwSoxfM04T17adurPcITSTkR8RlM65R2fRnaAr3BIE8zsKJ0INrvf7W5ZsHqr5RxyHB0wmiWtEZrgcGCpDT0aT8llxhAHAVNJDOR1s63D2A+zAA+sIZ5kl1/PSbzV1xzAU1nKzWkcuzooRBF/nNMQ8SllkZsv4tjmW1LAgMSjjv0bwr3HIUYp/oZ4iuohBJToXe9u3xc7WOK7IHebaHfGbUnhHNtoqFRYUABQZX5TUdqDkE5QWKjpR0/pyUdpYW5vt9N17IVhpVV/4JsvlAVS6QSnY+shRaGWO8hI4P79YoKCFzsYbb7wd3qb27vP+pvPtxDaDLo7CPV73Z7vo3+MquY8apn3lPJjFOE0QT524d/ZmERJiB27OqPIwQgC+iWVRq9NwRypK450K4lYJpejQExZfZRQxlvqVANrrf3RU67lFPHZxsWR8SBeknSU8+kkgH1qtey6mwCLDIhwFgNrfa1dsc+Nr2ttLf3G+mCwXvIT65Z2PBUWbQJV53F2k2D3dZKExM/90pyV5tMKug8pzncZkQlDjODU5SwDnBfHFYMW8IzSMMXcvept9wsr0qOK2JshhnyO2RgoP8QEHDesXRltxB5AL66jtQxsFQ+2OuCmYFn/G3LnMxpigOCSoegk4SQif+VXqa6ncfpBgTeeeXWgPx5tBYe/Otgei64eLuegq45ZMlcC5P41x7HINcFhccgxVaiE6JpvlNOWQ0OFeQzeDgfSJd+NQ/u48QxDtmot5eUqwSGXCYLYIh7gyJkImkPC5sNVKdp0MiDTcavka/E1SXnahki19DrrGyZkjaiPQohHQ8SRjh8mPN4J2vsANRcOfkFl6pWGhCP3RL9gaoZJa9TjA0rbWcWvCdM/QqJUNkZbpSs5jOVyWq1kIxJ/huqY4QjHHIUqyZkf/f6pYpM8KlyuQKBSCtUkjEx56mQRAUD2GER14g5fXrzjFzudXr/TvYjSK7/f7T37tLt9QSTR3lq7RL4BIavE/B3BrpjN/DlugXolxxNlNNRxJM6LNGkH99ZvL/RolJAQqzuFk5wjFkOCMRJNJzf/ewuq1PKgTOWBdDwceTPsf1ZmYT4NwSnDCaM+TlPKCtlT9/zweKu/92m4/+bDwd4n7+R4fDLa33vabqAHDWiYKcQGKETfCcU+PoJiTok0Pyolg0pv7tyOuO1isXE2Gd+kALgLC6RQ8Dh2MWROd4BjDP01Waceyu1FAa32bpzWQpg9ZY+kAKiczd3z1nVEyNtx60VVPnf+5e79bRb74qC5dohTgL6oQ9dOGcQOY84IpLG+JtNVfc2EYTJqJf2L+TQETbohtez4J9ey/RhNQuydHA1fn72loWgwK6zrZgwoqjbH7/EUM+hMmwZKzYRhalRZCX3jtFzAsVeh0TWBaN6al9Nmo1DL6teD+S843+tANutQqGIjlFHwzEDzTtk34+vT9m384G5vm9bh/0dwohUkZKvw5k5IhGQC8aY45iJvBYXF6SJYFIsMcYLjAIxNtCvf8Z1zEojHnqAjdiu+9adoLJd+658ehWK9/JH/Lgtb3qciZnnCXNMqjFKHmUoGdT+z1CHiBw8yDxZeKqr/kzuBukgmvXHdjAlXNaFMctVMGKbGIHanGFdBvcYrNLpe4QLKNrzIW7HkxenH53CKNBdQNc6ieI0mMTzQTOGhreMnia7w60kjROIylcyoiw2KZ3LtFj0dOOv2m+nd7rBOlnIa5a/5dStlROfcIPhbKLTyN64h9TPRUXBsM6RTKK9YLxd1UYLlOstc/ocDc6BSv1g/3JnesnpBrG8Um/dQ9z8=",
+      "after": "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"
+    }
+  }
+}]]></FlowDocument.Tag>
+  <Section Margin="0,24" TextAlignment="Center">
+    <Paragraph FontSize="24" FontWeight="Bold" Margin="12,0">
+      <LineBreak />
+      <Span Foreground="Gray">Qt Visual Studio Tools</Span>
+    </Paragraph>
+    <Paragraph FontSize="42" Margin="12,0" FontWeight="Bold">
+      <Span TextDecorations="Underline">Project Format Conversion</Span>
+    </Paragraph>
+    <Paragraph Margin="12,8" FontSize="18">
+      <Span>Report generated on 2023-11-01 15:29:47</Span>
+    </Paragraph>
+  </Section>
+  <Section>
+    <Paragraph FontSize="32" FontWeight="Bold" Margin="12,0">
+      <Span>Files</Span>
+    </Paragraph>
+    <Paragraph Margin="24,12,0,0">
+      <Span FontFamily="Consolas" FontSize="14" Background="WhiteSmoke"><![CDATA[D:\OCCTest-master\OCCTest\Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj]]></Span>
+      <LineBreak />
+      <Hyperlink NavigateUri="file://D:\OCCTest-master\OCCTest\Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj?before">[Before]</Hyperlink>
+      <Hyperlink NavigateUri="file://D:\OCCTest-master\OCCTest\Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj?after">[After]</Hyperlink>
+      <Hyperlink NavigateUri="file://D:\OCCTest-master\OCCTest\Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj?diff&amp;before&amp;after">
+                        [Diff before/after]
+                    </Hyperlink>
+      <Hyperlink NavigateUri="file://D:\OCCTest-master\OCCTest\Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj?diff&amp;before&amp;current">
+                        [Diff before/current]
+                    </Hyperlink>
+      <Hyperlink NavigateUri="file://D:\OCCTest-master\OCCTest\Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj?diff&amp;after&amp;current">
+                        [Diff after/current]
+                    </Hyperlink>
+      <LineBreak />
+    </Paragraph>
+  </Section>
+  <Section>
+    <Paragraph FontSize="32" FontWeight="Bold" Margin="12,0">
+      <Span>Changes</Span>
+    </Paragraph>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Converting custom build steps to Qt/MSBuild items]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[D:\OCCTest-master\OCCTest\Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span><![CDATA[      ]]></Span><Span Background="LightCoral"><![CDATA[<AdditionalIncludeDirectories>D:\Qt\5]]></Span><Span><![CDATA[.12.0\msvc2017_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>]]></Span>
+            </Paragraph>
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span><![CDATA[      ]]></Span><Span Background="LightGreen"><![CDATA[<AdditionalIncludeDirectories>.;D:\Qt\5]]></Span><Span><![CDATA[.12.0\msvc2017_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span><![CDATA[      ]]></Span><Span Background="LightCoral"><![CDATA[<AdditionalIncludeDirectories>D:\Qt\5]]></Span><Span><![CDATA[.12.0\msvc2017_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>]]></Span>
+            </Paragraph>
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span><![CDATA[      ]]></Span><Span Background="LightGreen"><![CDATA[<AdditionalIncludeDirectories>.;D:\Qt\5]]></Span><Span><![CDATA[.12.0\msvc2017_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Enabling multi-processor compilation]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[D:\OCCTest-master\OCCTest\Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[      <MultiProcessorCompilation>true</MultiProcessorCompilation>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[      <MultiProcessorCompilation>true</MultiProcessorCompilation>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[      <MultiProcessorCompilation>true</MultiProcessorCompilation>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[      <MultiProcessorCompilation>true</MultiProcessorCompilation>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Project format version]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[D:\OCCTest-master\OCCTest\Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[    <Keyword>QtVS_v304</Keyword>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Fallback for QTMSBUILD environment variable]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[D:\OCCTest-master\OCCTest\Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Default Qt properties]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[D:\OCCTest-master\OCCTest\Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  <Import Project="$(QtMsBuild)\qt_defaults.props" Condition="Exists('$(QtMsBuild)\qt_defaults.props')" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Qt build settings]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[D:\OCCTest-master\OCCTest\Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Warn if Qt/MSBuild is not found]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[D:\OCCTest-master\OCCTest\Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') OR !Exists('$(QtMsBuild)\Qt.props')">]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  </Target>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Qt property sheet]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[D:\OCCTest-master\OCCTest\Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[    <Import Project="$(QtMsBuild)\Qt.props" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[    <Import Project="$(QtMsBuild)\Qt.props" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[    <Import Project="$(QtMsBuild)\Qt.props" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[    <Import Project="$(QtMsBuild)\Qt.props" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Qt targets]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[D:\OCCTest-master\OCCTest\Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  <Import Project="$(QtMsBuild)\qt.targets" Condition="Exists('$(QtMsBuild)\qt.targets')" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+  </Section>
+  <Section>
+    <Paragraph />
+  </Section>
+</FlowDocument>
+<!--voDZ8drLDQRGnEgbVfhDFUqQGIcvTlqYEYAyY5dRnhY=-->

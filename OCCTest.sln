@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OulaHuiLu", "OulaHuiLu\Oula
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Project1", "Project1\Project1.vcxproj", "{BFAF3EC2-1131-41D9-98C8-66EACA5D5F8F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "meshSimple", "Mesh-Simplify-master\meshSimple\meshSimple\meshSimple.vcxproj", "{9BAD95EA-9C51-4672-83AA-D05AA2101CCA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{BFAF3EC2-1131-41D9-98C8-66EACA5D5F8F}.Release|x64.Build.0 = Release|x64
 		{BFAF3EC2-1131-41D9-98C8-66EACA5D5F8F}.Release|x86.ActiveCfg = Release|Win32
 		{BFAF3EC2-1131-41D9-98C8-66EACA5D5F8F}.Release|x86.Build.0 = Release|Win32
+		{9BAD95EA-9C51-4672-83AA-D05AA2101CCA}.Debug|x64.ActiveCfg = Debug|x64
+		{9BAD95EA-9C51-4672-83AA-D05AA2101CCA}.Debug|x64.Build.0 = Debug|x64
+		{9BAD95EA-9C51-4672-83AA-D05AA2101CCA}.Debug|x86.ActiveCfg = Debug|Win32
+		{9BAD95EA-9C51-4672-83AA-D05AA2101CCA}.Debug|x86.Build.0 = Debug|Win32
+		{9BAD95EA-9C51-4672-83AA-D05AA2101CCA}.Release|x64.ActiveCfg = Release|x64
+		{9BAD95EA-9C51-4672-83AA-D05AA2101CCA}.Release|x64.Build.0 = Release|x64
+		{9BAD95EA-9C51-4672-83AA-D05AA2101CCA}.Release|x86.ActiveCfg = Release|Win32
+		{9BAD95EA-9C51-4672-83AA-D05AA2101CCA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

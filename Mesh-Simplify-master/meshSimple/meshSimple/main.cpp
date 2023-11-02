@@ -7,6 +7,9 @@
 #include <cmath>
 #include <queue>
 #include <algorithm>
+
+#include "interface.h"
+
 #define BUFFER_SIZE 1024
 #define INFD 1e8
 #define EPSLOOSE 0.1
@@ -515,8 +518,9 @@ public:
 
 } model;
 
-int main(int argc, char **argv) {
-  if (argc < 4) {
+int main(int argc, char **argv) 
+{
+  /*if (argc < 4) {
     printf("Usage:\n ./main [Input Object] [Output Object] [Simplify Rate] [Threshold Value]");
     return 0;
   }
@@ -529,30 +533,44 @@ int main(int argc, char **argv) {
   } else {
     printf("Warning: use threshold = INF (default)\n");
     threshold = INFD;
-  }
+  }*/
 
-  printf("inputModelFileName: %s\n", inputModelFileName.c_str());
+  /*printf("inputModelFileName: %s\n", inputModelFileName.c_str());
   printf("outputModelFileName: %s\n", outputModelFileName.c_str());
   printf("simplifyRate: %.4lf\n", simplifyRate);
   printf("threshold: %.4lf\n", threshold);
-  printf("------------------------------------\n");
-
+  printf("------------------------------------\n");*/
+	QApplication app(argc, argv);
+	QString input = "", output = "";
+	interface* pDlg = new interface(input, output);
+	input = pDlg->in;
+	output = pDlg->out;
+  //if(pDlg->)
 
   time_t start = time(0);
+
+  std::string inputModelFileName = input.toStdString();
+  std::string outputModelFileName = output.toStdString();
+  double simplifyRate = pDlg->rate;
+  double threshold = pDlg->threshold;
+
+  if (inputModelFileName == "" || outputModelFileName == "" || simplifyRate < 0 || threshold < 0)
+	  return -1;
 
   model.loadFromFile(inputModelFileName);
 
   size_t all = model.getFaceN();
   size_t simple = all * simplifyRate;
 
-  printf("vertex: %zu\n", model.getVertexN());
+  /*printf("vertex: %zu\n", model.getVertexN());
   printf("edge: %zu\n", model.getEdgeN());
-  printf("simple / all = %zu / %zu\n", simple, all);
+  printf("simple / all = %zu / %zu\n", simple, all);*/
   model.simplify(simple, threshold);
 
   model.saveToFile(outputModelFileName);
   // model.selfCheck();
   time_t end = time(0);
-  printf("%cSave to [%s] successfully. Time %ld sec.\n", 13, outputModelFileName.c_str(), end - start);
+ // printf("%cSave to [%s] successfully. Time %ld sec.\n", 13, outputModelFileName.c_str(), end - start);
+  QMessageBox::information(nullptr, "Message", "Simplification succeed!");
   return 0;
 }
