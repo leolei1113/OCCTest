@@ -520,7 +520,7 @@ public:
 
 int main(int argc, char **argv) 
 {
-  /*if (argc < 4) {
+  if (argc < 4) {
     printf("Usage:\n ./main [Input Object] [Output Object] [Simplify Rate] [Threshold Value]");
     return 0;
   }
@@ -531,28 +531,29 @@ int main(int argc, char **argv)
   if (argc == 5) {
     threshold = atof(argv[4]);
   } else {
-    printf("Warning: use threshold = INF (default)\n");
+    //printf("Warning: use threshold = INF (default)\n");
     threshold = INFD;
-  }*/
+  }
 
   /*printf("inputModelFileName: %s\n", inputModelFileName.c_str());
   printf("outputModelFileName: %s\n", outputModelFileName.c_str());
   printf("simplifyRate: %.4lf\n", simplifyRate);
   printf("threshold: %.4lf\n", threshold);
   printf("------------------------------------\n");*/
+
 	QApplication app(argc, argv);
-	QString input = "", output = "";
-	interface* pDlg = new interface(input, output);
-	input = pDlg->in;
-	output = pDlg->out;
-  //if(pDlg->)
+	//QString input = "", output = "";
+	//interface* pDlg = new interface(input, output);
+	//input = pDlg->in;
+	//output = pDlg->out;
+ // //if(pDlg->)
 
-  time_t start = time(0);
+ // time_t start = time(0);
 
-  std::string inputModelFileName = input.toStdString();
-  std::string outputModelFileName = output.toStdString();
-  double simplifyRate = pDlg->rate;
-  double threshold = pDlg->threshold;
+ // std::string inputModelFileName = input.toStdString();
+ // std::string outputModelFileName = output.toStdString();
+ // double simplifyRate = pDlg->rate;
+ // double threshold = pDlg->threshold;
 
   if (inputModelFileName == "" || outputModelFileName == "" || simplifyRate < 0 || threshold < 0)
 	  return -1;
