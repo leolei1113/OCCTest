@@ -7,8 +7,9 @@
 #include <cmath>
 #include <queue>
 #include <algorithm>
+#include <QtNetwork/QNetworkInterface>
+#include <QtCore/QTranslator>
 
-#include "interface.h"
 
 #define BUFFER_SIZE 1024
 #define INFD 1e8
@@ -18,6 +19,9 @@
 using std::min;
 using std::max;
 using std::make_pair;
+
+
+#include "interface.h"
 
 
 class Vector {
@@ -520,7 +524,7 @@ public:
 
 int main(int argc, char **argv) 
 {
-  if (argc < 4) {
+  /*if (argc < 4) {
     printf("Usage:\n ./main [Input Object] [Output Object] [Simplify Rate] [Threshold Value]");
     return 0;
   }
@@ -531,29 +535,54 @@ int main(int argc, char **argv)
   if (argc == 5) {
     threshold = atof(argv[4]);
   } else {
-    //printf("Warning: use threshold = INF (default)\n");
     threshold = INFD;
-  }
-
-  /*printf("inputModelFileName: %s\n", inputModelFileName.c_str());
-  printf("outputModelFileName: %s\n", outputModelFileName.c_str());
-  printf("simplifyRate: %.4lf\n", simplifyRate);
-  printf("threshold: %.4lf\n", threshold);
-  printf("------------------------------------\n");*/
+  }*/
 
 	QApplication app(argc, argv);
-	//QString input = "", output = "";
-	//interface* pDlg = new interface(input, output);
-	//input = pDlg->in;
-	//output = pDlg->out;
- // //if(pDlg->)
+    QTranslator qtrans;
+    QString strpath = QCoreApplication::applicationDirPath();
+    bool bsuccess = qtrans.load(strpath + "/Translation_zh_Hans.qm");
+    if (bsuccess)
+    {
+        app.installTranslator(&qtrans);
+    }
 
- // time_t start = time(0);
+    QList<QNetworkInterface> allInterfaces = QNetworkInterface::allInterfaces();
+    QList<QNetworkInterface>::iterator iter;
+    std::vector<QString> vecMac;
+    for (iter = allInterfaces.begin(); iter != allInterfaces.end(); iter++)
+    {
+        QList<QNetworkAddressEntry> allEntries = iter->addressEntries();
+        QString localMacAddress = iter->hardwareAddress();
+        if (localMacAddress != "")
+            vecMac.push_back(localMacAddress);
+    }
 
- // std::string inputModelFileName = input.toStdString();
- // std::string outputModelFileName = output.toStdString();
- // double simplifyRate = pDlg->rate;
- // double threshold = pDlg->threshold;
+    bool ifShutdown = true;
+    for (int i = 0; i < vecMac.size(); i++)
+    {
+        if (vecMac[i] == "")
+        {
+            ifShutdown = false;
+            break;
+        }
+    }
+
+    if (ifShutdown)
+    {
+        QMessageBox::information(nullptr, QObject::tr("Info"), QObject::tr("No permission."));
+        return -1;
+    }
+
+	QString input = "", output = "";
+	interface * pDlg = new interface(input, output);
+	input = pDlg->in;
+	output = pDlg->out;
+
+    std::string inputModelFileName = input.toStdString();
+    std::string outputModelFileName = output.toStdString();
+    double simplifyRate = pDlg->rate;
+    double threshold = pDlg->threshold;
 
   if (inputModelFileName == "" || outputModelFileName == "" || simplifyRate < 0 || threshold < 0)
 	  return -1;

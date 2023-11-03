@@ -27,12 +27,12 @@ void interface::OnBtnOk()
 
 void interface::OnBtnBrowse1()
 {
-	in = QFileDialog::getOpenFileName(this,"Select file", "/", "OBJ Files(*.obj)");
+	in = QFileDialog::getOpenFileName(this, QObject::tr("Select file"), "/", "OBJ Files(*.obj)");
 	ui.lineEdit->setText(in);
 }
 
 void interface::OnBtnBrowse2()
 {
-	out = QFileDialog::getSaveFileName(this, "Save path", "/", "OBJ Files(*.obj)");
+	out = QFileDialog::getSaveFileName(this, QObject::tr("Save path"), "/", "OBJ Files(*.obj)");
 	ui.lineEdit_2->setText(out);
 }

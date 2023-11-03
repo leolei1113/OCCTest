@@ -32,4 +32,7 @@
       <Filter>源文件</Filter>
     </QtMoc>
   </ItemGroup>
+  <ItemGroup>
+    <QtTranslation Include="Translation_zh_Hans.ts" />
+  </ItemGroup>
 </Project>
