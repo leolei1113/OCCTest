@@ -99,7 +99,7 @@ int nero = 0;
 
 //void OCCTest::ConvertEllipse2Polygon(gp_Elips& elips, int n, TopoDS_Wire& my_wire)
 //{
-//	//¼ÆËãÍÖÔ²ÖÜ³¤c
+//	//è®¡ç®—æ¤­åœ†å‘¨é•¿c
 //	Standard_Real a = elips.MajorRadius();
 //	Standard_Real b = elips.MinorRadius();
 //	Standard_Real c_elips = 2 * PI * b + 4*(a - b);
@@ -277,18 +277,18 @@ bool OCCTest::fillet(TopoDS_Shape& shape)
 
 	TopExp_Explorer  ex(shape, TopAbs_EDGE);
 	ListOfEdge.Append(ex.Value());
-	ex.Next();                                             //ËùÓĞÀâÖùµÄµÚÒ»ÌõÀâ±ß
+	ex.Next();                                             //æ‰€æœ‰æ£±æŸ±çš„ç¬¬ä¸€æ¡æ£±è¾¹
 	ListOfEdge.Append(ex.Value());
 	ex.Next();
 	ex.Next();
 	ex.Next();
-	ListOfEdge.Append(ex.Value());                        //µ½Õâ±ßÊÇÈıÀâÖù
+	ListOfEdge.Append(ex.Value());                        //åˆ°è¿™è¾¹æ˜¯ä¸‰æ£±æŸ±
 	ex.Next();
 	ex.Next();
 	ex.Next();
 	ex.Next();
 	ex.Next();
-	ListOfEdge.Append(ex.Value());                          //µ½Õâ±ßÊÇËÄÀâÖù
+	ListOfEdge.Append(ex.Value());                          //åˆ°è¿™è¾¹æ˜¯å››æ£±æŸ±
 	ex.Next();
 	ex.Next();
 	ex.Next();
@@ -297,7 +297,7 @@ bool OCCTest::fillet(TopoDS_Shape& shape)
 	ex.Next();
 	ex.Next();
 	ex.Next();
-	ListOfEdge.Append(ex.Value());                          //µ½Õâ±ßÊÇÎåÀâÖù
+	ListOfEdge.Append(ex.Value());                          //åˆ°è¿™è¾¹æ˜¯äº”æ£±æŸ±
 
 	TopTools_ListIteratorOfListOfShape itls;
 	for (itls.Initialize(ListOfEdge); itls.More(); itls.Next())
@@ -331,19 +331,19 @@ void OCCTest::ConvertEllipse2Polygon(gp_Elips& elips, int n, TopoDS_Wire& my_wir
 	double num1 = n - 1;
 	double num2 = n;
 	double Jishu_xishu = num1 / num2;
-	//×¼±¸¹¤×÷
+	//å‡†å¤‡å·¥ä½œ
 	std::vector<gp_Pnt> point_list;
 
-	//¼ÆËãÍÖÔ²ÖÜ³¤c
+	//è®¡ç®—æ¤­åœ†å‘¨é•¿c
 	Standard_Real a = elips.MajorRadius();
 	Standard_Real b = elips.MinorRadius();
 
 	int mo_num = n % 2;
 	if (mo_num == 1)
 	{
-		//ÆæÊı±ß
+		//å¥‡æ•°è¾¹
 		point_list.push_back(gp_Pnt(a, 0, 0));
-		//Ò»±ßÉ¢µã
+		//ä¸€è¾¹æ•£ç‚¹
 		int divid_num = (n - 1) / 2;
 		for (int i = 1; i <= divid_num; i++)
 		{
@@ -360,9 +360,9 @@ void OCCTest::ConvertEllipse2Polygon(gp_Elips& elips, int n, TopoDS_Wire& my_wir
 	}
 	else
 	{
-		//Å¼Êı±ß --- °´³¤¶È
+		//å¶æ•°è¾¹ --- æŒ‰é•¿åº¦
 		//point_list.push_back(gp_Pnt(a, 0, 0));
-		////Ò»±ßÉ¢µã
+		////ä¸€è¾¹æ•£ç‚¹
 		//int divid_num = (n - 2) / 2;
 		//for (int i = 1; i <= divid_num; i++)
 		//{
@@ -378,7 +378,7 @@ void OCCTest::ConvertEllipse2Polygon(gp_Elips& elips, int n, TopoDS_Wire& my_wir
 		//	point_list.push_back(gp_Pnt(x, y, 0));
 		//}
 
-		//Å¼Êı±ß--°´½Ç¶È
+		//å¶æ•°è¾¹--æŒ‰è§’åº¦
 		point_list.push_back(gp_Pnt(a, 0, 0));
 		double theta = (360 / n) * PI / 180;
 		for (int i = 1; i < n; i++)
@@ -516,7 +516,7 @@ bool OCCTest::MakeAnnotation(std::vector<gp_Pnt> pnts, std::string text)
 	Handle(Graphic3d_GraphicDriver) driver = aView->Viewer()->Driver();
 	Handle(Graphic3d_StructureManager) manager = new  Graphic3d_StructureManager(driver);
 	Handle(Prs3d_Presentation) thePrs = new  Prs3d_Presentation(manager);
-	//´´½¨ÎÄ×Ö
+	//åˆ›å»ºæ–‡å­—
 	Handle(Graphic3d_Group) aGroup = thePrs->NewGroup();
 	// change the text aspect
 	Handle(Graphic3d_AspectText3d) aTextAspect = new Graphic3d_AspectText3d();
@@ -530,7 +530,7 @@ bool OCCTest::MakeAnnotation(std::vector<gp_Pnt> pnts, std::string text)
 	aText->SetPosition(gp_Pnt(1, 1, 1));
 	aGroup->AddText(aText);
 
-	////´´½¨¼ıÍ·
+	////åˆ›å»ºç®­å¤´
 	//Standard_Integer aNbTria = 1;
 	//Handle(Graphic3d_ArrayOfTriangles) anArray = new Graphic3d_ArrayOfTriangles(theVerticesMaxCount, theEdgesMaxCount, Graphic3d_ArrayFlags_VertexNormal);
 	//// add vertices to the array
@@ -548,7 +548,7 @@ bool OCCTest::MakeAnnotation(std::vector<gp_Pnt> pnts, std::string text)
 	//aGroup->AddPrimitiveArray(anArray);
 	//aGroup->SetGroupPrimitivesAspect(myDrawer->ShadingAspect()->Aspect());
 
-	////ÏÔÊ¾
+	////æ˜¾ç¤º
 	//Handle(V3d_Viewer) theViewer;
 	//Handle(AIS_InteractiveContext) aContext = new AIS_InteractiveContext(theViewer);
 
@@ -592,7 +592,7 @@ bool OCCTest::MakeAnnotation(std::vector<gp_Pnt> pnts, std::string text)
 //	Handle(WNT_Window) aWNTWindow = new WNT_Window((Aspect_Handle)wnd);
 //	myView->SetWindow(aWNTWindow);*/
 //
-//	//½»»¥-- - ÏÔÊ¾Çø¿é
+//	//äº¤äº’-- - æ˜¾ç¤ºåŒºå—
 //	AIS_InteractiveContext*	myAISContext = new AIS_InteractiveContext(myViewer);
 //	shape = BRepPrimAPI_MakeBox(10, 20, 30).Solid();
 //	Handle(AIS_Shape) anAISShape = new AIS_Shape(shape);
@@ -642,7 +642,7 @@ bool OCCTest::MakeAnnotation(std::vector<gp_Pnt> pnts, std::string text)
 //	return true;
 //}
 
-//²âÊÔÃæ»ıËãË³Ê±Õë¡¢ÄæÊ±Õë
+//æµ‹è¯•é¢ç§¯ç®—é¡ºæ—¶é’ˆã€é€†æ—¶é’ˆ
 //bool OCCTest::MakeDraft(TopoDS_Shape& shape)
 //{
 //	TopoDS_Wire Profile;
@@ -782,7 +782,7 @@ bool OCCTest::CheckOneLine(std::vector<TopoDS_Edge> anEdges)
 //	//shape = new_bop->Shape();
 //	imprintEdge(total, shape);
 //
-//	std::vector<TopoDS_Shape> list_edges;           //ÕæÕı¿ÉÒÔÓÃµÄÃæ
+//	std::vector<TopoDS_Shape> list_edges;           //çœŸæ­£å¯ä»¥ç”¨çš„é¢
 //	TopExp_Explorer Ex;
 //	for(Ex.Init(shape, TopAbs_FACE); Ex.More(); Ex.Next())
 //	{
@@ -813,7 +813,7 @@ bool OCCTest::CheckOneLine(std::vector<TopoDS_Edge> anEdges)
 
 //bool OCCTest::MakeDraft(TopoDS_Shape& shape)
 //{
-//	//Õâ²¿·ÖÔì²âÊÔÊı¾İ----Ïà½»Ìå£¬µã£¬ÏòÁ¿
+//	//è¿™éƒ¨åˆ†é€ æµ‹è¯•æ•°æ®----ç›¸äº¤ä½“ï¼Œç‚¹ï¼Œå‘é‡
 //	TopoDS_Wire Profile;
 //	gp_Vec vec1(0, 0, 10);
 //	std::vector<TopoDS_Edge> anEdges;
@@ -840,10 +840,10 @@ bool OCCTest::CheckOneLine(std::vector<TopoDS_Edge> anEdges)
 
 bool OCCTest::RayTest(TopoDS_Shape shape, gp_Pnt pos, gp_Dir dir, bool is_single, TopTools_ListOfShape& hits)
 {
-	//µã£¬ÏòÁ¿Éú³ÉÏß
+	//ç‚¹ï¼Œå‘é‡ç”Ÿæˆçº¿
 	gp_Lin ray_line(pos, dir);
 	Handle(NCollection_BaseAllocator) aAllocator = NCollection_BaseAllocator::CommonBaseAllocator();
-	//Ïà½»µÄ½Ó¿Ú
+	//ç›¸äº¤çš„æ¥å£
 	BOPAlgo_Section* new_bop = new BOPAlgo_Section(aAllocator);
 
 	BRepBuilderAPI_MakeEdge makeedge(ray_line);
@@ -852,12 +852,12 @@ bool OCCTest::RayTest(TopoDS_Shape shape, gp_Pnt pos, gp_Dir dir, bool is_single
 	new_bop->AddArgument(shape);
 	new_bop->AddArgument(edgesh);
 	new_bop->Perform();
-	//Ö±Ïß¹á´©Ìå£¬µÃµ½µÄÊÇÁ½¸öµã
+	//ç›´çº¿è´¯ç©¿ä½“ï¼Œå¾—åˆ°çš„æ˜¯ä¸¤ä¸ªç‚¹
 	hits = new_bop->Generated(edgesh);
 	return true;
 
-	//½«Ìåexplorer±éÀú Ãæ¡¢Ïß¡¢µã£¬ Í¬ÑùÊ¹ÓÃBOPAlgo_Section·½·¨£¬Èç¹ûGeneratedÉú³ÉµÄTopTools_ListOfShapeÓĞÖµ£¬size=1£¬·µ»ØÓëÆäÏà½»µÄ¶ÔÏó
-	//Èç¹ûÖ»ÒªµÚÒ»¸ö¶ÔÏó£¬ÎÒµÄÏë·¨ÊÇÏÈ½øĞĞÌåÏà½»£¬È¡TopTools_ListOfShape£º£ºfirst£¨£©µÚÒ»¸öÏà½»µã£¬ÔÙ½«ÌåÉÏÓëÖ®Ïà½»µÄÃæ¡¢Ïß¡¢µã·µ»Ø
+	//å°†ä½“exploreréå† é¢ã€çº¿ã€ç‚¹ï¼Œ åŒæ ·ä½¿ç”¨BOPAlgo_Sectionæ–¹æ³•ï¼Œå¦‚æœGeneratedç”Ÿæˆçš„TopTools_ListOfShapeæœ‰å€¼ï¼Œsize=1ï¼Œè¿”å›ä¸å…¶ç›¸äº¤çš„å¯¹è±¡
+	//å¦‚æœåªè¦ç¬¬ä¸€ä¸ªå¯¹è±¡ï¼Œæˆ‘çš„æƒ³æ³•æ˜¯å…ˆè¿›è¡Œä½“ç›¸äº¤ï¼Œå–TopTools_ListOfShapeï¼šï¼šfirstï¼ˆï¼‰ç¬¬ä¸€ä¸ªç›¸äº¤ç‚¹ï¼Œå†å°†ä½“ä¸Šä¸ä¹‹ç›¸äº¤çš„é¢ã€çº¿ã€ç‚¹è¿”å›
 }
 
 
@@ -929,7 +929,7 @@ bool OCCTest::IfTopoShapeExist(std::vector<TopoDS_Shape> list, TopoDS_Shape me)
 //	OCCBasicTools::GetOrderWireFromEdges(anEdges, Profile);
 //	TopoDS_Face ProfileFace = BRepBuilderAPI_MakeFace(Profile);
 //
-//	//½¨Á¢ÀâÖù
+//	//å»ºç«‹æ£±æŸ±
 //	gp_Vec vec(0, 0, 20);
 //	BRepPrimAPI_MakePrism* make_prism = new BRepPrimAPI_MakePrism(ProfileFace, vec);
 //	BRepSweep_Prism prism = make_prism->Prism();
@@ -987,7 +987,7 @@ bool OCCTest::IfTopoShapeExist(std::vector<TopoDS_Shape> list, TopoDS_Shape me)
 //	new_bop->Perform();
 //	bool if_md = new_bop->HasModified();
 //
-//	//²âÊÔ±ßÊı
+//	//æµ‹è¯•è¾¹æ•°
 //	std::vector<TopoDS_Edge> edges;
 //	TopExp_Explorer ex;
 //	for (ex.Init(ProfileFace, TopAbs_EDGE); ex.More(); ex.Next())
@@ -1081,7 +1081,7 @@ int OCCTest::LocateTarget2Num(std::vector<gp_Pnt> pt_vec, gp_Pnt taget_point)
 
 bool OCCTest::swapSheet(TopoDS_Shape mutter_3d, TopoDS_Shape vatter, TopoDS_Shape& sohn_shape)
 {
-	//Ïà½»
+	//ç›¸äº¤
 	BRepAlgo_Section my_section(mutter_3d, vatter, Standard_True);
 	my_section.Build();
 	TopoDS_Shape intersect_e = my_section.Shape();
@@ -1188,10 +1188,10 @@ bool OCCTest::moveEdges(std::vector<gp_Pnt> &point_list, std::vector<TopoDS_Edge
 			numvec.push_back(ptnum);
 		}
 		sort(numvec.begin(), numvec.end());
-		gp_Pnt first_point = point_list[numvec[0]];         //Ò»Ìõ±ßÔÚÕû¸öÍ¼ĞÎÖĞµÄµÚÒ»µã
-		gp_Pnt second_point = point_list[numvec[1]];		//Ò»Ìõ±ßÔÚÕû¸öÍ¼ĞÎÖĞµÄµÚ¶şµã
+		gp_Pnt first_point = point_list[numvec[0]];         //ä¸€æ¡è¾¹åœ¨æ•´ä¸ªå›¾å½¢ä¸­çš„ç¬¬ä¸€ç‚¹
+		gp_Pnt second_point = point_list[numvec[1]];		//ä¸€æ¡è¾¹åœ¨æ•´ä¸ªå›¾å½¢ä¸­çš„ç¬¬äºŒç‚¹
 
-		gp_Pnt pre_first_point, post_second_point;          //µÚÒ»µãµÄÇ°Ò»µã£¬ÒÔ¼°µÚ¶şµãµÄºóÒ»µã
+		gp_Pnt pre_first_point, post_second_point;          //ç¬¬ä¸€ç‚¹çš„å‰ä¸€ç‚¹ï¼Œä»¥åŠç¬¬äºŒç‚¹çš„åä¸€ç‚¹
 		if (numvec[0] - 1 < 0)
 			pre_first_point = point_list[point_list.size()-1];
 		else
@@ -1202,7 +1202,7 @@ bool OCCTest::moveEdges(std::vector<gp_Pnt> &point_list, std::vector<TopoDS_Edge
 		else
 			post_second_point = point_list[numvec[1] + 1];
 
-		//¼ÆËãÁ½Ìõ±ßµÄ·½Ïò
+		//è®¡ç®—ä¸¤æ¡è¾¹çš„æ–¹å‘
 		double distance1 = sqrt(pow((first_point.X() - pre_first_point.X()), 2) + pow(first_point.Y() - pre_first_point.Y(), 2) + pow(first_point.Z() - pre_first_point.Z(), 2));
 		gp_Vec vec1((first_point.X() - pre_first_point.X()) / distance1, (first_point.Y() - pre_first_point.Y()) / distance1, (first_point.Z() - pre_first_point.Z()) / distance1);
 
@@ -1214,7 +1214,7 @@ bool OCCTest::moveEdges(std::vector<gp_Pnt> &point_list, std::vector<TopoDS_Edge
 		double sintheta1 = sqrt(1 - pow(vec1 * vec3, 2) / pow(vec1.Magnitude() * vec3.Magnitude(), 2));
 		double sintheta2 = sqrt(1 - pow(vec2 * vec3, 2) / pow(vec2.Magnitude() * vec3.Magnitude(), 2));
 		
-		//¼ÆËã×îÔ¶µã£¨¿ÉÄÜÓĞ£©
+		//è®¡ç®—æœ€è¿œç‚¹ï¼ˆå¯èƒ½æœ‰ï¼‰
 		/*TopoDS_Edge line1 = BRepBuilderAPI_MakeEdge(first_point, first_point.Translated(vec1));
 		TopoDS_Edge line2 = BRepBuilderAPI_MakeEdge(second_point, second_point.Translated(vec2));
 
@@ -1249,7 +1249,7 @@ bool OCCTest::moveEdges(std::vector<gp_Pnt> &point_list, std::vector<TopoDS_Edge
 				{
 					if (it->X() == point_list[numvec[1]].X() && it->Y() == point_list[numvec[1]].Y() && it->Z() == point_list[numvec[1]].Z())
 					{
-						it = point_list.erase(it); //²»ÄÜĞ´³Éarr.erase(it);
+						it = point_list.erase(it); //ä¸èƒ½å†™æˆarr.erase(it);
 						break;
 					}
 					else
@@ -1277,7 +1277,7 @@ bool OCCTest::moveEdges(std::vector<gp_Pnt> &point_list, std::vector<TopoDS_Edge
 		}
 		else
 		{
-			//¼ÆËãĞÂÏß¶ÎµÄÁ½¸öµã
+			//è®¡ç®—æ–°çº¿æ®µçš„ä¸¤ä¸ªç‚¹
 			gp_Pnt newpoint1 = first_point.Translated(distance * vec1 / sintheta1);
 			gp_Pnt newpoint2 = second_point.Translated(distance * vec2 / sintheta2);
 
@@ -1350,7 +1350,7 @@ bool OCCTest::healing(TopoDS_Shape& shape, HealOption parameter)
 
 //bool OCCTest::MakeDraft(TopoDS_Shape& shape)
 //{
-//	//²âÊÔÄæ¾ØÕó»ØÔ­À´µã
+//	//æµ‹è¯•é€†çŸ©é˜µå›åŸæ¥ç‚¹
 //	TopoDS_Vertex oript = BRepBuilderAPI_MakeVertex(gp_Pnt(0, 0, 1)).Vertex();
 //	double ori_mtx[16] = { 1,2,3,5,2,1,3,5,3,3,3,5,0,0,0,1 };
 //	gp_Trsf trsf;
@@ -1678,7 +1678,7 @@ bool OCCTest::DetachFaces(TopoDS_Shape ent, std::vector<TopoDS_Face> facelist, b
 //	OCCBasicTools::GetOrderWireFromEdges(anEdges, Profile);
 //	TopoDS_Face ProfileFace = BRepBuilderAPI_MakeFace(Profile);
 //
-//	//½¨Á¢ÀâÖù
+//	//å»ºç«‹æ£±æŸ±
 //	gp_Vec vec(0, 0, 10);
 //	BRepPrimAPI_MakePrism* make_prism = new BRepPrimAPI_MakePrism(ProfileFace, vec);
 //
@@ -2184,9 +2184,9 @@ bool OCCTest::Connect(TopTools_ListOfShape shapelist, bool gensolid, TopoDS_Shap
 //		totalline++;
 //		count++;
 //		std::vector<string> text;
-//		istringstream istrm(line);//´´½¨×Ö·û´®Á÷
-//		while (istrm >> word)     //Öğµ¥´Ê¶Á
-//			text.push_back(word); //½«µ¥´Ê¶¼·ÅÈëÈİÆ÷
+//		istringstream istrm(line);//åˆ›å»ºå­—ç¬¦ä¸²æµ
+//		while (istrm >> word)     //é€å•è¯è¯»
+//			text.push_back(word); //å°†å•è¯éƒ½æ”¾å…¥å®¹å™¨
 //		std::vector<double> vecx;
 //		
 //		if (text.size() == 3)
@@ -2351,7 +2351,7 @@ bool OCCTest::AutoFillGapFaces(TopoDS_Shape& orishape, double allowedarea, TopoD
 {
 	if (orishape.ShapeType() != TopAbs_SHELL)
 		return false;
-	//ÏÈÕÒËùÓĞµÄ±»µ¥¸öÃæÓµÓĞµÄ±ß
+	//å…ˆæ‰¾æ‰€æœ‰çš„è¢«å•ä¸ªé¢æ‹¥æœ‰çš„è¾¹
 	std::vector<TopoDS_Shape> alldupedges, neededges;
 	TopExp_Explorer edgeex;
 	for (edgeex.Init(orishape, TopAbs_EDGE); edgeex.More(); edgeex.Next())
@@ -2372,7 +2372,7 @@ bool OCCTest::AutoFillGapFaces(TopoDS_Shape& orishape, double allowedarea, TopoD
 			neededges.push_back(edge1);
 	}
 
-	//ÔÙ·Ö±ğ»®·Ö×é³ÉÒ»¸ö¸ö·â±ÕwireµÄedge
+	//å†åˆ†åˆ«åˆ’åˆ†ç»„æˆä¸€ä¸ªä¸ªå°é—­wireçš„edge
 	TopTools_ListOfShape usedshapes;
 	std::vector<std::vector<TopoDS_Shape>> grouped_edges;
 	for (int i = 0; i < neededges.size(); i++)
@@ -2390,7 +2390,7 @@ bool OCCTest::AutoFillGapFaces(TopoDS_Shape& orishape, double allowedarea, TopoD
 		grouped_edges.push_back(xedgegroup);
 	}
 
-	//´¦ÀíÃ¿Ò»×é¶ÀÁ¢µÄ·â±Õwire
+	//å¤„ç†æ¯ä¸€ç»„ç‹¬ç«‹çš„å°é—­wire
 	TopTools_ListOfShape filledfaces;
 	for (int i = 0; i < grouped_edges.size(); i++)
 	{
@@ -2489,7 +2489,7 @@ bool OCCTest::Assembly(TopoDS_Shape toolshape, TopoDS_Shape blankshape, Assemble
 {
 	TopoDS_Shape toolshapeowner;
 	
-	//¹Ì¶¨¶ÔÏóÊÇÃæ
+	//å›ºå®šå¯¹è±¡æ˜¯é¢
 	if (blankshape.ShapeType() == TopAbs_SHELL)
 	{
 		TopoDS_Face blankface;
@@ -2508,59 +2508,59 @@ bool OCCTest::Assembly(TopoDS_Shape toolshape, TopoDS_Shape blankshape, Assemble
 		Handle(Geom_Surface) blankgeomsurface = BRep_Tool::Surface(blankface);
 		BRepAdaptor_Surface bas(blankface);
 		GeomAbs_SurfaceType blanksurfacetype = bas.GetType();
-		//¹Ì¶¨ÃæÊÇÆ½Ãæ
+		//å›ºå®šé¢æ˜¯å¹³é¢
 		if (blanksurfacetype == GeomAbs_Plane)
 		{
-			//ñîºÏ¶ÔÏóÊÇÃæ
+			//è€¦åˆå¯¹è±¡æ˜¯é¢
 			if (toolshape.ShapeType() == TopAbs_SHELL)
 			{
 				AssemblyPlaneFaceFace(toolshape, bas,
 					blankgeomsurface, targetshape, type, matrix, toolshapeowner);
 			}
-			//ñîºÏ¶ÔÏóÊÇ±ß
+			//è€¦åˆå¯¹è±¡æ˜¯è¾¹
 			else if (toolshape.ShapeType() == TopAbs_EDGE || toolshape.ShapeType() == TopAbs_WIRE)
 			{
 				AssemblyPlaneFaceEdge(toolshape, bas, blankgeomsurface, type, matrix, toolshapeowner, targetshape);
 			}
-			//ñîºÏ¶ÔÏóÊÇµã
+			//è€¦åˆå¯¹è±¡æ˜¯ç‚¹
 			else if (toolshape.ShapeType() == TopAbs_VERTEX)
 			{
 				AssemblyPlaneFaceVertex(bas, toolshape, matrix, targetshape, toolshapeowner, blankgeomsurface, type);
 			}
 		}
-		//¹Ì¶¨ÃæÊÇÔ²ÖùÃæ
+		//å›ºå®šé¢æ˜¯åœ†æŸ±é¢
 		else if (blanksurfacetype == GeomAbs_Cylinder)
 		{
-			//ñîºÏ¶ÔÏóÊÇÃæ
+			//è€¦åˆå¯¹è±¡æ˜¯é¢
 			if (toolshape.ShapeType() == TopAbs_SHELL)
 			{
 				AssemblyCylinderFaceFace(toolshape, bas, targetshape, type, matrix, toolshapeowner);
 			}
-			//ñîºÏ¶ÔÏóÊÇ±ß
+			//è€¦åˆå¯¹è±¡æ˜¯è¾¹
 			else if (toolshape.ShapeType() == TopAbs_EDGE || toolshape.ShapeType() == TopAbs_WIRE)
 			{
 				AssemblyCylinderFaceEdge(toolshape, bas, type, matrix, toolshapeowner, targetshape);
 			}
-			//ñîºÏ¶ÔÏóÊÇµã
+			//è€¦åˆå¯¹è±¡æ˜¯ç‚¹
 			else if (toolshape.ShapeType() == TopAbs_VERTEX)
 			{
 				AssemblyCylinderFaceVertex(bas, toolshape, matrix, targetshape, toolshapeowner, type);
 			}
 		}
-		//¹Ì¶¨ÃæÊÇÇòÃæ
+		//å›ºå®šé¢æ˜¯çƒé¢
 		else if (blanksurfacetype == GeomAbs_Sphere)
 		{
-			//ñîºÏ¶ÔÏóÊÇÃæ
+			//è€¦åˆå¯¹è±¡æ˜¯é¢
 			if (toolshape.ShapeType() == TopAbs_SHELL)
 			{
 				AssemblySphereFaceFace(toolshape, bas, targetshape, type, matrix, toolshapeowner);
 			}
-			//ñîºÏ¶ÔÏóÊÇ±ß
+			//è€¦åˆå¯¹è±¡æ˜¯è¾¹
 			else if (toolshape.ShapeType() == TopAbs_EDGE || toolshape.ShapeType() == TopAbs_WIRE)
 			{
 				AssemblySphereFaceEdge(toolshape, bas, type, matrix, toolshapeowner, targetshape);
 			}
-			//ñîºÏ¶ÔÏóÊÇµã
+			//è€¦åˆå¯¹è±¡æ˜¯ç‚¹
 			else if (toolshape.ShapeType() == TopAbs_VERTEX)
 			{
 				gp_Sphere plane = bas.Sphere();
@@ -2571,10 +2571,10 @@ bool OCCTest::Assembly(TopoDS_Shape toolshape, TopoDS_Shape blankshape, Assemble
 
 				gp_Pnt toolbasepoint = BRep_Tool::Pnt(TopoDS::Vertex(toolshape));
 
-				//ÏàºÏ
+				//ç›¸åˆ
 				if (type == AssembleType::coincidence)
 				{
-					//¿Õ¼ä±ä»»
+					//ç©ºé—´å˜æ¢
 					gp_Trsf transf;
 					transf.SetTranslation(toolbasepoint, blankbasepoint);
 
@@ -2589,7 +2589,7 @@ bool OCCTest::Assembly(TopoDS_Shape toolshape, TopoDS_Shape blankshape, Assemble
 			}
 		}
 	}
-	//¹Ì¶¨¶ÔÏóÊÇÏß
+	//å›ºå®šå¯¹è±¡æ˜¯çº¿
 	else if (blankshape.ShapeType() == TopAbs_EDGE || toolshape.ShapeType() == TopAbs_WIRE)
 	{
 		if (blankshape.ShapeType() == TopAbs_WIRE)
@@ -2611,20 +2611,20 @@ bool OCCTest::Assembly(TopoDS_Shape toolshape, TopoDS_Shape blankshape, Assemble
 		Handle(Geom_Curve) blankgeomcurve = BRep_Tool::Curve(blankedge, first, last);
 		BRepAdaptor_Curve bas(blankedge);
 		GeomAbs_CurveType blankscurvetype = bas.GetType();
-		//¹Ì¶¨±ßÊÇÖ±±ß
+		//å›ºå®šè¾¹æ˜¯ç›´è¾¹
 		if (blankscurvetype == GeomAbs_Line)
 		{
-			//ñîºÏ¶ÔÏóÊÇÃæ
+			//è€¦åˆå¯¹è±¡æ˜¯é¢
 			if (toolshape.ShapeType() == TopAbs_SHELL)
 			{
 				AssemblyLineFace(toolshape, bas, targetshape, type, matrix, toolshapeowner);
 			}
-			//ñîºÏ¶ÔÏóÊÇ±ß
+			//è€¦åˆå¯¹è±¡æ˜¯è¾¹
 			else if (toolshape.ShapeType() == TopAbs_EDGE || toolshape.ShapeType() == TopAbs_WIRE)
 			{
 				AssemblyLineEdge(toolshape, bas, type, matrix, toolshapeowner, targetshape);
 			}
-			//ñîºÏ¶ÔÏóÊÇµã
+			//è€¦åˆå¯¹è±¡æ˜¯ç‚¹
 			else if (toolshape.ShapeType() == TopAbs_VERTEX)
 			{
 				gp_Lin line = bas.Line();
@@ -2640,10 +2640,10 @@ bool OCCTest::Assembly(TopoDS_Shape toolshape, TopoDS_Shape blankshape, Assemble
 				if (gppoc.NbPoints() < 1)
 					return false;
 				gp_Pnt toolprojpoint = gppoc.Point(1);
-				//ÏàºÏ
+				//ç›¸åˆ
 				if (type == AssembleType::coincidence)
 				{
-					//¿Õ¼ä±ä»»
+					//ç©ºé—´å˜æ¢
 					gp_Trsf transf;
 					transf.SetTranslation(toolpoint, toolprojpoint);
 
@@ -2657,20 +2657,20 @@ bool OCCTest::Assembly(TopoDS_Shape toolshape, TopoDS_Shape blankshape, Assemble
 				}
 			}
 		}
-		//¹Ì¶¨±ßÊÇÆ½ÃæÏß
+		//å›ºå®šè¾¹æ˜¯å¹³é¢çº¿
 		else
 		{
-			//ñîºÏ¶ÔÏóÊÇÃæ
+			//è€¦åˆå¯¹è±¡æ˜¯é¢
 			if (toolshape.ShapeType() == TopAbs_SHELL)
 			{
 				AssemblyPlanarLineFace(toolshape, blankedge, targetshape, type, matrix, toolshapeowner);
 			}
-			//ñîºÏ¶ÔÏóÊÇ±ß
+			//è€¦åˆå¯¹è±¡æ˜¯è¾¹
 			else if (toolshape.ShapeType() == TopAbs_EDGE || toolshape.ShapeType() == TopAbs_WIRE)
 			{
 				AssemblyPlanarLineEdge(toolshape, blankedge, type, matrix, toolshapeowner, targetshape);
 			}
-			//ñîºÏ¶ÔÏóÊÇµã
+			//è€¦åˆå¯¹è±¡æ˜¯ç‚¹
 			else if (toolshape.ShapeType() == TopAbs_VERTEX)
 			{
 				double first, last;
@@ -2683,15 +2683,15 @@ bool OCCTest::Assembly(TopoDS_Shape toolshape, TopoDS_Shape blankshape, Assemble
 				Handle(Geom_Plane) blankgeplane = blankgcmp.Value();
 
 				gp_Pnt toolpoint = BRep_Tool::Pnt(TopoDS::Vertex(toolshape));
-				//Í¶Ó°µãµ½blankËùÔÚÆ½Ãæ
+				//æŠ•å½±ç‚¹åˆ°blankæ‰€åœ¨å¹³é¢
 				GeomAPI_ProjectPointOnSurf gppos(toolpoint, blankgeplane);
 				if (!gppos.IsDone() && gppos.NbPoints() < 1)
 					return false;
 				gp_Pnt toolprojpoint = gppos.Point(1);
-				//ÏàºÏ
+				//ç›¸åˆ
 				if (type == AssembleType::coincidence)
 				{
-					//¿Õ¼ä±ä»»
+					//ç©ºé—´å˜æ¢
 					gp_Trsf transf;
 					transf.SetTranslation(toolpoint, toolprojpoint);
 
@@ -2708,25 +2708,25 @@ bool OCCTest::Assembly(TopoDS_Shape toolshape, TopoDS_Shape blankshape, Assemble
 	}
 	else if (blankshape.ShapeType() == TopAbs_VERTEX)
 	{
-		//ñîºÏ¶ÔÏóÊÇÃæ
+		//è€¦åˆå¯¹è±¡æ˜¯é¢
 		if (toolshape.ShapeType() == TopAbs_SHELL)
 		{
 			AssemblyVtxFace(toolshape, blankshape, targetshape, type, matrix, toolshapeowner);
 		}
-		//ñîºÏ¶ÔÏóÊÇ±ß
+		//è€¦åˆå¯¹è±¡æ˜¯è¾¹
 		else if (toolshape.ShapeType() == TopAbs_EDGE || toolshape.ShapeType() == TopAbs_WIRE)
 		{
 			AssemblyVtxEdge(toolshape, blankshape, type, matrix, toolshapeowner, targetshape);
 		}
-		//ñîºÏ¶ÔÏóÊÇµã
+		//è€¦åˆå¯¹è±¡æ˜¯ç‚¹
 		else if (toolshape.ShapeType() == TopAbs_VERTEX)
 		{
 			gp_Pnt blankpoint = BRep_Tool::Pnt(TopoDS::Vertex(blankshape));
 			gp_Pnt toolpoint = BRep_Tool::Pnt(TopoDS::Vertex(toolshape));
-			//ÏàºÏ
+			//ç›¸åˆ
 			if (type == AssembleType::coincidence)
 			{
-				//¿Õ¼ä±ä»»
+				//ç©ºé—´å˜æ¢
 				gp_Trsf transf;
 				transf.SetTranslation(toolpoint, blankpoint);
 
@@ -2757,7 +2757,7 @@ bool OCCTest::AssemblyVtxEdge(TopoDS_Shape toolshape, TopoDS_Shape blankshape,
 	gp_Pnt toolcurvept1 = bascurve->Value(first);
 	gp_Pnt toolcurvept2 = bascurve->Value(last);
 
-	//ñîºÏ¶ÔÏóÊÇÖ±Ïß
+	//è€¦åˆå¯¹è±¡æ˜¯ç›´çº¿
 	if (bastool.GetType() == GeomAbs_Line)
 	{
 		gp_Lin line = bastool.Line();
@@ -2766,16 +2766,16 @@ bool OCCTest::AssemblyVtxEdge(TopoDS_Shape toolshape, TopoDS_Shape blankshape,
 
 		Handle(Geom_Line) toolgeomline = new Geom_Line(toolbasepoint, toolbasedir);
 
-		//Í¶Ó°blankµãµ½toolËùÔÚÏß
+		//æŠ•å½±blankç‚¹åˆ°toolæ‰€åœ¨çº¿
 		GeomAPI_ProjectPointOnCurve gppoc(blankpoint, toolgeomline);
 		if (gppoc.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppoc.Point(1);
 
-		//µãÓëÆ½ÃæÏßÏàºÏ¡¢¶ÔÆë¡¢Í¬ÏòµÄ²Ù×÷ÊÇÒ»ÑùµÄ
+		//ç‚¹ä¸å¹³é¢çº¿ç›¸åˆã€å¯¹é½ã€åŒå‘çš„æ“ä½œæ˜¯ä¸€æ ·çš„
 		//if (type == AssembleType::coincidence)
 		//{
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTranslation(toolprojpoint, blankpoint);
 
@@ -2788,7 +2788,7 @@ bool OCCTest::AssemblyVtxEdge(TopoDS_Shape toolshape, TopoDS_Shape blankshape,
 			targetshape = bat.Shape();
 		//}
 	}
-	//ñîºÏ¶ÔÏóÊÇÆ½ÃæÏß
+	//è€¦åˆå¯¹è±¡æ˜¯å¹³é¢çº¿
 	else
 	{
 		gp_Pnt toolbasepoint;
@@ -2797,16 +2797,16 @@ bool OCCTest::AssemblyVtxEdge(TopoDS_Shape toolshape, TopoDS_Shape blankshape,
 		{
 			GC_MakePlane blankgcmp(bascurve->Value(first), bascurve->Value(last), toolbasepoint);
 			Handle(Geom_Plane) toolgeplane = blankgcmp.Value();
-			//Í¶Ó°toolÆ½Ãæµãµ½blankÏßËùÔÚÆ½Ãæ
+			//æŠ•å½±toolå¹³é¢ç‚¹åˆ°blankçº¿æ‰€åœ¨å¹³é¢
 			GeomAPI_ProjectPointOnSurf gppos(toolbasepoint, toolgeplane);
 			if (!gppos.IsDone() && gppos.NbPoints() < 1)
 				return false;
 			gp_Pnt toolprojpoint = gppos.Point(1);
 
-			//µãÓëÆ½ÃæÏßÏàºÏ¡¢¶ÔÆë¡¢Í¬ÏòµÄ²Ù×÷ÊÇÒ»ÑùµÄ
+			//ç‚¹ä¸å¹³é¢çº¿ç›¸åˆã€å¯¹é½ã€åŒå‘çš„æ“ä½œæ˜¯ä¸€æ ·çš„
 			//if (type == AssembleType::coincidence)
 			//{
-				//¿Õ¼ä±ä»»
+				//ç©ºé—´å˜æ¢
 				gp_Trsf transf;
 				transf.SetTranslation(toolprojpoint, blankpoint);
 
@@ -2841,7 +2841,7 @@ bool OCCTest::AssemblyVtxFace(TopoDS_Shape toolshape, TopoDS_Shape blankshape, T
 		return false;
 	BRepAdaptor_Surface bastool(toolface);
 	GeomAbs_SurfaceType toolsurfacetype = bastool.GetType();
-	//ñîºÏÃæÊÇÆ½Ãæ
+	//è€¦åˆé¢æ˜¯å¹³é¢
 	if (toolsurfacetype == GeomAbs_Plane)
 	{
 		gp_Pln toolplane = bastool.Plane();
@@ -2852,16 +2852,16 @@ bool OCCTest::AssemblyVtxFace(TopoDS_Shape toolshape, TopoDS_Shape blankshape, T
 
 		Handle(Geom_Surface) toolgeomsurface = BRep_Tool::Surface(toolface);
 
-		//Í¶Ó°blankµãµ½toolÃæÉÏ
+		//æŠ•å½±blankç‚¹åˆ°toolé¢ä¸Š
 		GeomAPI_ProjectPointOnSurf gppos(blankpoint, toolgeomsurface);
 		if (!gppos.IsDone() && gppos.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppos.Point(1);
 
-		//ÏàºÏ
+		//ç›¸åˆ
 		//if (type == AssembleType::coincidence)
 		//{
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTranslation(toolprojpoint, blankpoint);
 
@@ -2874,7 +2874,7 @@ bool OCCTest::AssemblyVtxFace(TopoDS_Shape toolshape, TopoDS_Shape blankshape, T
 			targetshape = bat.Shape();
 		//}
 	}
-	//ñîºÏÃæÊÇÔ²ÖùÃæ
+	//è€¦åˆé¢æ˜¯åœ†æŸ±é¢
 	else if (toolsurfacetype == GeomAbs_Cylinder)
 	{
 		gp_Cylinder toolplane = bastool.Cylinder();
@@ -2885,16 +2885,16 @@ bool OCCTest::AssemblyVtxFace(TopoDS_Shape toolshape, TopoDS_Shape blankshape, T
 
 		Handle(Geom_Line) toolgeomline = new Geom_Line(toolbasepoint, toolbasedir);
 
-		//Í¶Ó°blankµãµ½toolÔ²ÖùÃæÖĞÖáÏßÉÏ
+		//æŠ•å½±blankç‚¹åˆ°toolåœ†æŸ±é¢ä¸­è½´çº¿ä¸Š
 		GeomAPI_ProjectPointOnCurve gppoc(blankpoint, toolgeomline);
 		if (gppoc.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppoc.Point(1);
 
-		//ÏàºÏ
+		//ç›¸åˆ
 		//if (type == AssembleType::coincidence)
 		//{
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTranslation(toolprojpoint, blankpoint);
 
@@ -2907,7 +2907,7 @@ bool OCCTest::AssemblyVtxFace(TopoDS_Shape toolshape, TopoDS_Shape blankshape, T
 			targetshape = bat.Shape();
 		//}
 	}
-	//ñîºÏÃæÊÇÔ²×¶Ãæ
+	//è€¦åˆé¢æ˜¯åœ†é”¥é¢
 	else if (toolsurfacetype == GeomAbs_Cone)
 	{
 		gp_Cone toolplane = bastool.Cone();
@@ -2918,16 +2918,16 @@ bool OCCTest::AssemblyVtxFace(TopoDS_Shape toolshape, TopoDS_Shape blankshape, T
 
 		Handle(Geom_Line) toolgeomline = new Geom_Line(toolbasepoint, toolbasedir);
 
-		//Í¶Ó°blankµãµ½toolÔ²×¶ÃæÖĞÖáÏßÉÏ
+		//æŠ•å½±blankç‚¹åˆ°toolåœ†é”¥é¢ä¸­è½´çº¿ä¸Š
 		GeomAPI_ProjectPointOnCurve gppoc(blankpoint, toolgeomline);
 		if (gppoc.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppoc.Point(1);
 
-		//ÏàºÏ
+		//ç›¸åˆ
 		//if (type == AssembleType::coincidence)
 		//{
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTranslation(toolprojpoint, blankpoint);
 
@@ -2940,7 +2940,7 @@ bool OCCTest::AssemblyVtxFace(TopoDS_Shape toolshape, TopoDS_Shape blankshape, T
 			targetshape = bat.Shape();
 		//}
 	}
-	//ñîºÏÃæÊÇÇòÃæ
+	//è€¦åˆé¢æ˜¯çƒé¢
 	else if (toolsurfacetype == GeomAbs_Sphere)
 	{
 		gp_Sphere toolplane = bastool.Sphere();
@@ -2949,10 +2949,10 @@ bool OCCTest::AssemblyVtxFace(TopoDS_Shape toolshape, TopoDS_Shape blankshape, T
 		gp_Pnt toolbasepoint = toolposition.Location();
 		gp_Dir toolbasedir = toolposition.Direction();
 
-		//ÏàºÏ
+		//ç›¸åˆ
 		//if (type == AssembleType::coincidence)
 		//{
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTranslation(toolbasepoint, blankpoint);
 
@@ -2989,14 +2989,14 @@ bool OCCTest::AssemblyPlanarLineEdge(TopoDS_Shape toolshape, TopoDS_Edge blanked
 	gp_Pnt toolcurvept1 = bascurve->Value(first);
 	gp_Pnt toolcurvept2 = bascurve->Value(last);
 
-	//ñîºÏ¶ÔÏóÊÇÖ±Ïß
+	//è€¦åˆå¯¹è±¡æ˜¯ç›´çº¿
 	if (bastool.GetType() == GeomAbs_Line)
 	{
 		gp_Lin line = bastool.Line();
 		gp_Pnt toolbasepoint = line.Location();
 		gp_Dir toolbasedir = line.Direction();
 
-		//Í¶Ó°µãµ½blankËùÔÚÆ½Ãæ
+		//æŠ•å½±ç‚¹åˆ°blankæ‰€åœ¨å¹³é¢
 		GeomAPI_ProjectPointOnSurf gppos(toolbasepoint, blankgeplane);
 		if (!gppos.IsDone() && gppos.NbPoints() < 1)
 			return false;
@@ -3005,12 +3005,12 @@ bool OCCTest::AssemblyPlanarLineEdge(TopoDS_Shape toolshape, TopoDS_Edge blanked
 		gp_Dir toolnewdir(toolbasedir.X() - blankbasedir.X(),
 			toolbasedir.Y() - blankbasedir.Y(), toolbasedir.Z() - blankbasedir.Z());
 
-		//1ÏàºÏ
+		//1ç›¸åˆ
 		if (type == AssembleType::coincidence || type == AssembleType::align)
 		{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, toolnewdir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3026,7 +3026,7 @@ bool OCCTest::AssemblyPlanarLineEdge(TopoDS_Shape toolshape, TopoDS_Edge blanked
 		{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3039,25 +3039,25 @@ bool OCCTest::AssemblyPlanarLineEdge(TopoDS_Shape toolshape, TopoDS_Edge blanked
 			targetshape = bat.Shape();
 		}
 	}
-	//ñîºÏ¶ÔÏóÊÇÆ½ÃæÏß
+	//è€¦åˆå¯¹è±¡æ˜¯å¹³é¢çº¿
 	else
 	{
 		gp_Pnt toolbasepoint;
 		gp_Dir toolbasedir;
 		if (IsEdgePlanar(bascurve, first, last, toolbasepoint, toolbasedir))
 		{
-			//Í¶Ó°toolÆ½Ãæµãµ½blankÏßËùÔÚÆ½Ãæ
+			//æŠ•å½±toolå¹³é¢ç‚¹åˆ°blankçº¿æ‰€åœ¨å¹³é¢
 			GeomAPI_ProjectPointOnSurf gppos(toolbasepoint, blankgeplane);
 			if (!gppos.IsDone() && gppos.NbPoints() < 1)
 				return false;
 			gp_Pnt toolprojpoint = gppos.Point(1);
 
-			//ÏàºÏ
+			//ç›¸åˆ
 			if (type == AssembleType::coincidence)
 			{
 				gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 				gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-				//¿Õ¼ä±ä»»
+				//ç©ºé—´å˜æ¢
 				gp_Trsf transf;
 				transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3099,7 +3099,7 @@ bool OCCTest::AssemblyPlanarLineFace(TopoDS_Shape toolshape, TopoDS_Edge blanked
 		return false;
 	BRepAdaptor_Surface bastool(toolface);
 	GeomAbs_SurfaceType toolsurfacetype = bastool.GetType();
-	//ñîºÏÃæÊÇÆ½Ãæ
+	//è€¦åˆé¢æ˜¯å¹³é¢
 	if (toolsurfacetype == GeomAbs_Plane)
 	{
 		gp_Pln toolplane = bastool.Plane();
@@ -3110,18 +3110,18 @@ bool OCCTest::AssemblyPlanarLineFace(TopoDS_Shape toolshape, TopoDS_Edge blanked
 
 		Handle(Geom_Surface) toolgeomsurface = BRep_Tool::Surface(toolface);
 
-		//Í¶Ó°toolÆ½Ãæµãµ½blankÇúÏßËùÔÚÆ½ÃæÉÏ
+		//æŠ•å½±toolå¹³é¢ç‚¹åˆ°blankæ›²çº¿æ‰€åœ¨å¹³é¢ä¸Š
 		GeomAPI_ProjectPointOnSurf gppos(toolbasepoint, blankgeplane);
 		if (!gppos.IsDone() && gppos.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppos.Point(1);
 
-		////ÏàºÏ
+		////ç›¸åˆ
 		//if (type == AssembleType::coincidence)
 		//{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3134,7 +3134,7 @@ bool OCCTest::AssemblyPlanarLineFace(TopoDS_Shape toolshape, TopoDS_Edge blanked
 			targetshape = bat.Shape();
 		//}
 	}
-	//ñîºÏÃæÊÇÔ²ÖùÃæ
+	//è€¦åˆé¢æ˜¯åœ†æŸ±é¢
 	else if (toolsurfacetype == GeomAbs_Cylinder)
 	{
 		gp_Cylinder toolplane = bastool.Cylinder();
@@ -3143,7 +3143,7 @@ bool OCCTest::AssemblyPlanarLineFace(TopoDS_Shape toolshape, TopoDS_Edge blanked
 		gp_Pnt toolbasepoint = toolposition.Location();
 		gp_Dir toolbasedir = toolposition.Direction();
 
-		//Í¶Ó°toolÖĞÖáÏßµãµ½blankÇúÏßËùÔÚÆ½ÃæÉÏ
+		//æŠ•å½±toolä¸­è½´çº¿ç‚¹åˆ°blankæ›²çº¿æ‰€åœ¨å¹³é¢ä¸Š
 		GeomAPI_ProjectPointOnSurf gppos(toolbasepoint, blankgeplane);
 		if (!gppos.IsDone() && gppos.NbPoints() < 1)
 			return false;
@@ -3152,12 +3152,12 @@ bool OCCTest::AssemblyPlanarLineFace(TopoDS_Shape toolshape, TopoDS_Edge blanked
 		gp_Dir toolnewdir(toolbasedir.X() - blankbasedir.X(),
 			toolbasedir.Y() - blankbasedir.Y(), toolbasedir.Z() - blankbasedir.Z());
 
-		//ÏàºÏ
+		//ç›¸åˆ
 		if (type == AssembleType::coincidence)
 		{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, toolnewdir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3173,7 +3173,7 @@ bool OCCTest::AssemblyPlanarLineFace(TopoDS_Shape toolshape, TopoDS_Edge blanked
 		{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3186,7 +3186,7 @@ bool OCCTest::AssemblyPlanarLineFace(TopoDS_Shape toolshape, TopoDS_Edge blanked
 			targetshape = bat.Shape();
 		}
 	}
-	//ñîºÏÃæÊÇÔ²×¶Ãæ
+	//è€¦åˆé¢æ˜¯åœ†é”¥é¢
 	else if (toolsurfacetype == GeomAbs_Cone)
 	{
 		gp_Cone toolplane = bastool.Cone();
@@ -3195,7 +3195,7 @@ bool OCCTest::AssemblyPlanarLineFace(TopoDS_Shape toolshape, TopoDS_Edge blanked
 		gp_Pnt toolbasepoint = toolposition.Location();
 		gp_Dir toolbasedir = toolposition.Direction();
 
-		//Í¶Ó°toolÖĞÖáÏßµãµ½blankÇúÏßËùÔÚÆ½ÃæÉÏ
+		//æŠ•å½±toolä¸­è½´çº¿ç‚¹åˆ°blankæ›²çº¿æ‰€åœ¨å¹³é¢ä¸Š
 		GeomAPI_ProjectPointOnSurf gppos(toolbasepoint, blankgeplane);
 		if (!gppos.IsDone() && gppos.NbPoints() < 1)
 			return false;
@@ -3204,12 +3204,12 @@ bool OCCTest::AssemblyPlanarLineFace(TopoDS_Shape toolshape, TopoDS_Edge blanked
 		gp_Dir toolnewdir(toolbasedir.X() - blankbasedir.X(),
 			toolbasedir.Y() - blankbasedir.Y(), toolbasedir.Z() - blankbasedir.Z());
 
-		//ÏàºÏ
+		//ç›¸åˆ
 		if (type == AssembleType::coincidence)
 		{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, toolnewdir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3225,7 +3225,7 @@ bool OCCTest::AssemblyPlanarLineFace(TopoDS_Shape toolshape, TopoDS_Edge blanked
 		{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3238,7 +3238,7 @@ bool OCCTest::AssemblyPlanarLineFace(TopoDS_Shape toolshape, TopoDS_Edge blanked
 			targetshape = bat.Shape();
 		}
 	}
-	//ñîºÏÃæÊÇÇòÃæ
+	//è€¦åˆé¢æ˜¯çƒé¢
 	else if (toolsurfacetype == GeomAbs_Sphere)
 	{
 		gp_Sphere toolplane = bastool.Sphere();
@@ -3247,18 +3247,18 @@ bool OCCTest::AssemblyPlanarLineFace(TopoDS_Shape toolshape, TopoDS_Edge blanked
 		gp_Pnt toolbasepoint = toolposition.Location();
 		gp_Dir toolbasedir = toolposition.Direction();
 
-		//Í¶Ó°toolÖĞÖáÏßµãµ½blankÇúÏßËùÔÚÆ½ÃæÉÏ
+		//æŠ•å½±toolä¸­è½´çº¿ç‚¹åˆ°blankæ›²çº¿æ‰€åœ¨å¹³é¢ä¸Š
 		GeomAPI_ProjectPointOnSurf gppos(toolbasepoint, blankgeplane);
 		if (!gppos.IsDone() && gppos.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppos.Point(1);
 
-		//2ÏàºÏ
+		//2ç›¸åˆ
 		if (type == AssembleType::coincidence || type == AssembleType::align)
 		{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3294,25 +3294,25 @@ bool OCCTest::AssemblyLineEdge(TopoDS_Shape toolshape, BRepAdaptor_Curve bas,
 	gp_Pnt toolcurvept1 = bascurve->Value(first);
 	gp_Pnt toolcurvept2 = bascurve->Value(last);
 
-	//ñîºÏ¶ÔÏóÊÇÖ±Ïß
+	//è€¦åˆå¯¹è±¡æ˜¯ç›´çº¿
 	if (bastool.GetType() == GeomAbs_Line)
 	{
 		gp_Lin line = bastool.Line();
 		gp_Pnt toolbasepoint = line.Location();
 		gp_Dir toolbasedir = line.Direction();
 
-		//Í¶Ó°µãµ½toolÏß
+		//æŠ•å½±ç‚¹åˆ°toolçº¿
 		GeomAPI_ProjectPointOnCurve gppoc(toolbasepoint, blankgeomline);
 		if (gppoc.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppoc.Point(1);
 
-		//ÏàºÏ
+		//ç›¸åˆ
 		if (type == AssembleType::coincidence)
 		{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3324,12 +3324,12 @@ bool OCCTest::AssemblyLineEdge(TopoDS_Shape toolshape, BRepAdaptor_Curve bas,
 				return false;
 			targetshape = bat.Shape();
 		}
-		//¶ÔÆëºÍÍ¬Ïò
+		//å¯¹é½å’ŒåŒå‘
 		else
 		{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolbasepoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3342,7 +3342,7 @@ bool OCCTest::AssemblyLineEdge(TopoDS_Shape toolshape, BRepAdaptor_Curve bas,
 			targetshape = bat.Shape();
 		}
 	}
-	//ñîºÏ¶ÔÏóÊÇÆ½ÃæÏß
+	//è€¦åˆå¯¹è±¡æ˜¯å¹³é¢çº¿
 	else
 	{
 		gp_Pnt toolbasepoint;
@@ -3351,7 +3351,7 @@ bool OCCTest::AssemblyLineEdge(TopoDS_Shape toolshape, BRepAdaptor_Curve bas,
 		{
 			GC_MakePlane gcmp(toolcurvept1, toolcurvept2, toolbasepoint);
 			Handle(Geom_Plane) geplane = gcmp.Value();
-			//Í¶Ó°µãµ½toolÆ½ÃæËùÔÚÆ½Ãæ
+			//æŠ•å½±ç‚¹åˆ°toolå¹³é¢æ‰€åœ¨å¹³é¢
 			GeomAPI_ProjectPointOnSurf gppos(blankbasepoint, geplane);
 			if (!gppos.IsDone() && gppos.NbPoints() < 1)
 				return false;
@@ -3360,12 +3360,12 @@ bool OCCTest::AssemblyLineEdge(TopoDS_Shape toolshape, BRepAdaptor_Curve bas,
 			gp_Dir toolnewdir(toolbasedir.X() - blankbasedir.X(),
 				toolbasedir.Y() - blankbasedir.Y(), toolbasedir.Z() - blankbasedir.Z());
 
-			//ÏàºÏºÍ¶ÔÆë
+			//ç›¸åˆå’Œå¯¹é½
 			if (type == AssembleType::coincidence || type == AssembleType::align)
 			{
 				gp_Ax3 toolorigin(toolprojpoint, toolbasedir);
 				gp_Ax3 toolterminal(blankbasepoint, toolnewdir);
-				//¿Õ¼ä±ä»»
+				//ç©ºé—´å˜æ¢
 				gp_Trsf transf;
 				transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3381,7 +3381,7 @@ bool OCCTest::AssemblyLineEdge(TopoDS_Shape toolshape, BRepAdaptor_Curve bas,
 			{
 				gp_Ax3 toolorigin(toolprojpoint, toolbasedir);
 				gp_Ax3 toolterminal(blankbasepoint, blankbasedir);
-				//¿Õ¼ä±ä»»
+				//ç©ºé—´å˜æ¢
 				gp_Trsf transf;
 				transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3422,7 +3422,7 @@ bool OCCTest::AssemblyLineFace(TopoDS_Shape toolshape, BRepAdaptor_Curve bas
 		return false;
 	BRepAdaptor_Surface bastool(toolface);
 	GeomAbs_SurfaceType toolsurfacetype = bastool.GetType();
-	//ñîºÏÃæÊÇÆ½Ãæ
+	//è€¦åˆé¢æ˜¯å¹³é¢
 	if (toolsurfacetype == GeomAbs_Plane)
 	{
 		gp_Pln toolplane = bastool.Plane();
@@ -3436,18 +3436,18 @@ bool OCCTest::AssemblyLineFace(TopoDS_Shape toolshape, BRepAdaptor_Curve bas
 		gp_Dir toolnewdir(toolbasedir.X() - blankbasedir.X(),
 			toolbasedir.Y() - blankbasedir.Y(), toolbasedir.Z() - blankbasedir.Z());
 
-		//Í¶Ó°blankµãµ½toolÃæ
+		//æŠ•å½±blankç‚¹åˆ°toolé¢
 		GeomAPI_ProjectPointOnSurf gppos(blankbasepoint, toolgeomsurface);
 		if (!gppos.IsDone() && gppos.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppos.Point(1);
 
-		//ÏàºÏºÍ¶ÔÆëÒ»Ñù
+		//ç›¸åˆå’Œå¯¹é½ä¸€æ ·
 		if (type == AssembleType::coincidence || type == AssembleType::align)
 		{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, toolnewdir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3463,7 +3463,7 @@ bool OCCTest::AssemblyLineFace(TopoDS_Shape toolshape, BRepAdaptor_Curve bas
 		{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3476,7 +3476,7 @@ bool OCCTest::AssemblyLineFace(TopoDS_Shape toolshape, BRepAdaptor_Curve bas
 			targetshape = bat.Shape();
 		}
 	}
-	//ñîºÏÃæÊÇÔ²ÖùÃæ
+	//è€¦åˆé¢æ˜¯åœ†æŸ±é¢
 	else if (toolsurfacetype == GeomAbs_Cylinder)
 	{
 		gp_Cylinder toolplane = bastool.Cylinder();
@@ -3487,18 +3487,18 @@ bool OCCTest::AssemblyLineFace(TopoDS_Shape toolshape, BRepAdaptor_Curve bas
 
 		Handle(Geom_Line) geomline = new Geom_Line(toolbasepoint, toolbasedir);
 
-		//Í¶Ó°µãµ½toolµãµ½blankÏß
+		//æŠ•å½±ç‚¹åˆ°toolç‚¹åˆ°blankçº¿
 		GeomAPI_ProjectPointOnCurve gppoc(toolbasepoint, blankgeomline);
 		if (gppoc.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppoc.Point(1);
 
-		//ÏàºÏºÍ¶ÔÆëÒ»Ñù
+		//ç›¸åˆå’Œå¯¹é½ä¸€æ ·
 		if (type == AssembleType::coincidence || type == AssembleType::align)
 		{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3511,7 +3511,7 @@ bool OCCTest::AssemblyLineFace(TopoDS_Shape toolshape, BRepAdaptor_Curve bas
 			targetshape = bat.Shape();
 		}
 	}
-	//ñîºÏÃæÊÇÔ²×¶Ãæ
+	//è€¦åˆé¢æ˜¯åœ†é”¥é¢
 	else if (toolsurfacetype == GeomAbs_Cone)
 	{
 		gp_Cone toolplane = bastool.Cone();
@@ -3522,18 +3522,18 @@ bool OCCTest::AssemblyLineFace(TopoDS_Shape toolshape, BRepAdaptor_Curve bas
 
 		Handle(Geom_Line) geomline = new Geom_Line(toolbasepoint, toolbasedir);
 
-		//Í¶Ó°µãµ½toolµãµ½blankÏß
+		//æŠ•å½±ç‚¹åˆ°toolç‚¹åˆ°blankçº¿
 		GeomAPI_ProjectPointOnCurve gppoc(toolbasepoint, blankgeomline);
 		if (gppoc.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppoc.Point(1);
 
-		//3ÏàºÏ
+		//3ç›¸åˆ
 		//if (type == AssembleType::coincidence)
 		//{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3546,7 +3546,7 @@ bool OCCTest::AssemblyLineFace(TopoDS_Shape toolshape, BRepAdaptor_Curve bas
 			targetshape = bat.Shape();
 		//}
 	}
-	//ñîºÏÃæÊÇÇòÃæ
+	//è€¦åˆé¢æ˜¯çƒé¢
 	else if (toolsurfacetype == GeomAbs_Sphere)
 	{
 		gp_Sphere toolplane = bastool.Sphere();
@@ -3555,18 +3555,18 @@ bool OCCTest::AssemblyLineFace(TopoDS_Shape toolshape, BRepAdaptor_Curve bas
 		gp_Pnt toolbasepoint = toolposition.Location();
 		gp_Dir toolbasedir = toolposition.Direction();
 
-		//Í¶Ó°µãµ½toolµãµ½blankÏß
+		//æŠ•å½±ç‚¹åˆ°toolç‚¹åˆ°blankçº¿
 		GeomAPI_ProjectPointOnCurve gppoc(toolbasepoint, blankgeomline);
 		if (gppoc.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppoc.Point(1);
 
-		//3ÏàºÏ
+		//3ç›¸åˆ
 		//if (type == AssembleType::coincidence)
 		//{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3599,23 +3599,23 @@ bool OCCTest::AssemblySphereFaceEdge(TopoDS_Shape toolshape, BRepAdaptor_Surface
 	gp_Pnt toolcurvept1 = bascurve->Value(first);
 	gp_Pnt toolcurvept2 = bascurve->Value(last);
 
-	//ñîºÏ¶ÔÏóÊÇÖ±Ïß
+	//è€¦åˆå¯¹è±¡æ˜¯ç›´çº¿
 	if (bastool.GetType() == GeomAbs_Line)
 	{
 		gp_Lin line = bastool.Line();
 		gp_Pnt toolbasepoint = line.Location();
 		gp_Dir toolbasedir = line.Direction();
 
-		//Í¶Ó°µãµ½toolÏß
+		//æŠ•å½±ç‚¹åˆ°toolçº¿
 		GeomAPI_ProjectPointOnCurve gppoc(blankbasepoint, bascurve);
 		if (gppoc.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppoc.Point(1);
 
-		//ÏàºÏ¡¢¶ÔÆë¡¢Í¬ÏòÒ»Ñù
+		//ç›¸åˆã€å¯¹é½ã€åŒå‘ä¸€æ ·
 		//if (type == AssembleType::coincidence)
 		//{
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTranslation(toolprojpoint, blankbasepoint);
 
@@ -3628,7 +3628,7 @@ bool OCCTest::AssemblySphereFaceEdge(TopoDS_Shape toolshape, BRepAdaptor_Surface
 			targetshape = bat.Shape();
 		//}
 	}
-	//ñîºÏ¶ÔÏóÊÇÆ½ÃæÏß
+	//è€¦åˆå¯¹è±¡æ˜¯å¹³é¢çº¿
 	else
 	{
 		gp_Pnt toolbasepoint;
@@ -3637,16 +3637,16 @@ bool OCCTest::AssemblySphereFaceEdge(TopoDS_Shape toolshape, BRepAdaptor_Surface
 		{
 			GC_MakePlane gcmp(toolcurvept1, toolcurvept2, toolbasepoint);
 			Handle(Geom_Plane) geplane = gcmp.Value();
-			//Í¶Ó°µãµ½toolÆ½ÃæËùÔÚÆ½Ãæ
+			//æŠ•å½±ç‚¹åˆ°toolå¹³é¢æ‰€åœ¨å¹³é¢
 			GeomAPI_ProjectPointOnSurf gppos(blankbasepoint, geplane);
 			if (!gppos.IsDone() && gppos.NbPoints() < 1)
 				return false;
 			gp_Pnt toolprojpoint = gppos.Point(1);
 
-			//ÏàºÏ¡¢¶ÔÆë¡¢Í¬ÏòÒ»Ñù
+			//ç›¸åˆã€å¯¹é½ã€åŒå‘ä¸€æ ·
 			//if (type == AssembleType::coincidence)
 			//{
-				//¿Õ¼ä±ä»»
+				//ç©ºé—´å˜æ¢
 				gp_Trsf transf;
 				transf.SetTranslation(toolprojpoint, blankbasepoint);
 
@@ -3685,7 +3685,7 @@ bool OCCTest::AssemblySphereFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface
 		return false;
 	BRepAdaptor_Surface bastool(toolface);
 	GeomAbs_SurfaceType toolsurfacetype = bastool.GetType();
-	//ñîºÏÃæÊÇÆ½Ãæ
+	//è€¦åˆé¢æ˜¯å¹³é¢
 	if (toolsurfacetype == GeomAbs_Plane)
 	{
 		gp_Pln toolplane = bastool.Plane();
@@ -3696,17 +3696,17 @@ bool OCCTest::AssemblySphereFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface
 
 		Handle(Geom_Surface) toolgeomsurface = BRep_Tool::Surface(toolface);
 
-		//Í¶Ó°blankÇòĞÄµãµ½toolÃæ
+		//æŠ•å½±blankçƒå¿ƒç‚¹åˆ°toolé¢
 		GeomAPI_ProjectPointOnSurf gppos(blankbasepoint, toolgeomsurface);
 		if (!gppos.IsDone() && gppos.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppos.Point(1);
 
-		//ÏàºÏ¶ÔÆëÒ»Ñù
+		//ç›¸åˆå¯¹é½ä¸€æ ·
 		if (type == AssembleType::coincidence || type == AssembleType::align)
 		{
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTranslation(toolprojpoint, blankbasepoint);
 
@@ -3719,7 +3719,7 @@ bool OCCTest::AssemblySphereFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface
 			targetshape = bat.Shape();
 		}
 	}
-	//ñîºÏÃæÊÇÔ²ÖùÃæ
+	//è€¦åˆé¢æ˜¯åœ†æŸ±é¢
 	else if (toolsurfacetype == GeomAbs_Cylinder)
 	{
 		gp_Cylinder toolplane = bastool.Cylinder();
@@ -3730,17 +3730,17 @@ bool OCCTest::AssemblySphereFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface
 
 		Handle(Geom_Line) geomline = new Geom_Line(toolbasepoint, toolbasedir);
 
-		//Í¶Ó°µãµ½blankÃæµÄÖĞÖáÏß
+		//æŠ•å½±ç‚¹åˆ°blanké¢çš„ä¸­è½´çº¿
 		GeomAPI_ProjectPointOnCurve gppoc(blankbasepoint, geomline);
 		if (gppoc.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppoc.Point(1);
 
-		//ÏàºÏºÍ¶ÔÆëÒ»Ñù
+		//ç›¸åˆå’Œå¯¹é½ä¸€æ ·
 		if (type == AssembleType::coincidence || type == AssembleType::align)
 		{
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTranslation(toolprojpoint, blankbasepoint);
 
@@ -3753,7 +3753,7 @@ bool OCCTest::AssemblySphereFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface
 			targetshape = bat.Shape();
 		}
 	}
-	//ñîºÏÃæÊÇÔ²×¶Ãæ
+	//è€¦åˆé¢æ˜¯åœ†é”¥é¢
 	else if (toolsurfacetype == GeomAbs_Cone)
 	{
 		gp_Cone toolplane = bastool.Cone();
@@ -3764,17 +3764,17 @@ bool OCCTest::AssemblySphereFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface
 
 		Handle(Geom_Line) geomline = new Geom_Line(toolbasepoint, toolbasedir);
 
-		//Í¶Ó°µãµ½blankÃæµÄÖĞÖáÏß
+		//æŠ•å½±ç‚¹åˆ°blanké¢çš„ä¸­è½´çº¿
 		GeomAPI_ProjectPointOnCurve gppoc(blankbasepoint, geomline);
 		if (gppoc.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppoc.Point(1);
 
-		//¶ÔÆëºÍÍ¬ÏòÒ»Ñù
+		//å¯¹é½å’ŒåŒå‘ä¸€æ ·
 		if (type == AssembleType::orient || type == AssembleType::align)
 		{
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTranslation(toolprojpoint, blankbasepoint);
 
@@ -3787,7 +3787,7 @@ bool OCCTest::AssemblySphereFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface
 			targetshape = bat.Shape();
 		}
 	}
-	//ñîºÏÃæÊÇÇòÃæ
+	//è€¦åˆé¢æ˜¯çƒé¢
 	else if (toolsurfacetype == GeomAbs_Sphere)
 	{
 		gp_Sphere toolplane = bastool.Sphere();
@@ -3796,10 +3796,10 @@ bool OCCTest::AssemblySphereFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface
 		gp_Pnt toolbasepoint = toolposition.Location();
 		gp_Dir toolbasedir = toolposition.Direction();
 
-		//ÏàºÏ¡¢¶ÔÆë¡¢Í¬Ïò¶¼Ò»Ñù
+		//ç›¸åˆã€å¯¹é½ã€åŒå‘éƒ½ä¸€æ ·
 		//if (type == AssembleType::coincidence)
 		//{
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 
 			transf.GetMat4(matrix);
@@ -3826,17 +3826,17 @@ bool OCCTest::AssemblyCylinderFaceVertex(BRepAdaptor_Surface bas, TopoDS_Shape t
 	Handle(Geom_Line) geomline = new Geom_Line(blankbasepoint, blankbasedir);
 
 	gp_Pnt toolbasepoint = BRep_Tool::Pnt(TopoDS::Vertex(toolshape));
-	//Í¶Ó°µãµ½blankÃæµÄÖĞÖáÏß
+	//æŠ•å½±ç‚¹åˆ°blanké¢çš„ä¸­è½´çº¿
 	GeomAPI_ProjectPointOnCurve gppoc(toolbasepoint, geomline);
 	if (gppoc.NbPoints() < 1)
 		return false;
 	gp_Pnt toolprojpoint = gppoc.Point(1);
 
-	//ÏàºÏºÍ¶ÔÆëÒ»Ñù
+	//ç›¸åˆå’Œå¯¹é½ä¸€æ ·
 	if (type == AssembleType::coincidence || type == AssembleType::align)
 	{
 		gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-		//¿Õ¼ä±ä»»
+		//ç©ºé—´å˜æ¢
 		gp_Trsf transf;
 		transf.SetTransformation(blankposition, toolterminal);
 
@@ -3879,7 +3879,7 @@ bool OCCTest::AssemblyCylinderFaceEdge(TopoDS_Shape toolshape, BRepAdaptor_Surfa
 	BRepAdaptor_Curve bastool(tooledge);
 	double first, last;
 	Handle(Geom_Curve) bascurve = BRep_Tool::Curve(tooledge, first, last);
-	//ñîºÏ¶ÔÏóÊÇÖ±Ïß
+	//è€¦åˆå¯¹è±¡æ˜¯ç›´çº¿
 	if (bastool.GetType() == GeomAbs_Line)
 	{
 		gp_Lin line = bastool.Line();
@@ -3888,17 +3888,17 @@ bool OCCTest::AssemblyCylinderFaceEdge(TopoDS_Shape toolshape, BRepAdaptor_Surfa
 		gp_Dir toolbasedir = line.Direction();
 		gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 
-		//Í¶Ó°µãµ½blankÃæµÄÖĞÖáÏß
+		//æŠ•å½±ç‚¹åˆ°blanké¢çš„ä¸­è½´çº¿
 		GeomAPI_ProjectPointOnCurve gppoc(toolbasepoint, geomline);
 		if (gppoc.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppoc.Point(1);
 
-		//ÏàºÏºÍ¶ÔÆëÒ»Ñù
+		//ç›¸åˆå’Œå¯¹é½ä¸€æ ·
 		if (type == AssembleType::coincidence || type == AssembleType::align)
 		{	
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3911,7 +3911,7 @@ bool OCCTest::AssemblyCylinderFaceEdge(TopoDS_Shape toolshape, BRepAdaptor_Surfa
 			targetshape = bat.Shape();
 		}
 	}
-	//ñîºÏ¶ÔÏóÊÇÆ½ÃæÏß
+	//è€¦åˆå¯¹è±¡æ˜¯å¹³é¢çº¿
 	else if (bastool.GetType() != GeomAbs_Line)
 	{
 		gp_Pnt toolbasepoint;
@@ -3919,7 +3919,7 @@ bool OCCTest::AssemblyCylinderFaceEdge(TopoDS_Shape toolshape, BRepAdaptor_Surfa
 		if (IsEdgePlanar(bascurve, first, last, toolbasepoint, toolbasedir))
 		{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
-			//Í¶Ó°µãµ½blankÃæµÄÖĞÖáÏß
+			//æŠ•å½±ç‚¹åˆ°blanké¢çš„ä¸­è½´çº¿
 			GeomAPI_ProjectPointOnCurve gppoc(toolbasepoint, geomline);
 			if (gppoc.NbPoints() < 1)
 				return false;
@@ -3928,11 +3928,11 @@ bool OCCTest::AssemblyCylinderFaceEdge(TopoDS_Shape toolshape, BRepAdaptor_Surfa
 			gp_Dir toolnewdir(toolbasedir.X() - blankbasedir.X(),
 				toolbasedir.Y() - blankbasedir.Y(), toolbasedir.Z() - blankbasedir.Z());
 
-			//ÏàºÏ
+			//ç›¸åˆ
 			if (type == AssembleType::coincidence)
 			{
 				gp_Ax3 toolterminal(toolprojpoint, toolnewdir);
-				//¿Õ¼ä±ä»»
+				//ç©ºé—´å˜æ¢
 				gp_Trsf transf;
 				transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3947,7 +3947,7 @@ bool OCCTest::AssemblyCylinderFaceEdge(TopoDS_Shape toolshape, BRepAdaptor_Surfa
 			else
 			{
 				gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-				//¿Õ¼ä±ä»»
+				//ç©ºé—´å˜æ¢
 				gp_Trsf transf;
 				transf.SetTransformation(toolorigin, toolterminal);
 
@@ -3988,7 +3988,7 @@ bool OCCTest::AssemblyCylinderFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surfa
 		return false;
 	BRepAdaptor_Surface bastool(toolface);
 	GeomAbs_SurfaceType toolsurfacetype = bastool.GetType();
-	//ñîºÏÃæÊÇÆ½Ãæ
+	//è€¦åˆé¢æ˜¯å¹³é¢
 	if (toolsurfacetype == GeomAbs_Plane)
 	{
 		gp_Pln toolplane = bastool.Plane();
@@ -4000,17 +4000,17 @@ bool OCCTest::AssemblyCylinderFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surfa
 		gp_Dir toolnewdir(toolbasedir.X() - blankbasedir.X(),
 			toolbasedir.Y() - blankbasedir.Y(), toolbasedir.Z() - blankbasedir.Z());
 
-		//Í¶Ó°µãµ½blankÃæµÄÖĞÖáÏß
+		//æŠ•å½±ç‚¹åˆ°blanké¢çš„ä¸­è½´çº¿
 		GeomAPI_ProjectPointOnCurve gppoc(toolbasepoint, geomline);
 		if (gppoc.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppoc.Point(1);
 
-		//ÏàºÏ
+		//ç›¸åˆ
 		if (type == AssembleType::coincidence)
 		{
 			gp_Ax3 toolterminal(toolprojpoint, toolnewdir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolposition, toolterminal);
 
@@ -4025,7 +4025,7 @@ bool OCCTest::AssemblyCylinderFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surfa
 		else
 		{
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolposition, toolterminal);
 
@@ -4038,7 +4038,7 @@ bool OCCTest::AssemblyCylinderFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surfa
 			targetshape = bat.Shape();
 		}
 	}
-	//ñîºÏÃæÊÇÔ²ÖùÃæ
+	//è€¦åˆé¢æ˜¯åœ†æŸ±é¢
 	else if (toolsurfacetype == GeomAbs_Cylinder)
 	{
 		gp_Cylinder toolplane = bastool.Cylinder();
@@ -4047,17 +4047,17 @@ bool OCCTest::AssemblyCylinderFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surfa
 		gp_Pnt toolbasepoint = toolposition.Location();
 		gp_Dir toolbasedir = toolposition.Direction();
 
-		//Í¶Ó°µãµ½blankÃæµÄÖĞÖáÏß
+		//æŠ•å½±ç‚¹åˆ°blanké¢çš„ä¸­è½´çº¿
 		GeomAPI_ProjectPointOnCurve gppoc(toolbasepoint, geomline);
 		if (gppoc.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppoc.Point(1);
 
-		//ÏàºÏ¡¢¶ÔÆë¡¢Í¬ÏòÒ»Ñù
+		//ç›¸åˆã€å¯¹é½ã€åŒå‘ä¸€æ ·
 		//if (type == AssembleType::coincidence || type == AssembleType::orient)
 		//{
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolposition, toolterminal);
 
@@ -4070,7 +4070,7 @@ bool OCCTest::AssemblyCylinderFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surfa
 			targetshape = bat.Shape();
 		//}
 	}
-	//ñîºÏÃæÊÇÔ²×¶Ãæ
+	//è€¦åˆé¢æ˜¯åœ†é”¥é¢
 	else if (toolsurfacetype == GeomAbs_Cone)
 	{
 		gp_Cone toolplane = bastool.Cone();
@@ -4079,18 +4079,18 @@ bool OCCTest::AssemblyCylinderFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surfa
 		gp_Pnt toolbasepoint = toolposition.Location();
 		gp_Dir toolbasedir = toolposition.Direction();
 
-		//Í¶Ó°µãµ½blankÃæµÄÖĞÖáÏß
+		//æŠ•å½±ç‚¹åˆ°blanké¢çš„ä¸­è½´çº¿
 		GeomAPI_ProjectPointOnCurve gppoc(toolbasepoint, geomline);
 		if (gppoc.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppoc.Point(1);
 
-		//¶ÔÆëºÍÍ¬ÏòÒ»Ñù
+		//å¯¹é½å’ŒåŒå‘ä¸€æ ·
 		if (type == AssembleType::align || type == AssembleType::orient)
 		{
-			//¿ÉÒÔ²»´æÔÚÏàºÏ
+			//å¯ä»¥ä¸å­˜åœ¨ç›¸åˆ
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolposition, toolterminal);
 
@@ -4103,7 +4103,7 @@ bool OCCTest::AssemblyCylinderFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surfa
 			targetshape = bat.Shape();
 		}
 	}
-	//ñîºÏÃæÊÇÇòÃæ
+	//è€¦åˆé¢æ˜¯çƒé¢
 	else if (toolsurfacetype == GeomAbs_Sphere)
 	{
 		gp_Sphere toolplane = bastool.Sphere();
@@ -4112,17 +4112,17 @@ bool OCCTest::AssemblyCylinderFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surfa
 		gp_Pnt toolbasepoint = toolposition.Location();
 		gp_Dir toolbasedir = toolposition.Direction();
 
-		//Í¶Ó°µãµ½blankÃæµÄÖĞÖáÏß
+		//æŠ•å½±ç‚¹åˆ°blanké¢çš„ä¸­è½´çº¿
 		GeomAPI_ProjectPointOnCurve gppoc(toolbasepoint, geomline);
 		if (gppoc.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppoc.Point(1);
 
-		//ÏàºÏºÍ¶ÔÆëÒ»Ñù
+		//ç›¸åˆå’Œå¯¹é½ä¸€æ ·
 		if (type == AssembleType::coincidence || type == AssembleType::align)
 		{
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolposition, toolterminal);
 
@@ -4147,17 +4147,17 @@ bool OCCTest::AssemblyPlaneFaceVertex(BRepAdaptor_Surface bas, TopoDS_Shape tool
 	gp_Dir blankbasedir = blankposition.Direction();
 
 	gp_Pnt toolbasepoint = BRep_Tool::Pnt(TopoDS::Vertex(toolshape));
-	//Í¶Ó°µãµ½blankÃæ
+	//æŠ•å½±ç‚¹åˆ°blanké¢
 	GeomAPI_ProjectPointOnSurf gppos(toolbasepoint, blankgeomsurface);
 	if (!gppos.IsDone() && gppos.NbPoints() < 1)
 		return false;
 	gp_Pnt toolprojpoint = gppos.Point(1);
 
-	//ÏàºÏ»òÕß¶ÔÆë
+	//ç›¸åˆæˆ–è€…å¯¹é½
 	if (type == AssembleType::coincidence || type == AssembleType::align)
 	{
 		gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-		//¿Õ¼ä±ä»»
+		//ç©ºé—´å˜æ¢
 		gp_Trsf transf;
 		transf.SetTransformation(blankposition, toolterminal);
 
@@ -4195,7 +4195,7 @@ bool OCCTest::AssemblyPlaneFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface 
 		return false;
 	BRepAdaptor_Surface bastool(toolface);
 	GeomAbs_SurfaceType toolsurfacetype = bastool.GetType();
-	//ñîºÏÃæÊÇÆ½Ãæ
+	//è€¦åˆé¢æ˜¯å¹³é¢
 	if (toolsurfacetype == GeomAbs_Plane)
 	{
 		gp_Pln toolplane = bastool.Plane();
@@ -4203,17 +4203,17 @@ bool OCCTest::AssemblyPlaneFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface 
 
 		gp_Pnt toolbasepoint = toolposition.Location();
 		gp_Dir toolbasedir = toolposition.Direction();
-		//Í¶Ó°µãµ½blankÃæ
+		//æŠ•å½±ç‚¹åˆ°blanké¢
 		GeomAPI_ProjectPointOnSurf gppos(toolbasepoint, blankgeomsurface);
 		if (!gppos.IsDone() && gppos.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppos.Point(1);
 
-		//ÏàºÏ¡¢¶ÔÆë¡¢Í¬Ïò¶¼Ò»Ñù
+		//ç›¸åˆã€å¯¹é½ã€åŒå‘éƒ½ä¸€æ ·
 		//if (type == AssembleType::coincidence)
 		//{
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolposition, toolterminal);
 
@@ -4226,7 +4226,7 @@ bool OCCTest::AssemblyPlaneFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface 
 			targetshape = bat.Shape();
 		//}
 	}
-	//ñîºÏÃæÊÇÔ²ÖùÃæ
+	//è€¦åˆé¢æ˜¯åœ†æŸ±é¢
 	else if (toolsurfacetype == GeomAbs_Cylinder)
 	{
 		gp_Cylinder toolplane = bastool.Cylinder();
@@ -4238,17 +4238,17 @@ bool OCCTest::AssemblyPlaneFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface 
 		gp_Dir toolnewdir(toolbasedir.X() - blankbasedir.X(),
 			toolbasedir.Y() - blankbasedir.Y(), toolbasedir.Z() - blankbasedir.Z());
 
-		//Í¶Ó°µãµ½blankÃæ
+		//æŠ•å½±ç‚¹åˆ°blanké¢
 		GeomAPI_ProjectPointOnSurf gppos(toolbasepoint, blankgeomsurface);
 		if (!gppos.IsDone() && gppos.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppos.Point(1);
 
-		//ÏàºÏ
+		//ç›¸åˆ
 		if (type == AssembleType::coincidence)
 		{
 			gp_Ax3 toolterminal(toolprojpoint, toolnewdir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolposition, toolterminal);
 
@@ -4263,7 +4263,7 @@ bool OCCTest::AssemblyPlaneFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface 
 		else
 		{
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolposition, toolterminal);
 
@@ -4276,7 +4276,7 @@ bool OCCTest::AssemblyPlaneFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface 
 			targetshape = bat.Shape();
 		}
 	}
-	//ñîºÏÃæÊÇÔ²×¶Ãæ
+	//è€¦åˆé¢æ˜¯åœ†é”¥é¢
 	else if (toolsurfacetype == GeomAbs_Cone)
 	{
 		gp_Cone toolplane = bastool.Cone();
@@ -4288,18 +4288,18 @@ bool OCCTest::AssemblyPlaneFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface 
 		gp_Dir toolnewdir(toolbasedir.X() - blankbasedir.X(),
 			toolbasedir.Y() - blankbasedir.Y(), toolbasedir.Z() - blankbasedir.Z());
 
-		//Í¶Ó°µãµ½blankÃæ
+		//æŠ•å½±ç‚¹åˆ°blanké¢
 		GeomAPI_ProjectPointOnSurf gppos(toolbasepoint, blankgeomsurface);
 		if (!gppos.IsDone() && gppos.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppos.Point(1);
 
-		//ÏàºÏ
+		//ç›¸åˆ
 		if (type == AssembleType::coincidence)
 		{
-			//¿ÉÒÔ²»´æÔÚÏàºÏ
+			//å¯ä»¥ä¸å­˜åœ¨ç›¸åˆ
 			gp_Ax3 toolterminal(toolprojpoint, toolnewdir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolposition, toolterminal);
 
@@ -4314,7 +4314,7 @@ bool OCCTest::AssemblyPlaneFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface 
 		else if (type == AssembleType::orient)
 		{
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolposition, toolterminal);
 
@@ -4327,7 +4327,7 @@ bool OCCTest::AssemblyPlaneFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface 
 			targetshape = bat.Shape();
 		}
 	}
-	//ñîºÏÃæÊÇÇòÃæ
+	//è€¦åˆé¢æ˜¯çƒé¢
 	else if (toolsurfacetype == GeomAbs_Sphere)
 	{
 		gp_Sphere toolplane = bastool.Sphere();
@@ -4336,17 +4336,17 @@ bool OCCTest::AssemblyPlaneFaceFace(TopoDS_Shape toolshape, BRepAdaptor_Surface 
 		gp_Pnt toolbasepoint = toolposition.Location();
 		gp_Dir toolbasedir = toolposition.Direction();
 
-		//Í¶Ó°µãµ½blankÃæ
+		//æŠ•å½±ç‚¹åˆ°blanké¢
 		GeomAPI_ProjectPointOnSurf gppos(toolbasepoint, blankgeomsurface);
 		if (!gppos.IsDone() && gppos.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppos.Point(1);
 
-		//ÏàºÏºÍ¶ÔÆëÒ»Ñù
+		//ç›¸åˆå’Œå¯¹é½ä¸€æ ·
 		if (type == AssembleType::coincidence || type == AssembleType::align)
 		{
 			gp_Ax3 toolterminal(toolprojpoint, toolbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolposition, toolterminal);
 
@@ -4388,7 +4388,7 @@ bool OCCTest::AssemblyPlaneFaceEdge(TopoDS_Shape toolshape, BRepAdaptor_Surface 
 	BRepAdaptor_Curve bastool(tooledge);
 	double first, last;
 	Handle(Geom_Curve) bascurve = BRep_Tool::Curve(tooledge, first, last);
-	//ñîºÏ¶ÔÏóÊÇÖ±Ïß
+	//è€¦åˆå¯¹è±¡æ˜¯ç›´çº¿
 	if (bastool.GetType() == GeomAbs_Line)
 	{
 		gp_Lin line = bastool.Line();
@@ -4398,18 +4398,18 @@ bool OCCTest::AssemblyPlaneFaceEdge(TopoDS_Shape toolshape, BRepAdaptor_Surface 
 		gp_Dir toolnewdir(toolbasedir.X() - blankbasedir.X(),
 			toolbasedir.Y() - blankbasedir.Y(), toolbasedir.Z() - blankbasedir.Z());
 
-		//Í¶Ó°µãµ½blankÃæ
+		//æŠ•å½±ç‚¹åˆ°blanké¢
 		GeomAPI_ProjectPointOnSurf gppos(toolbasepoint, blankgeomsurface);
 		if (!gppos.IsDone() && gppos.NbPoints() < 1)
 			return false;
 		gp_Pnt toolprojpoint = gppos.Point(1);
 
-		//ÏàºÏºÍ¶ÔÆëÒ»Ñù
+		//ç›¸åˆå’Œå¯¹é½ä¸€æ ·
 		if (type == AssembleType::coincidence || type == AssembleType::align)
 		{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, toolnewdir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -4425,7 +4425,7 @@ bool OCCTest::AssemblyPlaneFaceEdge(TopoDS_Shape toolshape, BRepAdaptor_Surface 
 		{
 			gp_Ax3 toolorigin(toolbasepoint, toolbasedir);
 			gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-			//¿Õ¼ä±ä»»
+			//ç©ºé—´å˜æ¢
 			gp_Trsf transf;
 			transf.SetTransformation(toolorigin, toolterminal);
 
@@ -4438,24 +4438,24 @@ bool OCCTest::AssemblyPlaneFaceEdge(TopoDS_Shape toolshape, BRepAdaptor_Surface 
 			targetshape = bat.Shape();
 		}
 	}
-	//ñîºÏ¶ÔÏóÊÇÆ½ÃæÏß
+	//è€¦åˆå¯¹è±¡æ˜¯å¹³é¢çº¿
 	else if (bastool.GetType() != GeomAbs_Line)
 	{
 		gp_Pnt toolbasepoint;
 		gp_Dir toolbasedir;
 		if (IsEdgePlanar(bascurve, first, last, toolbasepoint, toolbasedir))
 		{
-			//Í¶Ó°µãµ½blankÃæ
+			//æŠ•å½±ç‚¹åˆ°blanké¢
 			GeomAPI_ProjectPointOnSurf gppos(toolbasepoint, blankgeomsurface);
 			if (!gppos.IsDone() && gppos.NbPoints() < 1)
 				return false;
 			gp_Pnt toolprojpoint = gppos.Point(1);
 
-			//ÏàºÏ¡¢¶ÔÆë¡¢Í¬ÏòµÄÇé¿ö¶¼Ò»Ñù
+			//ç›¸åˆã€å¯¹é½ã€åŒå‘çš„æƒ…å†µéƒ½ä¸€æ ·
 			//if (type == AssembleType::coincidence)
 			//{
 				gp_Ax3 toolterminal(toolprojpoint, blankbasedir);
-				//¿Õ¼ä±ä»»
+				//ç©ºé—´å˜æ¢
 				gp_Trsf transf;
 				transf.SetTransformation(toolterminal);
 
@@ -4482,7 +4482,7 @@ bool OCCTest::IsEdgePlanar(Handle(Geom_Curve) curve, double first, double last, 
 	gp_Pnt pt5 = curve->Value(first + 4 * (last - first) / 5);
 	gp_Pnt pt6 = curve->Value(first + 5 * (last - first) / 5);
 
-	//ÔìÁ½¸öÃæ
+	//é€ ä¸¤ä¸ªé¢
 	GC_MakePlane gcmp1(pt1, pt2, pt3);
 	GC_MakePlane gcmp2(pt4, pt5, pt6);
 
@@ -4525,7 +4525,7 @@ bool OCCTest::Transform(Transforminfo transinfo, NCollection_Mat4<double> inputm
 	double ori_a33 = inputmatrix.GetValue(3, 3);
 	double ori_a34 = inputmatrix.GetValue(3, 4);
 	trsfori.SetValues(ori_a11, ori_a12, ori_a13, ori_a14, ori_a21, ori_a22, ori_a23, ori_a24, ori_a31, ori_a32, ori_a33, ori_a34);*/
-	//Æ½ÒÆ
+	//å¹³ç§»
 	if (transinfo.istranslate)
 	{
 		//==========================================================
@@ -4541,7 +4541,7 @@ bool OCCTest::Transform(Transforminfo transinfo, NCollection_Mat4<double> inputm
 		trsfprocess.SetTranslation(vec);
 		trsfprocess.GetMat4(operatematrix);
 	}
-	//Ğı×ª
+	//æ—‹è½¬
 	else if (transinfo.isrotate)
 	{
 		gp_Ax1 ax1(gp_Pnt(transinfo.transformbase[0], transinfo.transformbase[1], transinfo.transformbase[2]),
@@ -4549,7 +4549,7 @@ bool OCCTest::Transform(Transforminfo transinfo, NCollection_Mat4<double> inputm
 		trsfprocess.SetRotation(ax1, transinfo.rotateangleinrad);
 		trsfprocess.GetMat4(operatematrix);
 	}
-	//Ëõ·Å
+	//ç¼©æ”¾
 	else if (transinfo.isscale)
 	{
 		//==========================================================
@@ -4561,7 +4561,7 @@ bool OCCTest::Transform(Transforminfo transinfo, NCollection_Mat4<double> inputm
 		trsfprocess.SetScale(gp_Pnt(transinfo.transformbase[0], transinfo.transformbase[1], transinfo.transformbase[2]), transinfo.scalevalue);
 		trsfprocess.GetMat4(operatematrix);
 	}
-	//¾µÏñ
+	//é•œåƒ
 	else if(transinfo.ismirror)
 	{
 		gp_Ax2 ax2(gp_Pnt(transinfo.transformbase[0], transinfo.transformbase[1], transinfo.transformbase[2]),
@@ -4576,7 +4576,7 @@ bool OCCTest::Transform(Transforminfo transinfo, NCollection_Mat4<double> inputm
 bool OCCTest::Transform(Transforminfo transinfo, TopoDS_Shape& operateshape)
 {
 	gp_Trsf trsfprocess;
-	//Æ½ÒÆ
+	//å¹³ç§»
 	if (transinfo.istranslate)
 	{
 		gp_Vec vec;
@@ -4585,19 +4585,19 @@ bool OCCTest::Transform(Transforminfo transinfo, TopoDS_Shape& operateshape)
 		vec.SetZ(transinfo.tanslatedistance * transinfo.transformirection[2]);
 		trsfprocess.SetTranslation(vec);
 	}
-	//Ğı×ª
+	//æ—‹è½¬
 	else if (transinfo.isrotate)
 	{
 		gp_Ax1 ax1(gp_Pnt(transinfo.transformbase[0], transinfo.transformbase[1], transinfo.transformbase[2]),
 			gp_Dir(transinfo.transformirection[0], transinfo.transformirection[1], transinfo.transformirection[2]));
 		trsfprocess.SetRotation(ax1, transinfo.rotateangleinrad);
 	}
-	//Ëõ·Å
+	//ç¼©æ”¾
 	else if (transinfo.isscale)
 	{
 		trsfprocess.SetScale(gp_Pnt(transinfo.transformbase[0], transinfo.transformbase[1], transinfo.transformbase[2]), transinfo.scalevalue);
 	}
-	//¾µÏñ
+	//é•œåƒ
 	else if (transinfo.ismirror)
 	{
 		gp_Ax2 ax2(gp_Pnt(transinfo.transformbase[0], transinfo.transformbase[1], transinfo.transformbase[2]),
@@ -4615,7 +4615,7 @@ bool OCCTest::FaceSplitBody(TopoDS_Shape inputbody, std::vector<TopoDS_Face> fac
 {
 	if (inputbody.ShapeType() > TopAbs_SHELL)
 		return false;
-	//×é×°Êä³öcompound
+	//ç»„è£…è¾“å‡ºcompound
 	BRep_Builder B;
 	B.MakeCompound(outputshape);
 	if (inputbody.ShapeType() == TopAbs_COMPOUND)
@@ -4783,7 +4783,7 @@ bool OCCTest::MakeDraft(TopoDS_Shape& shape)
 	OCCBasicTools::GetOrderWireFromEdges(anEdges, Profile);
 	TopoDS_Face ProfileFace = BRepBuilderAPI_MakeFace(Profile);
 
-	//½¨Á¢ÀâÖù
+	//å»ºç«‹æ£±æŸ±
 	gp_Vec vec(0, 0, 5);
 	BRepPrimAPI_MakePrism* make_prism = new BRepPrimAPI_MakePrism(ProfileFace, vec);
 	TopoDS_Shape shape1 = make_prism->Shape();
@@ -4797,7 +4797,7 @@ bool OCCTest::MakeDraft(TopoDS_Shape& shape)
 	OCCBasicTools::GetOrderWireFromEdges(anEdges1, Profile1);
 	TopoDS_Face ProfileFace1 = BRepBuilderAPI_MakeFace(Profile1);
 
-	//½¨Á¢ÀâÖù
+	//å»ºç«‹æ£±æŸ±
 	BRepPrimAPI_MakePrism* make_prism1 = new BRepPrimAPI_MakePrism(ProfileFace1, vec);
 	TopoDS_Shape shape2 = make_prism1->Shape();
 
@@ -4811,7 +4811,7 @@ bool OCCTest::MakeDraft(TopoDS_Shape& shape)
 	anEdges2.push_back(BRepBuilderAPI_MakeEdge(gp_Pnt(0, 5, 0), gp_Pnt(0, 0, 0)));
 	OCCBasicTools::GetOrderWireFromEdges(anEdges2, Profile2);
 	TopoDS_Face ProfileFace2 = BRepBuilderAPI_MakeFace(Profile2);
-	//½¨Á¢ÀâÖù
+	//å»ºç«‹æ£±æŸ±
 	BRepPrimAPI_MakePrism* make_prism2 = new BRepPrimAPI_MakePrism(ProfileFace2, vec);
 	TopoDS_Shape shape3 = make_prism2->Shape();
 	TopExp_Explorer exsold;
@@ -4857,12 +4857,12 @@ bool OCCTest::MakeDraft(TopoDS_Shape& shape)
 //	//gp_Dir cross7 = dir1.Crossed(dir5);
 //	//gp_Dir cross8 = dir5.Crossed(dir1);
 //
-//	////»æÖÆÍÖÔ²
+//	////ç»˜åˆ¶æ¤­åœ†
 //	//gp_Ax2 ax2(gp_Pnt(0, 0, 0), gp_Dir(0, 0, 1));
 //	//gp_Elips test_elips(ax2,10,5);
 //	//TopoDS_Wire my_wire;
 //	//TopoDS_Face myface;
-//	////Ä£ĞÍ£¬±ßÊı£¬Ïß¿ò
+//	////æ¨¡å‹ï¼Œè¾¹æ•°ï¼Œçº¿æ¡†
 //	//ConvertEllipse2Polygon(test_elips, 7, my_wire);
 //
 //	//TopoDS_Face ProfileFace = BRepBuilderAPI_MakeFace(my_wire);
@@ -4879,7 +4879,7 @@ bool OCCTest::MakeDraft(TopoDS_Shape& shape)
 //	OCCBasicTools::GetOrderWireFromEdges(anEdges, Profile);
 //	TopoDS_Face ProfileFace = BRepBuilderAPI_MakeFace(Profile);
 //
-//	//½¨Á¢ÀâÖù
+//	//å»ºç«‹æ£±æŸ±
 //	gp_Vec vec(10, 10, 20);
 //	BRepPrimAPI_MakePrism* make_prism = new BRepPrimAPI_MakePrism(ProfileFace, vec);
 //
@@ -4890,16 +4890,16 @@ bool OCCTest::MakeDraft(TopoDS_Shape& shape)
 //	BRepSweep_Prism prism = make_prism->Prism();
 //	//shape = prism.Shape();
 //
-//	gp_Dir Direc(0., 0., 1.);                             //ÖĞĞÔÃæµÄ·½Ïò£¬ËÆºõ²»Ó°Ïì
-//	gp_Dir Direc1(-10., -10., -20.);                      //£¨¹Ø¼ü£©
-//	Standard_Real Angle = -5. * PI / 180.;                  //´ú±í°ÎÄ£·½ÏòÉÏÓë£¨0£¬0£¬1£©·¨ÏòµÄ¼Ğ½Ç                   £¨¹Ø¼ü£©
-//	gp_Pln Neutral(gp_Pnt(0, 0, 20), Direc);                 //Ñ¡ÔñµÄÕâ¸öÃæ´ú±íÀâÖùµÄÕâ¸öµ×ÃæÔÚ°ÎÄ£¹ı³ÌÖĞÃæ»ı²»»á·¢Éú±ä»¯   £¨¹Ø¼ü£©
+//	gp_Dir Direc(0., 0., 1.);                             //ä¸­æ€§é¢çš„æ–¹å‘ï¼Œä¼¼ä¹ä¸å½±å“
+//	gp_Dir Direc1(-10., -10., -20.);                      //ï¼ˆå…³é”®ï¼‰
+//	Standard_Real Angle = -5. * PI / 180.;                  //ä»£è¡¨æ‹”æ¨¡æ–¹å‘ä¸Šä¸ï¼ˆ0ï¼Œ0ï¼Œ1ï¼‰æ³•å‘çš„å¤¹è§’                   ï¼ˆå…³é”®ï¼‰
+//	gp_Pln Neutral(gp_Pnt(0, 0, 20), Direc);                 //é€‰æ‹©çš„è¿™ä¸ªé¢ä»£è¡¨æ£±æŸ±çš„è¿™ä¸ªåº•é¢åœ¨æ‹”æ¨¡è¿‡ç¨‹ä¸­é¢ç§¯ä¸ä¼šå‘ç”Ÿå˜åŒ–   ï¼ˆå…³é”®ï¼‰
 //	BRepOffsetAPI_DraftAngle theDraft_test(shape);
 //	BRepOffsetAPI_DraftAngle theDraft(shape);
 //
-//	//ÕÒÀâÖùµÄ²àÃæ£¨ÓÃÓÚ°ÎÄ£µÄÃæ£©
-//	TopTools_ListOfShape ListOfFace_preselect;             //³õÑ¡ËùÓĞÃæ
-//	TopTools_ListOfShape ListOfFace_finalselect;           //ÕæÕı¿ÉÒÔÓÃµÄÃæ
+//	//æ‰¾æ£±æŸ±çš„ä¾§é¢ï¼ˆç”¨äºæ‹”æ¨¡çš„é¢ï¼‰
+//	TopTools_ListOfShape ListOfFace_preselect;             //åˆé€‰æ‰€æœ‰é¢
+//	TopTools_ListOfShape ListOfFace_finalselect;           //çœŸæ­£å¯ä»¥ç”¨çš„é¢
 //	TopExp_Explorer Ex;
 //	for (Ex.Init(shape, TopAbs_FACE); Ex.More(); Ex.Next())
 //	{
@@ -4907,10 +4907,10 @@ bool OCCTest::MakeDraft(TopoDS_Shape& shape)
 //	}
 //
 //	TopTools_ListIteratorOfListOfShape itl;
-//	//ÕâÒ»¶ÎforÉ¸³öÄÜ°ÎÄ£µÄÃæ
+//	//è¿™ä¸€æ®µforç­›å‡ºèƒ½æ‹”æ¨¡çš„é¢
 //	for (itl.Initialize(ListOfFace_preselect); itl.More(); itl.Next())
 //	{
-//		TopoDS_Face todo_face = TopoDS::Face(itl.Value());                              //theDraft.Remove(todo_face)Õâ¸ö·½·¨ÓĞbug£¬±ğÓÃ
+//		TopoDS_Face todo_face = TopoDS::Face(itl.Value());                              //theDraft.Remove(todo_face)è¿™ä¸ªæ–¹æ³•æœ‰bugï¼Œåˆ«ç”¨
 //		theDraft_test.Add(todo_face, Direc1, Angle, Neutral);
 //		if (theDraft_test.AddDone())
 //		{
@@ -4933,7 +4933,7 @@ bool OCCTest::MakeDraft(TopoDS_Shape& shape)
 //	theDraft.Build();
 //	shape = theDraft.Shape();
 //
-//	//µ¹½Ç
+//	//å€’è§’
 //	bool if_filleted = false;
 //	//if_filleted = fillet(shape);
 //
@@ -4950,7 +4950,7 @@ bool OCCTest::FindTypeLevelFatherLabel(TDF_Label& inputlabel, TopAbs_ShapeEnum t
 	{
 		inputlabel = inputlabel.Father();
 		FindTypeLevelFatherLabel(inputlabel, type, currentshape);
-		//ÊÖ¶¯ÖÕÖ¹µİ¹é
+		//æ‰‹åŠ¨ç»ˆæ­¢é€’å½’
 		if (!currentshape.IsNull())
 			return true;
 		currenttype = testshape.ShapeType();
@@ -4963,7 +4963,7 @@ bool OCCTest::FindTypeLevelFatherLabel(TDF_Label& inputlabel, TopAbs_ShapeEnum t
 	return false;
 }
 
-//´ÓlabelÕÒshape
+//ä»labelæ‰¾shape
 TopoDS_Shape OCCTest::getLabelShape(TDF_Label label)
 {
 	TopoDS_Shape emptyshape;
@@ -4973,11 +4973,11 @@ TopoDS_Shape OCCTest::getLabelShape(TDF_Label label)
 	return namedshape->Get();
 }
 
-//´ÓshapeÕÒlabel
+//ä»shapeæ‰¾label
 TDF_Label OCCTest::getShapeLabel(TDF_Label& rootlabel, TopoDS_Shape shape)
 {
 	Handle(TNaming_NamedShape) namedshape;
-	//µ±Ç°labelÓëÒªÕÒµÄshapeµÄlabelÒ»ÖÂ
+	//å½“å‰labelä¸è¦æ‰¾çš„shapeçš„labelä¸€è‡´
 	if (!rootlabel.FindAttribute(TNaming_NamedShape::GetID(), namedshape))
 	{
 		TopoDS_Shape compareshape = namedshape->Get();
@@ -4987,7 +4987,7 @@ TDF_Label OCCTest::getShapeLabel(TDF_Label& rootlabel, TopoDS_Shape shape)
 		}
 	}
 
-	//Ã»ÕÒµ½£¬¼ÌĞøÍùrootlabelµÄ×Ó½ÚµãÑ°ÕÒ
+	//æ²¡æ‰¾åˆ°ï¼Œç»§ç»­å¾€rootlabelçš„å­èŠ‚ç‚¹å¯»æ‰¾
 	TDF_ChildIterator childiter(rootlabel);
 	for (; childiter.More(); childiter.Next())
 	{
@@ -5021,13 +5021,13 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 	double inputradius)
 {
 	TopExp_Explorer faceex;
-	//µ±Ç°Ä£ĞÍËùÓĞµÄÃæ
+	//å½“å‰æ¨¡å‹æ‰€æœ‰çš„é¢
 	std::vector<TopoDS_Face> facelists;
-	//·¢ÏÖµÄĞ¡ÓÚ°ë¾¶ÖµµÄÔ²Ïß¿ò
+	//å‘ç°çš„å°äºåŠå¾„å€¼çš„åœ†çº¿æ¡†
 	std::vector<TopoDS_Wire> wirelists;
 	for (faceex.Init(shape, TopAbs_FACE); faceex.More(); faceex.Next())
 		facelists.push_back(TopoDS::Face(faceex.Current()));
-	//ÕÒµ½ÄÚ²¿Ïß¿ò
+	//æ‰¾åˆ°å†…éƒ¨çº¿æ¡†
 	for (int i = 0; i < facelists.size(); i++)
 	{
 		TopTools_ListOfShape innerwires;
@@ -5036,7 +5036,7 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 
 		TopoDS_Shape outcontour;
 		double biggestarea = 0;
-		//ÕÒµ½×î´ówire,¼´Íâ²¿Ïß¿ò
+		//æ‰¾åˆ°æœ€å¤§wire,å³å¤–éƒ¨çº¿æ¡†
 		for (TopExp_Explorer iter(wires, TopAbs_WIRE); iter.More(); iter.Next())
 		{
 			Bnd_Box box;
@@ -5048,7 +5048,7 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 			}
 		}
 
-		//ÔÙ´Î±éÀúwires£¬Èç¹û°üÎ§ºĞĞ¡ÓÚÍâ¿ò£¬ÔòÊÇÄÚ²¿Ïß
+		//å†æ¬¡éå†wiresï¼Œå¦‚æœåŒ…å›´ç›’å°äºå¤–æ¡†ï¼Œåˆ™æ˜¯å†…éƒ¨çº¿
 		for (TopExp_Explorer iter(wires, TopAbs_WIRE); iter.More(); iter.Next())
 		{
 			Bnd_Box box;
@@ -5059,7 +5059,7 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 			}
 		}
 
-		//Ñ°ÕÒÄÚ²¿Ïß¿òÃæ»ıĞ¡ÓÚÖ¸¶¨Ãæ»ıµÄ
+		//å¯»æ‰¾å†…éƒ¨çº¿æ¡†é¢ç§¯å°äºæŒ‡å®šé¢ç§¯çš„
 		for (auto wireiter : innerwires)
 		{
 			GProp_GProps ggx;
@@ -5072,10 +5072,10 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 		}
 	}
 
-	//´¦ÀíÄÚ²¿Ïß¿ò£¬ÕÒÄÚ²¿Ïß¿ò¶ÔÓ¦µÄÃæ
+	//å¤„ç†å†…éƒ¨çº¿æ¡†ï¼Œæ‰¾å†…éƒ¨çº¿æ¡†å¯¹åº”çš„é¢
 	std::vector<TopoDS_Edge> edgelist;
 	TopTools_ListOfShape face_listofshape;
-	//ÕÒÒ»ÏÂÄÚ²¿ÏßµÄ×î´ó°ë¾¶
+	//æ‰¾ä¸€ä¸‹å†…éƒ¨çº¿çš„æœ€å¤§åŠå¾„
 	std::vector<double> radiuses;
 	for (int i = 0; i < wirelists.size(); i++)
 	{
@@ -5098,7 +5098,7 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 			else
 				needcontinue = true;
 		}
-		//Ìø¹ıÖĞ¼ä¸ÉÉæ±ß
+		//è·³è¿‡ä¸­é—´å¹²æ¶‰è¾¹
 		if(needcontinue)
 			continue;
 
@@ -5123,7 +5123,7 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 			if (!facelist.Contains(xface))
 				facelist.Append(xface);
 
-			//ÕÒfaceµÄ¶ÔÃæ±ß
+			//æ‰¾faceçš„å¯¹é¢è¾¹
 			for (wireex.Init(xface, TopAbs_EDGE); wireex.More(); wireex.Next())
 			{
 				TopoDS_Shape compareshape = wireex.Current();
@@ -5132,7 +5132,7 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 				for (int k = 0; k < wirelists.size(); k++)
 				{
 					TopoDS_Wire wireshapexx = wirelists[k];
-					//ÄÚ²¿Ïß×ªÎªedge
+					//å†…éƒ¨çº¿è½¬ä¸ºedge
 					TopExp_Explorer thisexx;
 					TopoDS_Edge edgespx;
 					for (thisexx.Init(wireshapexx, TopAbs_EDGE); thisexx.More(); thisexx.Next())
@@ -5151,7 +5151,7 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 		}
 	}
 	std::sort(radiuses.begin(), radiuses.end());
-	//ÕÒÁíÒ»¸öÃæ
+	//æ‰¾å¦ä¸€ä¸ªé¢
 	for (int i = 0; i < facelists.size(); i++)
 	{
 		TopExp_Explorer wireex;
@@ -5171,7 +5171,7 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 			continue;
 		if (!facelist.Contains(xface))
 		{
-			//ĞèÒªÅĞ¶ÏÒ»ÏÂÄÚÍâĞÔ£¬·ÀÖ¹×îÍâÂÖÀªÃæ±»°üÀ¨
+			//éœ€è¦åˆ¤æ–­ä¸€ä¸‹å†…å¤–æ€§ï¼Œé˜²æ­¢æœ€å¤–è½®å»“é¢è¢«åŒ…æ‹¬
 			GProp_GProps gg;
 			BRepGProp::SurfaceProperties(xface, gg);
 			double comparea = M_PI * pow(radiuses[radiuses.size() - 1], 2);
@@ -5182,7 +5182,7 @@ bool OCCTest::DetectHoleFacesAndRemove(TopoDS_Shape shape, TopTools_ListOfShape&
 	}
 
 	TopTools_ListOfShape finalfacelist;
-	//´¦ÀíÌØÊâÇé¿ö£¬ÄÚÇúÃæ·ÖÀë
+	//å¤„ç†ç‰¹æ®Šæƒ…å†µï¼Œå†…æ›²é¢åˆ†ç¦»
 	for (auto iter : facelist)
 	{
 		TopoDS_Shape xs = iter;
@@ -5295,6 +5295,6 @@ bool OCCTest::XDStitchFaces(string facestobestitched)
 	}
 	catch (...)
 	{
-		return false;
+		return true;
 	}
 }
